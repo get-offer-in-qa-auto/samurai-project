@@ -14,4 +14,11 @@ public class RandomData {
     public static String getUserName() {
         return "user" + RandomStringUtils.randomAlphanumeric(8);
     }
-}
+
+    public static String getUserPassword() {
+        return RandomStringUtils.randomAlphabetic(8).toLowerCase();}
+
+     public static String getTokenName() {
+            return "token" + RandomStringUtils.randomAlphanumeric(8);
+        }
+    }
