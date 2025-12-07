@@ -43,7 +43,7 @@ public class RequestSpecs {
                 .setAuth(RestAssured.basic((username), password))
                 .build();
     }
-    public static RequestSpecification userAuthSpecWithToken(String token) {
+    public static RequestSpecification userAuthSpecWithToken() {
         AuthUser authUser = AuthUserExtension.getAuthUser();
         if (authUser == null) {
             throw new IllegalStateException("AuthUser не создан. Проверь, что тест аннотирован @ExtendWith(AuthUserExtension.class)");

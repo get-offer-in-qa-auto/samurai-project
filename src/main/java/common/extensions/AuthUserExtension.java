@@ -27,7 +27,7 @@ public class AuthUserExtension implements BeforeEachCallback, AfterEachCallback 
         AdminSteps.addRoleForUser(userRequest, role);
 
         var tokenResponse = UserSteps.createTokenForUser(userRequest);
-        AuthUser authUser = new AuthUser(userRequest.getUsername(), userRequest.getPassword(), tokenResponse.getValue());
+        AuthUser authUser = new AuthUser(userRequest.getUsername(), userRequest.getPassword(), tokenResponse.getValue(),userRequest.getId());
 
         threadLocalAuthUser.set(authUser);
         threadLocalUserRequest.set(userRequest);
