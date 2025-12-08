@@ -18,17 +18,22 @@ public class AuthUserExtension implements BeforeEachCallback, AfterEachCallback 
 
     @Override
     public void beforeEach(ExtensionContext context) {
-        Roles role = context.getTestMethod()
-                .flatMap(method -> java.util.Optional.ofNullable(method.getAnnotation(WithAuthUser.class))
-                        .map(WithAuthUser::role))
-                .orElse(Roles.USER_ROLE);
+        var annotation = context.getTestMethod()
+                .flatMap(method -> java.util.Optional.ofNullable(method.getAnnotation(WithAuthUser.class)))
+                .or(() -> context.getTestClass()
+                        .flatMap(clazz -> java.util.Optional.ofNullable(clazz.getAnnotation(WithAuthUser.class))));
+
+        if (annotation.isEmpty()) {
+            return;
+        }
+        Roles role = annotation.map(WithAuthUser::role).orElse(Roles.USER_ROLE);
 
         CreateUserRequest userRequest = AdminSteps.createTemporaryUser();
         CreateUserRoleRequest userRole = AdminSteps.addRoleForUser(userRequest, role);
 
         var tokenResponse = UserSteps.createTokenForUser(userRequest);
         AuthUser authUser = new AuthUser(userRequest.getUsername(), userRequest.getPassword(),
-                tokenResponse.getValue(),userRequest.getId(),userRole.getRoleId());
+                tokenResponse.getValue(), userRequest.getId(), userRole.getRoleId());
 
         threadLocalAuthUser.set(authUser);
         threadLocalUserRequest.set(userRequest);
