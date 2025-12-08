@@ -4,6 +4,9 @@ import api.models.BaseModel;
 import api.models.agent.GetAgentRequest;
 import api.models.agent.GetAgentResponse;
 import api.models.agent.GetAuthorizedInfoAgentResponse;
+import api.models.project.CreateProjectFromRepositoryRequest;
+import api.models.project.CreateProjectManuallyRequest;
+import api.models.project.CreateProjectResponse;
 import api.models.users.*;
 import api.requests.skelethon.requesters.IdentityFormat;
 import lombok.AllArgsConstructor;
@@ -24,7 +27,7 @@ public enum Endpoint {
             IdentityFormat.TEAMCITY_ID
     ),
     GET_ALL_USERS(
-          "/users",
+            "/users",
             BaseModel.class,
             GetAllUsersResponse.class
     ),
@@ -40,7 +43,7 @@ public enum Endpoint {
             IdentityFormat.TEAMCITY_ID
     ),
     USERS_CREATE_ROLE(
-      "/users/{id}/roles",
+            "/users/{id}/roles",
             CreateUserRoleRequest.class,
             CreateUserRoleResponse.class,
             IdentityFormat.TEAMCITY_ID
@@ -50,6 +53,16 @@ public enum Endpoint {
             BaseModel.class,
             BaseModel.class,
             IdentityFormat.TEAMCITY_ID
+    ),
+    PROJECT_CREATE_MANUALLY(
+            "/projects",
+            CreateProjectManuallyRequest.class,
+            CreateProjectResponse.class
+    ),
+    PROJECT_CREATE_FROM_REPOSITORY(
+            "/projects",
+            CreateProjectFromRepositoryRequest.class,
+            CreateProjectResponse.class
     );
 
 
