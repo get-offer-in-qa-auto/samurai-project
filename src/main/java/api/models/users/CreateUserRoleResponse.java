@@ -1,4 +1,5 @@
 package api.models.users;
+
 import api.models.BaseModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateUserRoleResponse extends BaseModel {
     private String roleId;
-    private  String scope;
-    private  String href;
+    private String scope;
+    private String href;
 }

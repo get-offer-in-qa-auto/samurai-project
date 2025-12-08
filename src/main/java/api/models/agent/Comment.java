@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class GetAuthorizedInfoAgentResponse extends BaseModel {
-    private Boolean status;
-    private Comment comment;
-
+@NoArgsConstructor
+public class Comment extends BaseModel {
+    private String timestamp;
+    private String text;
+    private User user;
 }
