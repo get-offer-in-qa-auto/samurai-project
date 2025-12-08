@@ -14,6 +14,11 @@ public class ResponseSpecs {
         return new ResponseSpecBuilder();
     }
 
+    public  static ResponseSpecification ignoreErrors(){
+        return  defaultResponseSpecBuilder().build();
+
+    }
+
     public static ResponseSpecification entityWasCreated() {
         return defaultResponseSpecBuilder()
                 .expectStatusCode(HttpStatus.SC_CREATED)

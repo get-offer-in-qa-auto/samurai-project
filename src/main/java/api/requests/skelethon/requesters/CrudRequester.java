@@ -22,16 +22,28 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .body(model)
                 .post(endpoint.getUrl())
                 .then()
-                .assertThat()
                 .spec(responseSpec);
     }
+
+    @Override
+    public ValidatableResponse post(BaseModel model, int id) {
+        String formattedId = endpoint.formatId(id);
+        return given()
+                .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .body(model)
+                .urlEncodingEnabled(false)
+                .post(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
     @Override
     public ValidatableResponse post() {
         return given()
                 .spec(requestSpec)
                 .post(endpoint.getUrl())
                 .then()
-                .assertThat()
                 .spec(responseSpec);
     }
 
@@ -40,6 +52,16 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
         String formattedId = endpoint.formatId(id);
         return given()
                 .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .urlEncodingEnabled(false)
+                .get(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
+    @Override
+    public ValidatableResponse get() {
+        return given()
                 .spec(requestSpec)
                 .get(endpoint.getUrl())
                 .then()
@@ -53,16 +75,16 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .body(model)
                 .put(endpoint.getUrl())
                 .then()
-                .assertThat()
                 .spec(responseSpec);
     }
 
     @Override
     public ValidatableResponse delete(int id) {
+        String formattedId = endpoint.formatId(id);
         return given()
+                .pathParam("id", formattedId)
                 .spec(requestSpec)
-                .pathParam("id", id)
-                .when()
+                .urlEncodingEnabled(false)
                 .delete(endpoint.getUrl())
                 .then()
                 .spec(responseSpec);
