@@ -2,6 +2,7 @@ package common.extensions;
 
 import api.models.users.AuthUser;
 import api.models.users.CreateUserRequest;
+import api.models.users.CreateUserRoleRequest;
 import api.models.users.Roles;
 import api.requests.steps.AdminSteps;
 import api.requests.steps.UserSteps;
@@ -9,7 +10,6 @@ import common.annotations.WithAuthUser;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterResolver;
 
 public class AuthUserExtension implements BeforeEachCallback, AfterEachCallback {
 
@@ -21,13 +21,14 @@ public class AuthUserExtension implements BeforeEachCallback, AfterEachCallback 
         Roles role = context.getTestMethod()
                 .flatMap(method -> java.util.Optional.ofNullable(method.getAnnotation(WithAuthUser.class))
                         .map(WithAuthUser::role))
-                .orElse(Roles.SYSTEM_ADMIN);
+                .orElse(Roles.USER_ROLE);
 
         CreateUserRequest userRequest = AdminSteps.createTemporaryUser();
-        AdminSteps.addRoleForUser(userRequest, role);
+        CreateUserRoleRequest userRole = AdminSteps.addRoleForUser(userRequest, role);
 
         var tokenResponse = UserSteps.createTokenForUser(userRequest);
-        AuthUser authUser = new AuthUser(userRequest.getUsername(), userRequest.getPassword(), tokenResponse.getValue(),userRequest.getId());
+        AuthUser authUser = new AuthUser(userRequest.getUsername(), userRequest.getPassword(),
+                tokenResponse.getValue(),userRequest.getId(),userRole.getRoleId());
 
         threadLocalAuthUser.set(authUser);
         threadLocalUserRequest.set(userRequest);
