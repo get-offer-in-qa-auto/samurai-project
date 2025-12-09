@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateUserTokenResponse  extends BaseModel {
+public class CreateUserTokenResponse extends BaseModel {
     private String name;
-    private  String value;
+    private String value;
 }

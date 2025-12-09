@@ -1,13 +1,13 @@
 package api.requests.skelethon;
 
 import api.models.BaseModel;
-import api.models.agent.GetAgentRequest;
-import api.models.agent.GetAgentResponse;
+import api.models.agent.GetAgentsResponse;
 import api.models.agent.GetAuthorizedInfoAgentResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
 import api.models.users.*;
+import api.models.agent.AgentStatusUpdateResponse;
 import api.requests.skelethon.requesters.IdentityFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,13 +17,19 @@ import lombok.Getter;
 public enum Endpoint {
     AGENTS(
             "/agents",
-            GetAgentRequest.class,
-            GetAgentResponse.class
+            BaseModel.class,
+            GetAgentsResponse.class
     ),
     AUTHORIZED_INFO_AGENT(
             "/agents/{id}/authorizedInfo",
             BaseModel.class,
             GetAuthorizedInfoAgentResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    ENABLED_INFO_AGENT(
+            "/agents/{id}/enabledInfo",
+            BaseModel.class,
+            AgentStatusUpdateResponse.class,
             IdentityFormat.TEAMCITY_ID
     ),
     GET_ALL_USERS(

@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetAuthorizedInfoAgentResponse extends BaseModel {
-    private Boolean status;
-    private Comment comment;
-
+public class User extends BaseModel {
+    private String username;
+    private int id;
+    private String href;
 }

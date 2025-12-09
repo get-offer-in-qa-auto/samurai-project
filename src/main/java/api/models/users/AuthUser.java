@@ -9,6 +9,6 @@ public class AuthUser {
     private final String username;
     private final String password;
     private final String token;
-    private  final int id;
-    private  final  String role;
+    private final int id;
+    private final String role;
 }

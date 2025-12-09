@@ -2,9 +2,14 @@ package api.requests.steps;
 
 import api.generators.RandomData;
 import api.generators.RandomModelGenerator;
+import api.models.agent.Agent;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
+import api.models.agent.AgentStatusUpdateRequest;
+import api.models.agent.AgentStatusUpdateResponse;
+import api.models.agent.Comment;
+import api.models.agent.GetAgentsResponse;
 import api.models.users.CreateUserRequest;
 import api.models.users.CreateUserTokenRequest;
 import api.models.users.CreateUserTokenResponse;
@@ -14,6 +19,14 @@ import api.requests.skelethon.requesters.ValidatedCrudRequester;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import io.restassured.specification.RequestSpecification;
+
+import java.util.Map;
+
+import static api.models.agent.GetAgentsRequest.AGENT_AUTHORIZATION;
+import static api.models.agent.GetAgentsRequest.AGENT_DEAUTHORIZATION;
+import static api.models.agent.GetAgentsRequest.AGENT_DISABLING;
+import static api.models.agent.GetAgentsRequest.AGENT_ENABLING;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserSteps {
     public static CreateUserTokenResponse createTokenForUser(CreateUserRequest request) {
@@ -44,5 +57,95 @@ public class UserSteps {
                 Endpoint.PROJECT_CREATE_FROM_REPOSITORY,
                 ResponseSpecs.requestReturnsOK())
                 .post(RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class));
+    }
+
+
+    public static Agent getAnyAgent() {
+        GetAgentsResponse response = getAgentList(Map.of("locator", "defaultFilter:false"));
+        assertThat(response.getAgent()).isNotEmpty();
+        return response.getAgent().get(0);
+    }
+
+    public static void setDefaultAgentEnabledStatus(boolean status) {
+        int agentId = getAnyAgent().getId();
+        String action = status ? AGENT_ENABLING : AGENT_DISABLING;
+        AgentStatusUpdateRequest request = AgentStatusUpdateRequest.builder()
+                .status(status)
+                .comment(Comment.builder().text(action + agentId).build())
+                .build();
+        setEnabledStatusToAgent(request, agentId);
+    }
+
+    public static void setDefaultAgentAuthorizedStatus(boolean status) {
+        int agentId = getAnyAgent().getId();
+        String action = status ? AGENT_AUTHORIZATION : AGENT_DEAUTHORIZATION;
+        AgentStatusUpdateRequest request = AgentStatusUpdateRequest.builder()
+                .status(status)
+                .comment(Comment.builder().text(action + agentId).build())
+                .build();
+        setAuthorizationStatusToAgent(request, agentId);
+    }
+
+    public static AgentStatusUpdateResponse setAuthorizationStatusToAgent(AgentStatusUpdateRequest request, int id) {
+        return new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AUTHORIZED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK()
+        )
+                .put(request, id)
+                .extract()
+                .as(AgentStatusUpdateResponse.class);
+    }
+
+    public static AgentStatusUpdateResponse getAuthorizedAgentInfo(int id) {
+        return new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AUTHORIZED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK()
+        )
+                .get(id)
+                .extract()
+                .as(AgentStatusUpdateResponse.class);
+    }
+
+    public static AgentStatusUpdateResponse setEnabledStatusToAgent(AgentStatusUpdateRequest request, int agentId) {
+        return new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.ENABLED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK()
+        )
+                .put(request, agentId)
+                .extract()
+                .as(AgentStatusUpdateResponse.class);
+    }
+
+    public static AgentStatusUpdateResponse getAgentEnabledInfo(int agentId) {
+        return new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.ENABLED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK())
+                .get(agentId)
+                .extract()
+                .as(AgentStatusUpdateResponse.class);
+    }
+
+    public static GetAgentsResponse getAgentList() {
+        return new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AGENTS,
+                ResponseSpecs.requestReturnsOK())
+                .get()
+                .extract()
+                .as(GetAgentsResponse.class);
+    }
+
+    public static GetAgentsResponse getAgentList(Map<String, Object> queryParams) {
+        return new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AGENTS,
+                ResponseSpecs.requestReturnsOK())
+                .get(queryParams)
+                .extract()
+                .as(GetAgentsResponse.class);
     }
 }
