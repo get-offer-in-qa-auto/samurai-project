@@ -36,7 +36,7 @@ public class UserSteps {
                 .build();
         return new CrudRequester(
                 RequestSpecs.userAuthSpecWithoutToken(request.getUsername(), request.getPassword()),
-                Endpoint.USERS_CREATE_TOKEN,
+                Endpoint.USER_CREATE_TOKEN,
                 ResponseSpecs.ignoreErrors()
         ).post(userRequest, request.getId())
                 .extract()

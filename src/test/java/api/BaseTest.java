@@ -1,6 +1,9 @@
 package api;
 
+import api.models.error.ErrorResponse;
+import common.errors.HasMessage;
 import common.extensions.AuthUserExtension;
+import io.restassured.response.ValidatableResponse;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,5 +21,16 @@ public class BaseTest {
     @AfterEach
     public void afterTest() {
         softly.assertAll();
+    }
+
+    protected ErrorResponse extractError(ValidatableResponse response) {
+        return response.extract().as(ErrorResponse.class);
+    }
+
+    protected <E extends Enum<E> & HasMessage> void assertErrorMessage(
+            ErrorResponse errorResponse, E expected) {
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
+                .as("Проверка сообщения алерта")
+                .isEqualTo(expected.getMessage());
     }
 }

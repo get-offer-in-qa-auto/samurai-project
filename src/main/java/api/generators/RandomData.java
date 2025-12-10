@@ -2,6 +2,8 @@ package api.generators;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class RandomData {
 
     private RandomData() {
@@ -16,9 +18,14 @@ public class RandomData {
     }
 
     public static String getUserPassword() {
-        return RandomStringUtils.randomAlphabetic(8).toLowerCase();}
-
-     public static String getTokenName() {
-            return "token" + RandomStringUtils.randomAlphanumeric(8);
-        }
+        return RandomStringUtils.randomAlphabetic(8).toLowerCase();
     }
+
+    public static String getTokenName() {
+        return "token" + RandomStringUtils.randomAlphanumeric(8);
+    }
+
+    public static int getId() {
+        return ThreadLocalRandom.current().nextInt(500, 1000);
+    }
+}

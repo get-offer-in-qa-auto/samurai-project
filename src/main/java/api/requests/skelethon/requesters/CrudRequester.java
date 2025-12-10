@@ -87,6 +87,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface,
         return given()
                 .pathParam("id", formattedId)
                 .spec(requestSpec)
+                .urlEncodingEnabled(false)
                 .body(model)
                 .put(endpoint.getUrl())
                 .then()

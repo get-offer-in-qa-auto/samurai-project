@@ -1,6 +1,7 @@
 package api.models.agent;
 
 import api.models.BaseModel;
+import api.models.users.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
