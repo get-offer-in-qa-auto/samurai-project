@@ -3,7 +3,10 @@ package api.users;
 import api.BaseTest;
 import api.generators.RandomData;
 import api.models.error.ErrorResponse;
-import api.models.users.*;
+import api.models.users.AuthUser;
+import api.models.users.CreateUserRoleRequest;
+import api.models.users.CreateUserRoleResponse;
+import api.models.users.Roles;
 import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.requesters.CrudRequester;
 import api.requests.skelethon.requesters.ValidatedCrudRequester;
@@ -16,21 +19,23 @@ import common.extensions.AuthUserExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.List;
 
 public class AssignUserRoleTest extends BaseTest {
-
     @ParameterizedTest
     @DisplayName("Успешное добавление роли пользователю")
-    @ValueSource(strings = {"PROJECT_VIEWER", "PROJECT_DEVELOPER",
-            "PROJECT_ADMIN", "AGENT_MANAGER", "GUEST_ROLE", "USER_ROLE"})
+    @EnumSource(
+            value = Roles.class,
+            names = "SYSTEM_ADMIN",
+            mode = EnumSource.Mode.EXCLUDE
+    )
     @WithAuthUser
-    public void successfullyAddRoleWithValidData(String userRole) {
+    public void successfullyAddRoleWithValidData(Roles roles) {
         AuthUser authUser = AuthUserExtension.getAuthUser();
         CreateUserRoleRequest request = CreateUserRoleRequest.builder()
-                .roleId(userRole)
+                .roleId(roles.name())
                 .scope("p:_Root")
                 .build();
         CreateUserRoleResponse userRoleResponse = new ValidatedCrudRequester<CreateUserRoleResponse>(
@@ -39,12 +44,12 @@ public class AssignUserRoleTest extends BaseTest {
 
         List<CreateUserRoleResponse> roleUser = AdminSteps.getRoleUser(authUser.getId());
 
-        softly.assertThat(userRole)
+        softly.assertThat(roles.name())
                 .as("Проверка роли пользователя в ответе")
                 .isEqualTo(userRoleResponse.getRoleId());
         softly.assertThat(roleUser).as("Проверка роли пользователя")
                 .extracting(CreateUserRoleResponse::getRoleId)
-                .containsOnlyOnce(userRole);
+                .containsOnlyOnce(roles.name());
     }
 
     @Test
