@@ -4,6 +4,10 @@ import api.models.BaseModel;
 import api.models.agent.GetAgentRequest;
 import api.models.agent.GetAgentResponse;
 import api.models.agent.GetAuthorizedInfoAgentResponse;
+import api.models.builds.CancelBuildRequest;
+import api.models.builds.CreateBuildRequest;
+import api.models.builds.CreateBuildResponse;
+import api.models.builds.GetBuildResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
@@ -63,7 +67,32 @@ public enum Endpoint {
             "/projects",
             CreateProjectFromRepositoryRequest.class,
             CreateProjectResponse.class
+    ),
+    BUILD_QUEUE(
+            "/app/rest/buildQueue",
+                CreateBuildRequest.class,
+                CreateBuildResponse.class
+    ),
+    GET_BUILD(
+            "/app/rest/builds/{id}",
+            BaseModel.class,
+            GetBuildResponse.class
+    ),
+    DELETE_BUILD_FROM_QUEUE(
+            "/app/rest/buildQueue/{id}",
+            BaseModel.class,
+            BaseModel.class
+    ),
+    CANCEL_BUILD(
+            "/app/rest/builds/{id}/cancel",
+            CancelBuildRequest.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_ID
     );
+
+    ;
+
+
 
 
     private final String url;

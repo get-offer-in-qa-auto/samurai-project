@@ -50,4 +50,12 @@ public class ResponseSpecs {
                 .expectStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 .build();
     }
+    public static ResponseSpecification requestReturnsNoContent() {
+        return new ResponseSpecBuilder()
+                .expectStatusCode(HttpStatus.SC_NO_CONTENT)
+                .build();
+    }
+
+
+
 }
