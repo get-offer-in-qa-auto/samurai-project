@@ -9,7 +9,6 @@ import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.requesters.CrudRequester;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
-import com.sun.net.httpserver.Request;
 import io.restassured.response.ValidatableResponse;
 
 public class AdminSteps {
@@ -39,7 +38,7 @@ public class AdminSteps {
         return userRequest;
     }
 
-    public static CreateUserRoleRequest  addRoleForUser(CreateUserRequest request, Roles role){
+    public static CreateUserRoleRequest addRoleForUser(CreateUserRequest request, Roles role) {
         CreateUserRoleRequest addRoleRequest = CreateUserRoleRequest.builder()
                 .roleId(role.name())
                 .scope("p:_Root")
@@ -50,7 +49,7 @@ public class AdminSteps {
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.USERS_CREATE_ROLE,
                 ResponseSpecs.ignoreErrors())
-                .post(addRoleRequest,request.getId())
+                .post(addRoleRequest, request.getId())
                 .extract()
                 .as(CreateUserRoleRequest.class);
     }

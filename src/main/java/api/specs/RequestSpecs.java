@@ -2,7 +2,6 @@ package api.specs;
 
 import api.configs.Config;
 import api.models.users.AuthUser;
-import api.requests.skelethon.requesters.CrudRequester;
 import common.extensions.AuthUserExtension;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -54,7 +53,21 @@ public class RequestSpecs {
                 .build();
     }
 
+    public static RequestSpecification userAuthTextSpecWithToken() {
+        AuthUser authUser = AuthUserExtension.getAuthUser();
+        if (authUser == null) {
+            throw new IllegalStateException("AuthUser не создан. Проверь, что тест аннотирован @ExtendWith(AuthUserExtension.class)");
+        }
 
+        return new RequestSpecBuilder()
+                .setContentType(ContentType.TEXT)
+                .setAccept(ContentType.TEXT)
+                .addFilters(List.of(new RequestLoggingFilter(),
+                        new ResponseLoggingFilter()))
+                .setBaseUri(Config.getProperty("server") + Config.getProperty("api.basePath"))
+                .addHeader("Authorization", "Bearer " + authUser.getToken())
+                .build();
+    }
 }
 
 

@@ -5,7 +5,6 @@ import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.HttpRequest;
 import api.requests.skelethon.interfaces.CrudEndpointInterface;
 import api.requests.skelethon.interfaces.GetWithQueryParams;
-import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
@@ -52,6 +51,14 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     }
 
     @Override
+    public T get(String id) {
+        return (T) crudRequester
+                .get(id)
+                .extract()
+                .as(endpoint.getResponseModel());
+    }
+
+    @Override
     public T get() {
         return (T) crudRequester
                 .get()
@@ -76,6 +83,14 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     }
 
     @Override
+    public String put(String id, String text) {
+        return  crudRequester
+                .put(id, text)
+                .extract()
+                .asString();
+    }
+
+    @Override
     public T delete(int id) {
         return (T) crudRequester
                 .get(id)
@@ -84,7 +99,15 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     }
 
     @Override
-    public T  get(Map<String, Object> queryParams) {
+    public T delete(String id) {
+        return (T) crudRequester
+                .delete(id)
+                .extract()
+                .as(endpoint.getResponseModel());
+    }
+
+    @Override
+    public T get(Map<String, Object> queryParams) {
         return (T) crudRequester
                 .get(queryParams)
                 .extract()
