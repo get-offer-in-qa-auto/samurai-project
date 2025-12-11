@@ -20,15 +20,12 @@ public class BuildSteps {
                                 .build()
                 )
                 .build();
-
         new ValidatedCrudRequester<CreateBuildResponse>(
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.BUILD_QUEUE,
                 ResponseSpecs.entityWasCreated()).post(build);
-
         return build;
     }
-
 
     public static GetBuildResponse getBuildFromQueue(CreateBuildResponse response){
         GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(

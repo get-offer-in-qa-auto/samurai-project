@@ -89,12 +89,6 @@ public enum Endpoint {
             BaseModel.class,
             IdentityFormat.TEAMCITY_ID
     );
-
-    ;
-
-
-
-
     private final String url;
     private final Class<? extends BaseModel> requestModel;
     private final Class<? extends BaseModel> responseModel;
@@ -103,7 +97,6 @@ public enum Endpoint {
     Endpoint(String url, Class<? extends BaseModel> requestModel, Class<? extends BaseModel> responseModel) {
         this(url, requestModel, responseModel, IdentityFormat.NUMBER);
     }
-
     public String formatId(int id) {
         if (idFormat == null || idFormat == IdentityFormat.NUMBER) {
             return String.valueOf(id);
