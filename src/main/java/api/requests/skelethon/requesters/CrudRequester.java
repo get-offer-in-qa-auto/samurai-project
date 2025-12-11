@@ -152,4 +152,16 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface,
                 .then()
                 .spec(responseSpec);
     }
+
+    @Override
+    public ValidatableResponse put(String id, String text){
+        String formattedId = endpoint.formatId(id);
+        return given()
+                .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .body(text)
+                .put(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
 }

@@ -91,7 +91,7 @@ public enum Endpoint {
             CreateBuildTypeResponse.class
     ),
     CHANGE_BUILD_CONFIGURATION_NAME(
-            "/buildTypes/{buildId}/name",
+            "/buildTypes/{id}/name",
             BaseModel.class,
             BaseModel.class
     ),
