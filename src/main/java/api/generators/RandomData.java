@@ -25,6 +25,10 @@ public class RandomData {
         return "token" + RandomStringUtils.randomAlphanumeric(8);
     }
 
+    public static String getProjectId(int length) {
+        return RandomStringUtils.randomAlphabetic(length);
+    }
+}
     public static int getId() {
         return ThreadLocalRandom.current().nextInt(500, 1000);
     }

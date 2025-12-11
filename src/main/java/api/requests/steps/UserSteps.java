@@ -2,14 +2,12 @@ package api.requests.steps;
 
 import api.generators.RandomData;
 import api.generators.RandomModelGenerator;
-import api.models.agent.Agent;
+import api.models.agent.*;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
-import api.models.agent.AgentStatusUpdateRequest;
-import api.models.agent.AgentStatusUpdateResponse;
-import api.models.agent.Comment;
-import api.models.agent.GetAgentsResponse;
+import api.models.project.GetProjectsResponse;
+import api.models.project.GetProjectsResponse.Project;
 import api.models.users.CreateUserRequest;
 import api.models.users.CreateUserTokenRequest;
 import api.models.users.CreateUserTokenResponse;
@@ -22,10 +20,7 @@ import io.restassured.specification.RequestSpecification;
 
 import java.util.Map;
 
-import static api.models.agent.GetAgentsRequest.AGENT_AUTHORIZATION;
-import static api.models.agent.GetAgentsRequest.AGENT_DEAUTHORIZATION;
-import static api.models.agent.GetAgentsRequest.AGENT_DISABLING;
-import static api.models.agent.GetAgentsRequest.AGENT_ENABLING;
+import static api.models.agent.GetAgentsRequest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserSteps {
@@ -147,5 +142,36 @@ public class UserSteps {
                 .get(queryParams)
                 .extract()
                 .as(GetAgentsResponse.class);
+    }
+
+    public static int getProjectsCount(RequestSpecification requestSpec) {
+        return new CrudRequester(
+                requestSpec,
+                Endpoint.GET_ALL_PROJECTS,
+                ResponseSpecs.requestReturnsOK())
+                .get()
+                .extract()
+                .as(GetProjectsResponse.class)
+                .getCount();
+    }
+
+    public static void deleteProject(CreateProjectResponse project, RequestSpecification requestSpec) {
+        new CrudRequester(
+                requestSpec,
+                Endpoint.PROJECT_DELETE,
+                ResponseSpecs.ignoreErrors())
+                .delete(project.getId());
+    }
+
+    public static Project getProjectById(String projectId, RequestSpecification requestSpec) {
+        return new CrudRequester(
+                requestSpec,
+                Endpoint.GET_PROJECT_BY_ID,
+                ResponseSpecs.requestReturnsOK())
+                .get(projectId)
+                .extract()
+                .as(GetProjectsResponse.class)
+                .getProject()
+                .getFirst();
     }
 }

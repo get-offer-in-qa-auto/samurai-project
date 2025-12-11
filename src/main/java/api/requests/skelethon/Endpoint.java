@@ -1,13 +1,14 @@
 package api.requests.skelethon;
 
 import api.models.BaseModel;
+import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
 import api.models.agent.GetAuthorizedInfoAgentResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
+import api.models.project.GetProjectsResponse;
 import api.models.users.*;
-import api.models.agent.AgentStatusUpdateResponse;
 import api.requests.skelethon.requesters.IdentityFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -81,6 +82,28 @@ public enum Endpoint {
             "/projects",
             CreateProjectFromRepositoryRequest.class,
             CreateProjectResponse.class
+    ),
+    PROJECT_DELETE(
+            "/projects/{id}",
+            BaseModel.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    GET_ALL_PROJECTS(
+            "/projects",
+            BaseModel.class,
+            GetProjectsResponse.class
+    ),
+    GET_PROJECT_BY_ID(
+            "/projects/?locator={id}",
+            BaseModel.class,
+            GetProjectsResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    PROJECT_UPDATE(
+            "/projects/{id}/description",
+            BaseModel.class,
+            BaseModel.class
     );
 
 
@@ -100,5 +123,9 @@ public enum Endpoint {
             return "id:" + id;
         }
         throw new IllegalArgumentException("Unsupported IdFormat: " + idFormat);
+    }
+
+    public String formatId(String id) {
+        return id;
     }
 }

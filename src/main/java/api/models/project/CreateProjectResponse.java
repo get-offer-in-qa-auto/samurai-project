@@ -1,6 +1,7 @@
 package api.models.project;
 
 import api.models.BaseModel;
+import common.extensions.ProjectCleanupExtension;
 import lombok.Data;
 
 import java.util.List;
@@ -11,6 +12,7 @@ public class CreateProjectResponse extends BaseModel {
     public String id;
     public String name;
     public String parentProjectId;
+    public String description;
     public boolean virtual;
     public String href;
     public String webUrl;
@@ -63,5 +65,9 @@ public class CreateProjectResponse extends BaseModel {
 
     public static class Projects {
         public int count;
+    }
+
+    {
+        ProjectCleanupExtension.registerProject(this);
     }
 }

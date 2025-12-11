@@ -11,11 +11,17 @@ public interface CrudEndpointInterface {
 
     Object get(int id);
 
+    Object get(String id);
+
     Object get();
 
     Object put(BaseModel model);
 
+    Object put(String id, String text);
+
     Object put(BaseModel model, int id);
 
     Object delete(int id);
+
+    Object delete(String id);
 }
