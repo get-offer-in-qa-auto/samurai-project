@@ -30,7 +30,7 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     @Override
     public T post(BaseModel model, int id) {
         return (T) crudRequester
-                .post(model)
+                .post(model, id)
                 .extract()
                 .as(endpoint.getResponseModel());
     }
@@ -62,7 +62,7 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     @Override
     public T put(BaseModel model, int id) {
         return (T) crudRequester
-                .put(model)
+                .put(model, id)
                 .extract()
                 .as(endpoint.getResponseModel());
     }
@@ -84,7 +84,7 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     }
 
     @Override
-    public T  get(Map<String, Object> queryParams) {
+    public T get(Map<String, Object> queryParams) {
         return (T) crudRequester
                 .get(queryParams)
                 .extract()

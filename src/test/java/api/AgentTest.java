@@ -6,7 +6,7 @@ import api.models.agent.AgentStatusUpdateRequest;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.Comment;
 import api.models.agent.GetAgentsResponse;
-import api.models.agent.User;
+import api.models.users.User;
 import api.models.users.Roles;
 import common.annotations.WithAuthUser;
 import org.junit.jupiter.api.Test;
