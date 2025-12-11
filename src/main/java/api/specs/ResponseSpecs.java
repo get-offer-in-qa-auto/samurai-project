@@ -16,8 +16,8 @@ public class ResponseSpecs {
         return new ResponseSpecBuilder();
     }
 
-    public  static ResponseSpecification ignoreErrors(){
-        return  defaultResponseSpecBuilder().build();
+    public static ResponseSpecification ignoreErrors() {
+        return defaultResponseSpecBuilder().build();
 
     }
 
@@ -43,6 +43,18 @@ public class ResponseSpecs {
         return defaultResponseSpecBuilder()
                 .expectStatusCode(HttpStatus.SC_OK)
                 .expectBody("message", equalTo(expectedMessage))
+                .build();
+    }
+
+    public static ResponseSpecification requestReturns400BadRequest() {
+        return defaultResponseSpecBuilder()
+                .expectStatusCode(HttpStatus.SC_BAD_REQUEST)
+                .build();
+    }
+
+    public static ResponseSpecification requestReturns404NotFound() {
+        return defaultResponseSpecBuilder()
+                .expectStatusCode(HttpStatus.SC_NOT_FOUND)
                 .build();
     }
 

@@ -38,24 +38,36 @@ public enum Endpoint {
             BaseModel.class,
             GetAllUsersResponse.class
     ),
-    USERS_CREATE(
+    USER_CREATE(
             "/users",
             CreateUserRequest.class,
             CreateUserResponse.class
     ),
-    USERS_CREATE_TOKEN(
+    USER_UPDATE(
+            "/users/{id}",
+            UpdateUserRequest.class,
+            UpdateUserResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    USER_CREATE_TOKEN(
             "/users/{id}/tokens",
             CreateUserTokenRequest.class,
             CreateUserTokenResponse.class,
             IdentityFormat.TEAMCITY_ID
     ),
-    USERS_CREATE_ROLE(
+    USER_CREATE_ROLE(
             "/users/{id}/roles",
             CreateUserRoleRequest.class,
             CreateUserRoleResponse.class,
             IdentityFormat.TEAMCITY_ID
     ),
-    USERS_DELETE(
+    GET_USER_ROLE(
+            "/users/{id}/roles",
+            BaseModel.class,
+            GetUserRoleResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    USER_DELETE(
             "/users/{id}",
             BaseModel.class,
             BaseModel.class,
