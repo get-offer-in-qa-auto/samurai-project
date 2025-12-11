@@ -4,6 +4,8 @@ import api.models.BaseModel;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
 import api.models.agent.GetAuthorizedInfoAgentResponse;
+import api.models.buildConfiguration.CreateBuildTypeRequest;
+import api.models.buildConfiguration.CreateBuildTypeResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
@@ -82,6 +84,16 @@ public enum Endpoint {
             "/projects",
             CreateProjectFromRepositoryRequest.class,
             CreateProjectResponse.class
+    ),
+    BUILD_CONFIGURATION_CREATE(
+            "/buildTypes",
+            CreateBuildTypeRequest.class,
+            CreateBuildTypeResponse.class
+    ),
+    CHANGE_BUILD_CONFIGURATION_NAME(
+            "/buildTypes/{buildId}/name",
+            BaseModel.class,
+            BaseModel.class
     ),
     PROJECT_DELETE(
             "/projects/{id}",
