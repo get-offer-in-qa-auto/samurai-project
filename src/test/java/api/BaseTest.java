@@ -34,4 +34,12 @@ public class BaseTest {
                 .as("Проверка сообщения алерта")
                 .isEqualTo(expected.getMessage());
     }
+
+    protected <E extends Enum<E> & HasMessage> void assertErrorMessageContains(
+            ErrorResponse errorResponse, E expected) {
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
+                .as("Проверка, что сообщение алерта содержит ожидаемую подстроку")
+                .contains(expected.getMessage());
+    }
+
 }
