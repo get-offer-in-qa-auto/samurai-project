@@ -90,4 +90,10 @@ public class ResponseSpecs {
                 .expectBody(Matchers.containsString(msg))
                 .build();
     }
+
+    public static ResponseSpecification requestReturns403Forbidden() {
+        return defaultResponseSpecBuilder()
+                .expectStatusCode(HttpStatus.SC_FORBIDDEN)
+                .build();
+    }
 }

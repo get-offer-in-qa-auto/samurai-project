@@ -1,13 +1,14 @@
-package api;
+package api.agents;
 
+import api.BaseTest;
 import api.comparison.ModelAssertions;
-import api.models.agent.Agent;
 import api.models.agent.AgentStatusUpdateRequest;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.Comment;
 import api.models.agent.GetAgentsResponse;
-import api.models.users.User;
 import api.models.users.Roles;
+import api.models.users.User;
+import common.annotations.Agent;
 import common.annotations.WithAuthUser;
 import org.junit.jupiter.api.Test;
 
@@ -17,20 +18,19 @@ import static api.models.agent.GetAgentsRequest.AGENT_DISABLING;
 import static api.models.agent.GetAgentsRequest.AGENT_ENABLING;
 import static api.requests.steps.UserSteps.getAgentEnabledInfo;
 import static api.requests.steps.UserSteps.getAgentList;
-import static api.requests.steps.UserSteps.getAnyAgent;
-import static api.requests.steps.UserSteps.setEnabledStatusToAgent;
-import static api.requests.steps.UserSteps.setAuthorizationStatusToAgent;
-import static api.requests.steps.UserSteps.setDefaultAgentEnabledStatus;
 import static api.requests.steps.UserSteps.getAuthorizedAgentInfo;
+import static api.requests.steps.UserSteps.setAuthorizationStatusToAgent;
+import static api.requests.steps.UserSteps.setEnabledStatusToAgent;
+import static common.extensions.AgentExtension.getCurrentAgent;
 import static common.extensions.AuthUserExtension.getAuthUser;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AgentTest extends BaseTest {
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @Agent
     public void userCanAuthorizedAgentTest() {
-        // 1. Получаем неавторизованного агента
-        Agent agent = getAnyAgent();
+        // 1. Получаем агента
+        api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
         User user = User.builder().username(getAuthUser().getUsername()).id(getAuthUser().getId()).build();
 
@@ -47,62 +47,48 @@ public class AgentTest extends BaseTest {
 
         // 4. Проверяем, что агент теперь в списке авторизованных агентов
         GetAgentsResponse getAgentListResponse = getAgentList();
-        assertThat(agent).isEqualTo(getAgentListResponse.getAgent().get(0));
+        softly.assertThat(agent).isEqualTo(getAgentListResponse.getAgent().get(0));
 
         // 5. Проверяем, что получаем корректную информацию при запросе информации об авторизованном агенте по локатору (id)
-        assertThat(authorizationResponse).isEqualTo(getAuthorizedAgentInfo(agent.getId()));
+        softly.assertThat(authorizationResponse).isEqualTo(getAuthorizedAgentInfo(agent.getId()));
     }
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @Agent(authorized = true)
     public void userCanDeAuthorizeAgentTest() {
-        // 1. Получаем id агента (авторизованного или нет)
-        Agent agent = getAnyAgent();
+        // 1. Получаем id агента
+        api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
 
-        // 2. Получаем текущий статус авторизации
-        AgentStatusUpdateResponse currentAuthInfo = getAuthorizedAgentInfo(agentId);
-
-        // 3. Если агент НЕ авторизован — сначала авторизуем его
+        // 2. Деавторизуем агент
         User user = User.builder().username(getAuthUser().getUsername()).id(getAuthUser().getId()).build();
-        if (!currentAuthInfo.getStatus()) {
-            AgentStatusUpdateRequest authRequest = AgentStatusUpdateRequest.builder()
-                    .status(true)
-                    .comment(Comment.builder().text(AGENT_AUTHORIZATION + agentId).user(user).build())
-                    .build();
-            setAuthorizationStatusToAgent(authRequest, agentId);
 
-        // 4. Проверяем, что агент появился в списке авторизованных
-            assertThat(getAgentList().getAgent().get(0).getId()).isEqualTo(agentId);
-        }
-
-        // 5. Деавторизуем агент
         AgentStatusUpdateRequest deAuthRequest = AgentStatusUpdateRequest.builder()
                 .status(false)
                 .comment(Comment.builder().text(AGENT_DEAUTHORIZATION + agentId).user(user).build())
                 .build();
 
+        // 3. Проверка полей запрос/ответ
         AgentStatusUpdateResponse deAuthResponse = setAuthorizationStatusToAgent(deAuthRequest, agentId);
         ModelAssertions.assertThatModels(deAuthRequest, deAuthResponse).match();
 
-        // 6. Агент исчез из списка авторизованных агентов
+        // 4. Проверка -агент исчез из списка авторизованных агентов
         GetAgentsResponse afterDeAuth = getAgentList();
-        assertThat(afterDeAuth.getAgent())
-                .extracting(Agent::getId)
+        softly.assertThat(afterDeAuth.getAgent())
+                .extracting(api.models.agent.Agent::getId)
                 .doesNotContain(agentId);
     }
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @Agent
     public void userCanEnableAgentTest() {
-        // 1. Получаем ID  агента
-        Agent agent = getAnyAgent();
+        // 1. Получаем ID агента
+        api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
 
-        // 2. Гарантируем, что агент изначально ОТКЛЮЧЕН
-        setDefaultAgentEnabledStatus(false);
-
-        // 3. Включаем агента
+        // 2. Включаем агента
         User user = User.builder().username(getAuthUser().getUsername()).id(getAuthUser().getId()).build();
         AgentStatusUpdateRequest enableRequest = AgentStatusUpdateRequest.builder()
                 .status(true)
@@ -111,30 +97,24 @@ public class AgentTest extends BaseTest {
 
         AgentStatusUpdateResponse enableResponse = setEnabledStatusToAgent(enableRequest, agentId);
 
-        // 4. Проверяем ответ
+        // 3. Проверяем ответ
         ModelAssertions.assertThatModels(enableRequest, enableResponse).match();
 
-        // 5. Убеждаемся, что статус  изменился
+        // 4. Убеждаемся, что статус  изменился
         AgentStatusUpdateResponse currentStatusResponse = getAgentEnabledInfo(agentId);
-        assertThat(enableResponse).isEqualTo(currentStatusResponse);
-        assertThat(currentStatusResponse.getStatus()).isTrue();
+        softly.assertThat(enableResponse).isEqualTo(currentStatusResponse);
+        softly.assertThat(currentStatusResponse.getStatus()).isTrue();
     }
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @Agent(enabled = true)
     public void userCanDisableAgentTest() {
-        // 1. Получаем ID любого агента
-        Agent agent = getAnyAgent();
+        // 1. Получаем ID  агента
+        api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
 
-        // 2. Гарантируем, что агент изначально ВКЛЮЧЕН
-        AgentStatusUpdateRequest enableRequest = AgentStatusUpdateRequest.builder()
-                .status(true)
-                .comment(Comment.builder().text(AGENT_ENABLING + agentId).build())
-                .build();
-        setEnabledStatusToAgent(enableRequest, agentId);
-
-        // 3. Отключаем агента
+        // 2. Отключаем агента
         User user = User.builder().username(getAuthUser().getUsername()).id(getAuthUser().getId()).build();
         AgentStatusUpdateRequest disableRequest = AgentStatusUpdateRequest.builder()
                 .status(false)
@@ -143,12 +123,46 @@ public class AgentTest extends BaseTest {
 
         AgentStatusUpdateResponse enableResponse = setEnabledStatusToAgent(disableRequest, agentId);
 
-        // 4. Проверяем ответ
+        // 3. Проверяем ответ
         ModelAssertions.assertThatModels(disableRequest, enableResponse).match();
 
-        // 5. Убеждаемся, что статус изменился
+        // 4. Убеждаемся, что статус изменился
         AgentStatusUpdateResponse currentStatusResponse = getAgentEnabledInfo(agentId);
-        assertThat(enableResponse).isEqualTo(currentStatusResponse);
-        assertThat(currentStatusResponse.getStatus()).isFalse();
+        softly.assertThat(enableResponse).isEqualTo(currentStatusResponse);
+        softly.assertThat(currentStatusResponse.getStatus()).isFalse();
+    }
+
+    @Test
+    @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @Agent
+    public void reEnablingAgentReturnsSameResultTest() {
+        api.models.agent.Agent agent = getCurrentAgent();
+        int agentId = agent.getId();
+        AgentStatusUpdateRequest enableRequest = AgentStatusUpdateRequest.builder()
+                .status(true)
+                .comment(Comment.builder().text(AGENT_ENABLING + agentId).build())
+                .build();
+        AgentStatusUpdateResponse result1 = setEnabledStatusToAgent(enableRequest, agentId);
+        AgentStatusUpdateResponse result2 = setEnabledStatusToAgent(enableRequest, agentId);
+
+        softly.assertThat(result1).isEqualTo(result2);
+        softly.assertThat(result1.getStatus()).isTrue();
+    }
+
+    @Test
+    @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @Agent
+    public void reAuthorizationAgentReturnsSameResultTest() {
+        api.models.agent.Agent agent = getCurrentAgent();
+        int agentId = agent.getId();
+        AgentStatusUpdateRequest enableRequest = AgentStatusUpdateRequest.builder()
+                .status(true)
+                .comment(Comment.builder().text(AGENT_AUTHORIZATION + agentId).build())
+                .build();
+        AgentStatusUpdateResponse result1 = setEnabledStatusToAgent(enableRequest, agentId);
+        AgentStatusUpdateResponse result2 = setEnabledStatusToAgent(enableRequest, agentId);
+
+        softly.assertThat(result1).isEqualTo(result2);
+        softly.assertThat(result1.getStatus()).isTrue();
     }
 }
