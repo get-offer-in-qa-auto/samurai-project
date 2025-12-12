@@ -3,7 +3,6 @@ package api.requests.steps;
 import api.generators.RandomData;
 import api.generators.RandomModelGenerator;
 import api.models.agent.*;
-import api.models.buildConfiguration.BuildType;
 import api.models.buildConfiguration.CreateBuildTypeRequest;
 import api.models.buildConfiguration.CreateBuildTypeResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;

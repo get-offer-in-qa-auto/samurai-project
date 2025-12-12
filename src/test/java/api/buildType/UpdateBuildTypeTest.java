@@ -13,7 +13,6 @@ import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
 import common.errors.UserErrorMessage;
 import io.restassured.response.ValidatableResponse;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
