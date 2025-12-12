@@ -84,10 +84,10 @@ public class ResponseSpecs {
                 .build();
     }
 
-
     public static ResponseSpecification requestReturnsInternalServerError(String msg) {
         return new ResponseSpecBuilder()
                 .expectStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+                .expectBody(Matchers.containsString(msg))
                 .build();
     }
 

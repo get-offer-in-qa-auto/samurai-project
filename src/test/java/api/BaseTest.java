@@ -12,9 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 
-@ExtendWith({AuthUserExtension.class, ProjectCleanupExtension.class})
+
 @ExtendWith(AuthUserExtension.class)
 @ExtendWith(AgentExtension.class)
+@ExtendWith({AuthUserExtension.class, ProjectCleanupExtension.class})
 public class BaseTest {
     protected SoftAssertions softly;
 
@@ -34,13 +35,13 @@ public class BaseTest {
 
     protected <E extends Enum<E> & HasMessage> void assertErrorMessage(
             ErrorResponse errorResponse, E expected) {
-        softly.assertThat(errorResponse.getErrors().get(0).getMessage())
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
                 .as("Проверка сообщения алерта")
                 .isEqualTo(expected.getMessage());
     }
 
     protected void assertErrorMessage(ErrorResponse errorResponse, String expectedMessage) {
-        softly.assertThat(errorResponse.getErrors().get(0).getMessage())
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
                 .as("Проверка сообщения алерта")
                 .isEqualTo(expectedMessage);
     }
