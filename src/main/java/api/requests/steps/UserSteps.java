@@ -3,6 +3,9 @@ package api.requests.steps;
 import api.generators.RandomData;
 import api.generators.RandomModelGenerator;
 import api.models.agent.*;
+import api.models.buildConfiguration.BuildType;
+import api.models.buildConfiguration.CreateBuildTypeRequest;
+import api.models.buildConfiguration.CreateBuildTypeResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
@@ -20,6 +23,7 @@ import io.restassured.specification.RequestSpecification;
 
 import java.util.Map;
 
+import static api.generators.RandomData.getBuildName;
 import static api.models.agent.GetAgentsRequest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -173,5 +177,69 @@ public class UserSteps {
                 .as(GetProjectsResponse.class)
                 .getProject()
                 .getFirst();
+    }
+
+    public static String getFirstProjects(RequestSpecification requestSpec) {
+        GetProjectsResponse response = new CrudRequester(
+                requestSpec,
+                Endpoint.GET_ALL_PROJECTS,
+                ResponseSpecs.requestReturnsOK())
+                .get()
+                .extract()
+                .as(GetProjectsResponse.class);
+
+        return response.getProject().get(1).getId();
+    }
+
+    public static void deleteBuildType(CreateProjectResponse project, RequestSpecification requestSpec) {
+        new CrudRequester(
+                requestSpec,
+                Endpoint.DELETE_BUILD_CONFIGURATION,
+                ResponseSpecs.ignoreErrors())
+                .delete(project.getId());
+    }
+
+    public static String getBuildTypeById(String buildId, RequestSpecification requestSpec) {
+        CreateBuildTypeResponse response = new CrudRequester(
+                requestSpec,
+                Endpoint.GET_BUILD_CONFIGURATION,
+                ResponseSpecs.requestReturnsOK())
+                .get(buildId)
+                .extract()
+                .as(CreateBuildTypeResponse.class);
+
+        return response.getName();
+    }
+
+    public static String createBuildType(String projectId, RequestSpecification requestSpec) {
+        String newName = getBuildName();
+        api.models.buildConfiguration.Project project = api.models.buildConfiguration.Project.builder()
+                .id(projectId)
+                .build();
+        CreateBuildTypeRequest createBuildTypeRequest = CreateBuildTypeRequest.builder()
+                .name(newName)
+                .project(project)
+                .build();
+
+        CreateBuildTypeResponse response = new CrudRequester(
+                requestSpec,
+                Endpoint.BUILD_CONFIGURATION_CREATE,
+                ResponseSpecs.requestReturnsOK())
+                .post(createBuildTypeRequest)
+                .extract()
+                .as(CreateBuildTypeResponse.class);
+
+        return response.getId();
+    }
+
+    public static int getBuildTypeCount(RequestSpecification requestSpec) {
+        return new CrudRequester(
+                requestSpec,
+                Endpoint.GET_ALL_BUILD_CONFIGURATION,
+                ResponseSpecs.requestReturnsOK())
+                .get()
+                .extract()
+                .as(GetProjectsResponse.class)
+                .getCount();
     }
 }
