@@ -2,6 +2,7 @@ package api;
 
 import api.comparison.ModelAssertions;
 import api.generators.RandomModelGenerator;
+import api.models.error.ErrorResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
@@ -15,6 +16,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
+import common.errors.ProjectErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,16 +40,16 @@ public class ProjectTests extends BaseTest {
     public static Stream<Arguments> invalidProjectIds() {
         return Stream.of(
                 //негативные граничные значения
-                Arguments.of("", "Project ID must not be empty."),
-                Arguments.of(getProjectId(226), "it is 226 characters long while the maximum length is 225."),
+                Arguments.of("", ProjectErrorMessage.PROJECT_ID_EMPTY),
+                Arguments.of(getProjectId(226), ProjectErrorMessage.PROJECT_ID_TOO_LONG),
                 //начинающийся с underscore
-                Arguments.of("_id", ": starts with non-letter character '_'."),
+                Arguments.of("_id", ProjectErrorMessage.PROJECT_ID_STARTS_WITH_UNDERSCORE),
                 //сод-ся символы кроме _
-                Arguments.of("i-d", "contains unsupported character '-'."),
+                Arguments.of("i-d", ProjectErrorMessage.PROJECT_ID_UNSUPPORTED_CHARACTER),
                 //сод-ся не латинская буква,
-                Arguments.of("iд", "contains non-latin letter 'д'"),
+                Arguments.of("iд", ProjectErrorMessage.PROJECT_ID_NON_LATIN),
                 //начинающийся с цифры
-                Arguments.of("1d", "starts with non-letter character '1'")
+                Arguments.of("1d", ProjectErrorMessage.PROJECT_ID_STARTS_WITH_DIGIT)
         );
     }
 
@@ -98,40 +100,44 @@ public class ProjectTests extends BaseTest {
     @ParameterizedTest
     @MethodSource("invalidProjectIds")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCannotCreateProjectManuallyWithInvalidData(String id, String errorMessage) {
+    public void userCannotCreateProjectManuallyWithInvalidData(String id, ProjectErrorMessage expectedError) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
         CreateProjectFromRepositoryRequest requestModel = RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class);
         requestModel.setId(id);
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_FROM_REPOSITORY,
-                ResponseSpecs.requestReturnsInternalServerError(errorMessage))
+                ResponseSpecs.requestReturnsInternalServerError())
                 .post(requestModel);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, expectedError);
     }
 
 
     @ParameterizedTest
     @MethodSource("invalidProjectIds")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCannotCreateProjectFromRepositoryWithInvalidData(String id, String errorMessage) {
+    public void userCannotCreateProjectFromRepositoryWithInvalidData(String id, ProjectErrorMessage expectedError) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
         CreateProjectFromRepositoryRequest requestModel = RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class);
         requestModel.setId(id);
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_FROM_REPOSITORY,
-                ResponseSpecs.requestReturnsInternalServerError(errorMessage))
+                ResponseSpecs.requestReturnsInternalServerError())
                 .post(requestModel);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, expectedError);
     }
 
     @Test
@@ -142,13 +148,16 @@ public class ProjectTests extends BaseTest {
         CreateProjectManuallyRequest requestModel = RandomModelGenerator.generate(CreateProjectManuallyRequest.class);
         requestModel.setName("");
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_MANUALLY,
-                ResponseSpecs.requestReturns400ContainingString("Project name cannot be empty"));
+                ResponseSpecs.requestReturns400BadRequest())
+                .post(requestModel);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_NAME_EMPTY);
     }
 
     @Test
@@ -159,14 +168,16 @@ public class ProjectTests extends BaseTest {
         CreateProjectFromRepositoryRequest requestModel = RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class);
         requestModel.setName("");
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_FROM_REPOSITORY,
-                ResponseSpecs.requestReturns400ContainingString("Project name cannot be empty"))
+                ResponseSpecs.requestReturns400BadRequest())
                 .post(requestModel);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_NAME_EMPTY);
     }
 
     @Test
@@ -185,14 +196,16 @@ public class ProjectTests extends BaseTest {
         CreateProjectManuallyRequest secondProject = RandomModelGenerator.generate(CreateProjectManuallyRequest.class);
         secondProject.setId(firstProject.getId());
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_MANUALLY,
-                ResponseSpecs.requestReturns400ContainingString("is already used by another project"))
+                ResponseSpecs.requestReturns400BadRequest())
                 .post(secondProject);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount + 1);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_ID_ALREADY_USED);
     }
 
     @Test
@@ -209,16 +222,18 @@ public class ProjectTests extends BaseTest {
                 .post(firstProject);
 
         CreateProjectFromRepositoryRequest secondProject = RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class);
-        secondProject.setName(firstProject.getName());
+        secondProject.setId(firstProject.getId());
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_FROM_REPOSITORY,
-                ResponseSpecs.requestReturns400ContainingString("Project with this name already exists"))
+                ResponseSpecs.requestReturns400BadRequest())
                 .post(secondProject);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount + 1);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_ID_ALREADY_USED);
     }
 
     @Test
@@ -237,14 +252,16 @@ public class ProjectTests extends BaseTest {
         CreateProjectManuallyRequest secondProject = RandomModelGenerator.generate(CreateProjectManuallyRequest.class);
         secondProject.setName(firstProject.getName());
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_MANUALLY,
-                ResponseSpecs.requestReturns400ContainingString("Project with this name already exists"))
+                ResponseSpecs.requestReturns400BadRequest())
                 .post(secondProject);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount + 1);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_NAME_EXISTS);
     }
 
     @Test
@@ -263,14 +280,16 @@ public class ProjectTests extends BaseTest {
         CreateProjectFromRepositoryRequest secondProject = RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class);
         secondProject.setName(firstProject.getName());
 
-        new CrudRequester(
+        var projectCreationResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_CREATE_FROM_REPOSITORY,
-                ResponseSpecs.requestReturns400ContainingString("Project with this name already exists"))
+                ResponseSpecs.requestReturns400BadRequest())
                 .post(secondProject);
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount + 1);
+        ErrorResponse errorResponse = extractError(projectCreationResponse);
+        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_NAME_EXISTS);
     }
 
     @Test
@@ -347,13 +366,15 @@ public class ProjectTests extends BaseTest {
     public void userCannotDeleteProjectWithInvalidId() {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
-        new CrudRequester(
+        var projectDelResponse = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_DELETE,
-                ResponseSpecs.requestReturnsNotFound())
+                ResponseSpecs.requestReturns404NotFound())
                 .delete(getProjectName());
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount);
+        ErrorResponse errorResponse = extractError(projectDelResponse);
+        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_NOT_FOUND);
     }
 }

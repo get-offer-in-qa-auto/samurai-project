@@ -72,12 +72,6 @@ public class ResponseSpecs {
                 .build();
     }
 
-    public static ResponseSpecification requestReturnsNotFound() {
-        return defaultResponseSpecBuilder()
-                .expectStatusCode(HttpStatus.SC_NOT_FOUND)
-                .build();
-    }
-
     public static ResponseSpecification requestReturnsInternalServerError() {
         return new ResponseSpecBuilder()
                 .expectStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
