@@ -1,6 +1,13 @@
 package api.requests.skelethon;
 
 import api.models.BaseModel;
+import api.models.agent.GetAgentRequest;
+import api.models.agent.GetAgentResponse;
+import api.models.agent.GetAuthorizedInfoAgentResponse;
+import api.models.builds.CancelBuildRequest;
+import api.models.builds.CreateBuildRequest;
+import api.models.builds.CreateBuildResponse;
+import api.models.builds.GetBuildResponse;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
@@ -91,6 +98,26 @@ public enum Endpoint {
             CreateProjectFromRepositoryRequest.class,
             CreateProjectResponse.class
     ),
+    BUILD_QUEUE(
+            "/app/rest/buildQueue",
+                CreateBuildRequest.class,
+                CreateBuildResponse.class
+    ),
+    GET_BUILD(
+            "/app/rest/builds/{id}",
+            BaseModel.class,
+            GetBuildResponse.class
+    ),
+    DELETE_BUILD_FROM_QUEUE(
+            "/app/rest/buildQueue/{id}",
+            BaseModel.class,
+            BaseModel.class
+    ),
+    CANCEL_BUILD(
+            "/app/rest/builds/{id}/cancel",
+            CancelBuildRequest.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_ID
     PROJECT_DELETE(
             "/projects/{id}",
             BaseModel.class,
@@ -113,8 +140,6 @@ public enum Endpoint {
             BaseModel.class,
             BaseModel.class
     );
-
-
     private final String url;
     private final Class<? extends BaseModel> requestModel;
     private final Class<? extends BaseModel> responseModel;
@@ -123,7 +148,6 @@ public enum Endpoint {
     Endpoint(String url, Class<? extends BaseModel> requestModel, Class<? extends BaseModel> responseModel) {
         this(url, requestModel, responseModel, IdentityFormat.NUMBER);
     }
-
     public String formatId(int id) {
         if (idFormat == null || idFormat == IdentityFormat.NUMBER) {
             return String.valueOf(id);
