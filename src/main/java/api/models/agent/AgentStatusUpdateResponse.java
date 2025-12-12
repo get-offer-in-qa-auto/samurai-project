@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class GetAuthorizedInfoAgentRequest extends BaseModel {
+public class AgentStatusUpdateResponse extends BaseModel {
+    private Boolean status;
+    private Comment comment;
 }

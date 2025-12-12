@@ -7,13 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class GetAgentResponse extends BaseModel {
-    private Integer id;
+public class Agent extends BaseModel {
+    private int id;
     private String name;
     private Integer typeId;
     private String href;
     private String webUrl;
+    private Boolean authorized;
 }

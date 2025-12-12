@@ -25,20 +25,39 @@ public class ModelComparator {
         return new ComparisonResult(mismatches);
     }
 
-    private static Object getFieldValue(Object obj, String fieldName) {
-        Class<?> clazz = obj.getClass();
-        while (clazz != null) {
-            try {
-                Field field = clazz.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                return field.get(obj);
-            } catch (NoSuchFieldException e) {
-                clazz = clazz.getSuperclass();
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Cannot access field: " + fieldName, e);
+    private static Object getFieldValue(Object obj, String fieldPath) {
+        if (obj == null || fieldPath == null) {
+            return null;
+        }
+
+        String[] parts = fieldPath.split("\\.");
+        Object current = obj;
+
+        for (String fieldName : parts) {
+            if (current == null) {
+                return null;
+            }
+            Class<?> clazz = current.getClass();
+            boolean found = false;
+            while (clazz != null) {
+                try {
+                    Field field = clazz.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    current = field.get(current);
+                    found = true;
+                    break;
+                } catch (NoSuchFieldException e) {
+                    clazz = clazz.getSuperclass();
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Cannot access field: " + fieldName, e);
+                }
+            }
+            if (!found) {
+                throw new RuntimeException("Field not found: '" + fieldName + "' in path '" + fieldPath +
+                        "' in class " + current.getClass().getName());
             }
         }
-        throw new RuntimeException("Field not found: " + fieldName + " in class " + obj.getClass().getName());
+        return current;
     }
 
     public static class ComparisonResult {

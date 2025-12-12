@@ -8,10 +8,22 @@ import api.models.builds.CancelBuildRequest;
 import api.models.builds.CreateBuildRequest;
 import api.models.builds.CreateBuildResponse;
 import api.models.builds.GetBuildResponse;
+import api.models.agent.AgentStatusUpdateResponse;
+import api.models.agent.GetAgentsResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
-import api.models.users.*;
+import api.models.project.GetProjectsResponse;
+import api.models.users.CreateUserRequest;
+import api.models.users.CreateUserResponse;
+import api.models.users.CreateUserRoleRequest;
+import api.models.users.CreateUserRoleResponse;
+import api.models.users.CreateUserTokenRequest;
+import api.models.users.CreateUserTokenResponse;
+import api.models.users.GetAllUsersResponse;
+import api.models.users.GetUserRoleResponse;
+import api.models.users.UpdateUserRequest;
+import api.models.users.UpdateUserResponse;
 import api.requests.skelethon.requesters.IdentityFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,13 +33,19 @@ import lombok.Getter;
 public enum Endpoint {
     AGENTS(
             "/agents",
-            GetAgentRequest.class,
-            GetAgentResponse.class
+            BaseModel.class,
+            GetAgentsResponse.class
     ),
     AUTHORIZED_INFO_AGENT(
             "/agents/{id}/authorizedInfo",
             BaseModel.class,
-            GetAuthorizedInfoAgentResponse.class,
+            AgentStatusUpdateResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    ENABLED_INFO_AGENT(
+            "/agents/{id}/enabledInfo",
+            BaseModel.class,
+            AgentStatusUpdateResponse.class,
             IdentityFormat.TEAMCITY_ID
     ),
     GET_ALL_USERS(
@@ -35,24 +53,36 @@ public enum Endpoint {
             BaseModel.class,
             GetAllUsersResponse.class
     ),
-    USERS_CREATE(
+    USER_CREATE(
             "/users",
             CreateUserRequest.class,
             CreateUserResponse.class
     ),
-    USERS_CREATE_TOKEN(
+    USER_UPDATE(
+            "/users/{id}",
+            UpdateUserRequest.class,
+            UpdateUserResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    USER_CREATE_TOKEN(
             "/users/{id}/tokens",
             CreateUserTokenRequest.class,
             CreateUserTokenResponse.class,
             IdentityFormat.TEAMCITY_ID
     ),
-    USERS_CREATE_ROLE(
+    USER_CREATE_ROLE(
             "/users/{id}/roles",
             CreateUserRoleRequest.class,
             CreateUserRoleResponse.class,
             IdentityFormat.TEAMCITY_ID
     ),
-    USERS_DELETE(
+    GET_USER_ROLE(
+            "/users/{id}/roles",
+            BaseModel.class,
+            GetUserRoleResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    USER_DELETE(
             "/users/{id}",
             BaseModel.class,
             BaseModel.class,
@@ -88,6 +118,27 @@ public enum Endpoint {
             CancelBuildRequest.class,
             BaseModel.class,
             IdentityFormat.TEAMCITY_ID
+    PROJECT_DELETE(
+            "/projects/{id}",
+            BaseModel.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    GET_ALL_PROJECTS(
+            "/projects",
+            BaseModel.class,
+            GetProjectsResponse.class
+    ),
+    GET_PROJECT_BY_ID(
+            "/projects/?locator={id}",
+            BaseModel.class,
+            GetProjectsResponse.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    PROJECT_UPDATE(
+            "/projects/{id}/description",
+            BaseModel.class,
+            BaseModel.class
     );
     private final String url;
     private final Class<? extends BaseModel> requestModel;
@@ -104,5 +155,9 @@ public enum Endpoint {
             return "id:" + id;
         }
         throw new IllegalArgumentException("Unsupported IdFormat: " + idFormat);
+    }
+
+    public String formatId(String id) {
+        return id;
     }
 }

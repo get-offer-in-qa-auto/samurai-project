@@ -1,7 +1,6 @@
-package api.models.users;
+package api.models.agent;
 
 import api.models.BaseModel;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-
-public class GetAllUsersResponse extends BaseModel {
+public class GetAgentsResponse extends BaseModel {
     private int count;
-    private List<User> user;
+    private String href;
+    private List<Agent> agent;
 }

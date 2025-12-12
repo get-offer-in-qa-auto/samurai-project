@@ -7,15 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-
-public class GetAllUsersResponse extends BaseModel {
-    private int count;
-    private List<User> user;
+public class UpdateUserRequest extends BaseModel {
+    private String username;
+    private String name;
+    private String password;
+    private int id;
+    private String email;
 }

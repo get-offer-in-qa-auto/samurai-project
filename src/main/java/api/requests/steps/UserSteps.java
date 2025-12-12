@@ -2,9 +2,12 @@ package api.requests.steps;
 
 import api.generators.RandomData;
 import api.generators.RandomModelGenerator;
+import api.models.agent.*;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
+import api.models.project.GetProjectsResponse;
+import api.models.project.GetProjectsResponse.Project;
 import api.models.users.CreateUserRequest;
 import api.models.users.CreateUserTokenRequest;
 import api.models.users.CreateUserTokenResponse;
@@ -15,6 +18,12 @@ import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import io.restassured.specification.RequestSpecification;
 
+import java.util.List;
+import java.util.Map;
+
+import static api.models.agent.GetAgentsRequest.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class UserSteps {
     public static CreateUserTokenResponse createTokenForUser(CreateUserRequest request) {
         String tokenName = RandomData.getTokenName();
@@ -23,7 +32,7 @@ public class UserSteps {
                 .build();
         return new CrudRequester(
                 RequestSpecs.userAuthSpecWithoutToken(request.getUsername(), request.getPassword()),
-                Endpoint.USERS_CREATE_TOKEN,
+                Endpoint.USER_CREATE_TOKEN,
                 ResponseSpecs.ignoreErrors()
         ).post(userRequest, request.getId())
                 .extract()
@@ -44,5 +53,108 @@ public class UserSteps {
                 Endpoint.PROJECT_CREATE_FROM_REPOSITORY,
                 ResponseSpecs.requestReturnsOK())
                 .post(RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class));
+    }
+
+    public static List<Agent> getAllAgents() {
+        GetAgentsResponse response = getAgentList(Map.of("locator", "defaultFilter:false"));
+        assertThat(response.getAgent()).isNotEmpty();
+        return response.getAgent();
+    }
+
+    public static void setAgentEnabledStatus(boolean status, int agentId) {
+        String action = status ? AGENT_ENABLING : AGENT_DISABLING;
+        AgentStatusUpdateRequest request = AgentStatusUpdateRequest.builder()
+                .status(status)
+                .comment(Comment.builder().text(action + agentId).build())
+                .build();
+        setEnabledStatusToAgent(request, agentId);
+    }
+
+    public static void setAgentAuthorizedStatus(boolean status, int agentId) {
+        String action = status ? AGENT_AUTHORIZATION : AGENT_DEAUTHORIZATION;
+        AgentStatusUpdateRequest request = AgentStatusUpdateRequest.builder()
+                .status(status)
+                .comment(Comment.builder().text(action + agentId).build())
+                .build();
+        setAuthorizationStatusToAgent(request, agentId);
+    }
+
+    public static AgentStatusUpdateResponse setAuthorizationStatusToAgent(AgentStatusUpdateRequest request, int id) {
+        return new ValidatedCrudRequester<AgentStatusUpdateResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AUTHORIZED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK())
+                .put(request, id);
+    }
+
+    public static AgentStatusUpdateResponse getAuthorizedAgentInfo(int id) {
+        return new ValidatedCrudRequester<AgentStatusUpdateResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AUTHORIZED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK())
+                .get(id);
+    }
+
+    public static AgentStatusUpdateResponse setEnabledStatusToAgent(AgentStatusUpdateRequest request, int agentId) {
+        return new ValidatedCrudRequester<AgentStatusUpdateResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.ENABLED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK())
+                .put(request, agentId);
+    }
+
+    public static AgentStatusUpdateResponse getAgentEnabledInfo(int agentId) {
+        return new ValidatedCrudRequester<AgentStatusUpdateResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.ENABLED_INFO_AGENT,
+                ResponseSpecs.requestReturnsOK())
+                .get(agentId);
+    }
+
+    public static GetAgentsResponse getAgentList() {
+        return new ValidatedCrudRequester<GetAgentsResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AGENTS,
+                ResponseSpecs.requestReturnsOK())
+                .get();
+    }
+
+    public static GetAgentsResponse getAgentList(Map<String, Object> queryParams) {
+        return new ValidatedCrudRequester<GetAgentsResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.AGENTS,
+                ResponseSpecs.requestReturnsOK())
+                .get(queryParams);
+    }
+
+    public static int getProjectsCount(RequestSpecification requestSpec) {
+        return new CrudRequester(
+                requestSpec,
+                Endpoint.GET_ALL_PROJECTS,
+                ResponseSpecs.requestReturnsOK())
+                .get()
+                .extract()
+                .as(GetProjectsResponse.class)
+                .getCount();
+    }
+
+    public static void deleteProject(CreateProjectResponse project, RequestSpecification requestSpec) {
+        new CrudRequester(
+                requestSpec,
+                Endpoint.PROJECT_DELETE,
+                ResponseSpecs.ignoreErrors())
+                .delete(project.getId());
+    }
+
+    public static Project getProjectById(String projectId, RequestSpecification requestSpec) {
+        return new CrudRequester(
+                requestSpec,
+                Endpoint.GET_PROJECT_BY_ID,
+                ResponseSpecs.requestReturnsOK())
+                .get(projectId)
+                .extract()
+                .as(GetProjectsResponse.class)
+                .getProject()
+                .getFirst();
     }
 }

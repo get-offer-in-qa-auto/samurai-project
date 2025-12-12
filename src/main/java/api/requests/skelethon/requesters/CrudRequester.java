@@ -4,13 +4,17 @@ import api.models.BaseModel;
 import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.HttpRequest;
 import api.requests.skelethon.interfaces.CrudEndpointInterface;
+import api.requests.skelethon.interfaces.GetWithQueryParams;
+import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 
-public class CrudRequester extends HttpRequest implements CrudEndpointInterface {
+public class CrudRequester extends HttpRequest implements CrudEndpointInterface, GetWithQueryParams {
     public CrudRequester(RequestSpecification requestSpec, Endpoint endpoint, ResponseSpecification responseSpec) {
         super(requestSpec, endpoint, responseSpec);
     }
@@ -60,6 +64,18 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
     }
 
     @Override
+    public ValidatableResponse get(String id) {
+        String formattedId = endpoint.formatId(id);
+        return given()
+                .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .urlEncodingEnabled(false)
+                .get(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
+    @Override
     public ValidatableResponse get() {
         return given()
                 .spec(requestSpec)
@@ -79,6 +95,31 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
     }
 
     @Override
+    public ValidatableResponse put(String id, String text) {
+        String formattedId = endpoint.formatId(id);
+        return given()
+                .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .body(text)
+                .put(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
+    @Override
+    public ValidatableResponse put(BaseModel model, int id) {
+        String formattedId = endpoint.formatId(id);
+        return given()
+                .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .urlEncodingEnabled(false)
+                .body(model)
+                .put(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
+    @Override
     public ValidatableResponse delete(int id) {
         String formattedId = endpoint.formatId(id);
         return given()
@@ -86,6 +127,28 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .spec(requestSpec)
                 .urlEncodingEnabled(false)
                 .delete(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
+    @Override
+    public ValidatableResponse delete(String id) {
+        String formattedId = endpoint.formatId(id);
+        return given()
+                .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .urlEncodingEnabled(false)
+                .delete(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
+    @Override
+    public ValidatableResponse get(Map<String, Object> queryParams) {
+        return given()
+                .queryParams(queryParams)          // добавляем query-параметры
+                .spec(requestSpec)
+                .get(endpoint.getUrl())
                 .then()
                 .spec(responseSpec);
     }

@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateUserRoleResponse extends BaseModel {
-    private String roleId;
-    private String scope;
+public class User extends BaseModel {
+    private String username;
+    private String name;
+    private int id;
     private String href;
 }

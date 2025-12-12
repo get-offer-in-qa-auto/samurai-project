@@ -4,10 +4,13 @@ import api.models.BaseModel;
 import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.HttpRequest;
 import api.requests.skelethon.interfaces.CrudEndpointInterface;
+import api.requests.skelethon.interfaces.GetWithQueryParams;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
-public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest implements CrudEndpointInterface {
+import java.util.Map;
+
+public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest implements CrudEndpointInterface, GetWithQueryParams {
     private CrudRequester crudRequester;
 
     public ValidatedCrudRequester(RequestSpecification requestSpec, Endpoint endpoint, ResponseSpecification responseSpec) {
@@ -26,7 +29,7 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     @Override
     public T post(BaseModel model, int id) {
         return (T) crudRequester
-                .post(model)
+                .post(model, id)
                 .extract()
                 .as(endpoint.getResponseModel());
     }
@@ -48,9 +51,25 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     }
 
     @Override
+    public T get(String id) {
+        return (T) crudRequester
+                .get(id)
+                .extract()
+                .as(endpoint.getResponseModel());
+    }
+
+    @Override
     public T get() {
         return (T) crudRequester
                 .get()
+                .extract()
+                .as(endpoint.getResponseModel());
+    }
+
+    @Override
+    public T put(BaseModel model, int id) {
+        return (T) crudRequester
+                .put(model, id)
                 .extract()
                 .as(endpoint.getResponseModel());
     }
@@ -64,9 +83,33 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     }
 
     @Override
+    public String put(String id, String text) {
+        return  crudRequester
+                .put(id, text)
+                .extract()
+                .asString();
+    }
+
+    @Override
     public T delete(int id) {
         return (T) crudRequester
                 .get(id)
+                .extract()
+                .as(endpoint.getResponseModel());
+    }
+
+    @Override
+    public T delete(String id) {
+        return (T) crudRequester
+                .delete(id)
+                .extract()
+                .as(endpoint.getResponseModel());
+    }
+
+    @Override
+    public T get(Map<String, Object> queryParams) {
+        return (T) crudRequester
+                .get(queryParams)
                 .extract()
                 .as(endpoint.getResponseModel());
     }
