@@ -3,7 +3,6 @@ package api.requests.skelethon;
 import api.models.BaseModel;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
-import api.models.agent.GetAuthorizedInfoAgentResponse;
 import api.models.buildConfiguration.CreateBuildTypeRequest;
 import api.models.buildConfiguration.CreateBuildTypeResponse;
 import api.models.buildConfiguration.GetAllBuildTypeResponse;
@@ -11,7 +10,16 @@ import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
 import api.models.project.GetProjectsResponse;
-import api.models.users.*;
+import api.models.users.CreateUserRequest;
+import api.models.users.CreateUserResponse;
+import api.models.users.CreateUserRoleRequest;
+import api.models.users.CreateUserRoleResponse;
+import api.models.users.CreateUserTokenRequest;
+import api.models.users.CreateUserTokenResponse;
+import api.models.users.GetAllUsersResponse;
+import api.models.users.GetUserRoleResponse;
+import api.models.users.UpdateUserRequest;
+import api.models.users.UpdateUserResponse;
 import api.requests.skelethon.requesters.IdentityFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +35,7 @@ public enum Endpoint {
     AUTHORIZED_INFO_AGENT(
             "/agents/{id}/authorizedInfo",
             BaseModel.class,
-            GetAuthorizedInfoAgentResponse.class,
+            AgentStatusUpdateResponse.class,
             IdentityFormat.TEAMCITY_ID
     ),
     ENABLED_INFO_AGENT(
