@@ -14,7 +14,7 @@ import java.util.List;
 
 public class AdminSteps {
 
-    public static CreateUserRequest createTemporaryUser() {
+    public static final CreateUserRequest createTemporaryUser() {
         String username = RandomData.getUserName();
         String password = RandomData.getUserPassword();
 
