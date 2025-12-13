@@ -10,6 +10,9 @@ import api.models.builds.CreateBuildResponse;
 import api.models.builds.GetBuildResponse;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
+import api.models.buildConfiguration.CreateBuildTypeRequest;
+import api.models.buildConfiguration.CreateBuildTypeResponse;
+import api.models.buildConfiguration.GetAllBuildTypeResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
@@ -97,6 +100,34 @@ public enum Endpoint {
             "/projects",
             CreateProjectFromRepositoryRequest.class,
             CreateProjectResponse.class
+    ),
+    BUILD_CONFIGURATION_CREATE(
+            "/buildTypes",
+            CreateBuildTypeRequest.class,
+            CreateBuildTypeResponse.class
+    ),
+    UPDATE_BUILD_CONFIGURATION_NAME(
+            "/buildTypes/{id}/name",
+            BaseModel.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_NAME
+    ),
+    DELETE_BUILD_CONFIGURATION(
+            "/buildTypes/{id}",
+            BaseModel.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_ID
+    ),
+    GET_ALL_BUILD_CONFIGURATION(
+            "/buildTypes",
+            BaseModel.class,
+            GetAllBuildTypeResponse.class
+    ),
+    GET_BUILD_CONFIGURATION(
+            "/buildTypes/{id}",
+            BaseModel.class,
+            CreateBuildTypeResponse.class,
+            IdentityFormat.TEAMCITY_ID
     ),
     BUILD_QUEUE(
             "/app/rest/buildQueue",

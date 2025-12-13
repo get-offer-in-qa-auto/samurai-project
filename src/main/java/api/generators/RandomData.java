@@ -32,4 +32,8 @@ public class RandomData {
     public static int getId() {
         return ThreadLocalRandom.current().nextInt(500, 1000);
     }
+
+    public static String getBuildName() {
+        return "newBuildName" + RandomStringUtils.randomAlphanumeric(6);
+    }
 }
