@@ -132,9 +132,7 @@ public class UpdateUserTest extends BaseTest {
         List<User> users = AdminSteps.getAllUsers();
         ErrorResponse errorResponse = extractError(response);
 
-        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
-                .as("Проверка сообщения алерта")
-                .contains(UserErrorMessage.USERNAME_DUPLICATE_UPDATE.getMessage());
+        assertErrorMessageContains(errorResponse, UserErrorMessage.USERNAME_DUPLICATE_UPDATE);
         softly.assertThat(users).as("Проверка что username один")
                 .extracting(User::getUsername)
                 .containsOnlyOnce(authUser.getUsername().toLowerCase());

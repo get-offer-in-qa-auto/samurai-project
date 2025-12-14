@@ -1,9 +1,10 @@
 package api.models.users;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 @AllArgsConstructor
 public class AuthUser {
     private final String username;
@@ -11,4 +12,5 @@ public class AuthUser {
     private final String token;
     private final int id;
     private final String role;
+    private final String sessionId;
 }
