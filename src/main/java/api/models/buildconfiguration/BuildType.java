@@ -1,21 +1,13 @@
-package api.models.buildconfiguration;
+package api.models.buildConfiguration;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-
-
 public class BuildType {
     private String id;
-
-    public String getId() {
-        return id;
-    }
+    private String name;
+    private String projectName;
+    private String projectId;
+    private String href;
+    private String webUrl;
 }
