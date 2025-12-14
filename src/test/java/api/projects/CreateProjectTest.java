@@ -1,13 +1,12 @@
-package api;
+package api.projects;
 
+import api.BaseTest;
 import api.comparison.ModelAssertions;
 import api.generators.RandomModelGenerator;
 import api.models.error.ErrorResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
-import api.models.project.GetProjectsResponse;
-import api.models.project.GetProjectsResponse.Project;
 import api.models.users.Roles;
 import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.requesters.CrudRequester;
@@ -25,9 +24,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static api.generators.RandomData.getProjectId;
-import static api.generators.RandomData.getProjectName;
 
-public class ProjectTests extends BaseTest {
+public class CreateProjectTest extends BaseTest {
 
     public static Stream<Arguments> validProjectIds() {
         return Stream.of(
@@ -290,91 +288,5 @@ public class ProjectTests extends BaseTest {
         softly.assertThat(finalCount).isEqualTo(initialCount + 1);
         ErrorResponse errorResponse = extractError(projectCreationResponse);
         assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_NAME_EXISTS);
-    }
-
-    @Test
-    @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanUpdateProjectDescription() {
-        CreateProjectResponse project = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
-        String projectBefore = UserSteps.getProjectById(project.getId(), RequestSpecs.userAuthSpecWithToken())
-                .getDescription();
-        var randomText = getProjectName();
-        var response = new ValidatedCrudRequester<>(
-                RequestSpecs.userAuthTextSpecWithToken(),
-                Endpoint.PROJECT_UPDATE,
-                ResponseSpecs.requestReturnsOK())
-                .put(project.id, randomText);
-        softly.assertThat(response).isEqualTo(randomText);
-
-        String projectAfter = UserSteps.getProjectById(project.getId(), RequestSpecs.userAuthSpecWithToken())
-                .getDescription();
-        softly.assertThat(projectAfter).isNotEqualTo(projectBefore);
-        softly.assertThat(projectAfter).isEqualTo(randomText);
-    }
-
-
-    @Test
-    @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanGetProjectById() {
-        CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
-        Project gettedProject = new CrudRequester(
-                RequestSpecs.userAuthSpecWithToken(),
-                Endpoint.GET_PROJECT_BY_ID,
-                ResponseSpecs.requestReturnsOK())
-                .get(createdProject.id)
-                .extract()
-                .as(GetProjectsResponse.class)
-                .getProject()
-                .getFirst();
-
-        ModelAssertions.assertThatModels(createdProject, gettedProject).match();
-    }
-
-    @Test
-    @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCannotGetProjectWithInvalidId() {
-        int matchedCount = new CrudRequester(
-                RequestSpecs.userAuthSpecWithToken(),
-                Endpoint.GET_PROJECT_BY_ID,
-                ResponseSpecs.requestReturnsOK())
-                .get(getProjectName())
-                .extract()
-                .as(GetProjectsResponse.class)
-                .getCount();
-
-        softly.assertThat(matchedCount).isEqualTo(0);
-    }
-
-    @Test
-    @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanDeleteProject() {
-        CreateProjectResponse project = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
-        int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
-
-        new CrudRequester(
-                RequestSpecs.userAuthSpecWithToken(),
-                Endpoint.PROJECT_DELETE,
-                ResponseSpecs.requestReturnsNoContent())
-                .delete(project.getId());
-
-        int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
-        softly.assertThat(finalCount).isEqualTo(initialCount - 1);
-    }
-
-    @Test
-    @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCannotDeleteProjectWithInvalidId() {
-        int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
-
-        var projectDelResponse = new CrudRequester(
-                RequestSpecs.userAuthSpecWithToken(),
-                Endpoint.PROJECT_DELETE,
-                ResponseSpecs.requestReturns404NotFound())
-                .delete(getProjectName());
-
-        int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
-        softly.assertThat(finalCount).isEqualTo(initialCount);
-        ErrorResponse errorResponse = extractError(projectDelResponse);
-        assertErrorMessageContains(errorResponse, ProjectErrorMessage.PROJECT_NOT_FOUND);
     }
 }
