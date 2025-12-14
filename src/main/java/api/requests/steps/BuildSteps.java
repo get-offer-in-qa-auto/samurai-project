@@ -1,7 +1,7 @@
 package api.requests.steps;
 
 import api.models.BaseModel;
-import api.models.buildconfiguration.BuildType;
+import api.models.buildConfiguration.BuildType;
 import api.models.builds.CancelBuildRequest;
 import api.models.builds.CreateBuildRequest;
 import api.models.builds.CreateBuildResponse;

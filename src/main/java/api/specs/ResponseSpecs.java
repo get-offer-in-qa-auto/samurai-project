@@ -33,12 +33,6 @@ public class ResponseSpecs {
                 .build();
     }
 
-    public static ResponseSpecification requestReturnsNoContent() {
-        return defaultResponseSpecBuilder()
-                .expectStatusCode(HttpStatus.SC_NO_CONTENT)
-                .build();
-    }
-
     public static ResponseSpecification requestReturnsOKWithMessage(String expectedMessage) {
         return defaultResponseSpecBuilder()
                 .expectStatusCode(HttpStatus.SC_OK)
@@ -82,9 +76,6 @@ public class ResponseSpecs {
                 .expectStatusCode(HttpStatus.SC_NO_CONTENT)
                 .build();
     }
-
-
-
 
     public static ResponseSpecification requestReturnsInternalServerError(String msg) {
         return new ResponseSpecBuilder()
