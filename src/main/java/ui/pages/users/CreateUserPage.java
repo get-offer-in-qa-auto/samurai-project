@@ -28,4 +28,16 @@ public class CreateUserPage extends BasePage<CreateUserPage> {
         createUserButton.click();
         return this;
     }
+
+    public CreateUserPage fillFieldsWithoutUsername(String password) {
+        newPasswordField.shouldBe(visible, enabled).setValue(password);
+        confirmPasswordField.shouldBe(visible, enabled).setValue(password);
+        createUserButton.click();
+        return this;
+    }
+
+    public UsersPage createUserAndGoToUsers(String name, String password) {
+        createUser(name, password);
+        return getPage(UsersPage.class);
+    }
 }
