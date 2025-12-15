@@ -12,9 +12,9 @@ public class BaseUiTest extends BaseTest {
     public static void setupSelenoid() {
         //настроить Property
 //        Configuration.remote = Config.getProperty("uiRemote");
-//        Configuration.baseUrl = Config.getProperty("uiBaseUrl");
-//        Configuration.browser = Config.getProperty("browser");
-//        Configuration.browserSize = Config.getProperty("browserSize");
+        Configuration.baseUrl = Config.getProperty("server");
+        Configuration.browser = Config.getProperty("browser");
+        Configuration.browserSize = Config.getProperty("browserSize");
 
         Configuration.browserCapabilities.setCapability("selenoid:options",
                 Map.of("enableVNC", true, "enableLog", true)

@@ -18,6 +18,7 @@ import api.requests.skelethon.requesters.CrudRequester;
 import api.requests.skelethon.requesters.ValidatedCrudRequester;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import static api.generators.RandomData.getBuildName;
 import static api.models.agent.GetAgentsRequest.*;
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserSteps {
@@ -40,6 +42,21 @@ public class UserSteps {
         ).post(userRequest, request.getId())
                 .extract()
                 .as(CreateUserTokenResponse.class);
+    }
+
+    public static String getUserSessionIdByToken(String username, String password) {
+
+        Response response = given()
+                .spec(RequestSpecs.userAuthSpecWithoutToken(username, password))
+                .get("/");
+
+        String sessionId = response.getCookie("TCSESSIONID");
+
+        if (sessionId == null) {
+            throw new IllegalStateException("TCSESSIONID not found for user");
+        }
+
+        return sessionId;
     }
 
     public static CreateProjectResponse createProjectManually(RequestSpecification requestSpec) {
