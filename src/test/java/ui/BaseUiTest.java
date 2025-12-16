@@ -3,10 +3,10 @@ package ui;
 import api.BaseTest;
 import api.configs.Config;
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.SelenideElement;
 import common.errors.UserUiAlertMessage;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -26,16 +26,32 @@ public class BaseUiTest extends BaseTest {
         );
     }
 
-    protected void assertUiErrorsContain(UserUiAlertMessage... expectedErrors) {
-        List<String> actualErrors = $$x("//span[@data-error]")
+    private List<String> getUiErrors() {
+        return $$x("//span[@data-error]")
                 .stream()
                 .map(e -> e.getAttribute("data-error"))
                 .toList();
+    }
+
+    protected void assertUiErrorsMatchExactly(UserUiAlertMessage... expectedErrors) {
+        List<String> actualErrors = getUiErrors();
+
+        List<String> expectedMessages = Arrays.stream(expectedErrors)
+                .map(UserUiAlertMessage::getMessage)
+                .toList();
+
+        softly.assertThat(actualErrors)
+                .as("Проверка UI-ошибок")
+                .containsExactlyInAnyOrderElementsOf(expectedMessages);
+    }
+
+    protected void assertUiErrorsContain(UserUiAlertMessage... expectedErrors) {
+        List<String> actualErrors = getUiErrors();
 
         for (UserUiAlertMessage expected : expectedErrors) {
             softly.assertThat(actualErrors)
-                    .as("Проверка UI-ошибки: " + expected.name())
-                    .containsExactly(expected.getMessage());
+                    .as("Проверка UI-ошибки (частичное вхождение): " + expected.name())
+                    .anyMatch(error -> error.contains(expected.getMessage()));
         }
     }
 }
