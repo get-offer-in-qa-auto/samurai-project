@@ -11,7 +11,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.UserErrorMessage;
+import common.errors.BuildTypeErrorMessage;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ public class UpdateBuildTypeTest extends BaseTest {
         String buildId = UserSteps.createBuildType(idProject, RequestSpecs.userAuthSpecWithToken());
         String randomText = getProjectName();
 
-       var response = new ValidatedCrudRequester<>(
+        var response = new ValidatedCrudRequester<>(
                 RequestSpecs.userAuthTextSpecWithToken(),
                 Endpoint.UPDATE_BUILD_CONFIGURATION_NAME,
                 ResponseSpecs.requestReturnsOK())
@@ -43,7 +43,7 @@ public class UpdateBuildTypeTest extends BaseTest {
     @Test
     @DisplayName("Неуспешное обновление имени, имя уже существует")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanNotUpdateBuildTypeName(){
+    public void userCanNotUpdateBuildTypeName() {
         CreateProjectResponse projectForTest = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
         String idProject = projectForTest.getId();
         String buildIdFirst = UserSteps.createBuildType(idProject, RequestSpecs.userAuthSpecWithToken());
@@ -57,6 +57,6 @@ public class UpdateBuildTypeTest extends BaseTest {
                 .put(buildIdSecond, name);
 
         ErrorResponse errorResponse = extractError(response);
-        assertErrorMessage(errorResponse, UserErrorMessage.BUILD_TYPE_NAME_ALREADY_USE);
+        assertErrorMessage(errorResponse, BuildTypeErrorMessage.BUILD_TYPE_NAME_ALREADY_USE);
     }
 }

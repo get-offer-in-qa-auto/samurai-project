@@ -10,9 +10,7 @@ public enum UserErrorMessage implements HasMessage {
     USER_NOT_FOUND("User not found"),
     USERNAME_EMPTY_UPDATE("Username cannot be empty"),
     PASSWORD_EMPTY_UPDATE("Password cannot be empty"),
-    USERNAME_DUPLICATE_UPDATE("is already in use by some other user."),
-    BUILD_TYPE_NAME_EMPTY("When creating a build type, non empty name should be provided."),
-    BUILD_TYPE_NAME_ALREADY_USE("Build configuration with this name already exists");
+    USERNAME_DUPLICATE_UPDATE("is already in use by some other user.");
 
     private final String message;
 
