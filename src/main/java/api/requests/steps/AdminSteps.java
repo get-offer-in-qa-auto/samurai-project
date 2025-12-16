@@ -12,6 +12,7 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 import static api.specs.RequestSpecs.adminAuthSpec;
 import static io.restassured.RestAssured.given;
@@ -74,6 +75,20 @@ public class AdminSteps {
                 Endpoint.USER_DELETE,
                 ResponseSpecs.ignoreErrors())
                 .delete(response.getId());
+    }
+
+    public static void deleteUser(String name) {
+        List<User> users = AdminSteps.getAllUsers();
+        int userId = users.stream()
+                .filter(u -> u.getUsername().equalsIgnoreCase(name))
+                .mapToInt(User::getId)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("User not found: " + name));
+        ValidatableResponse requestForDelete = new CrudRequester(
+                adminAuthSpec(),
+                Endpoint.USER_DELETE,
+                ResponseSpecs.ignoreErrors())
+                .delete(userId);
     }
 
     public static List<User> getAllUsers() {
