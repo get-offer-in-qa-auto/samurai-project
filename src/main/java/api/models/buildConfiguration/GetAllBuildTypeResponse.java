@@ -12,5 +12,5 @@ import java.util.List;
 public class GetAllBuildTypeResponse extends BaseModel {
     public int count;
     public String href;
-    public List<BuildType> buildTypes;
+    public List<api.models.buildConfiguration.BuildType> buildTypes;
 }
