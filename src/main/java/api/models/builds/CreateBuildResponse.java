@@ -1,7 +1,6 @@
 package api.models.builds;
 import api.models.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,6 @@ import api.models.buildconfiguration.BuildType;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateBuildResponse extends BaseModel {
     private Integer id;
