@@ -2,17 +2,18 @@ package api.models.builds;
 
 import api.models.BaseModel;
 import api.models.users.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import api.models.buildConfiguration.BuildType;
-
+import api.models.buildconfiguration.BuildType;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CancelBuildResponse extends BaseModel {
     private Integer id;
     private String state;

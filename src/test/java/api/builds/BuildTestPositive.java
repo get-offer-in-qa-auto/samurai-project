@@ -2,12 +2,15 @@ package api.builds;
 
 import api.BaseTest;
 import api.comparison.ModelAssertions;
+import api.models.buildconfiguration.BuildType;
 import api.models.BaseModel;
 import api.models.builds.*;
+import api.models.project.CreateProjectResponse;
 import api.models.users.Roles;
 import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.requesters.ValidatedCrudRequester;
 import api.requests.steps.BuildSteps;
+import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
@@ -19,105 +22,94 @@ public class BuildTestPositive extends BaseTest {
 
     @Test
    @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanCreateBuild(){
-        //создадим проект и buildType
-        String createdBuildType = BuildSteps.setEnvironmentToCreateBuild();
-
+    public void userCanCreateBuild() {
+        CreateProjectResponse project =
+                UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
+        String buildTypeId =
+                UserSteps.createBuildType(project.getId(), RequestSpecs.adminAuthSpec());
         //тело запроса
         CreateBuildRequest build = CreateBuildRequest.builder()
                 .buildType(
-                        CreateBuildRequest.BuildType.builder()
-                                .id(createdBuildType)
+                        BuildType.builder()
+                                .id(buildTypeId)
                                 .build()
                 )
                 .build();
-
         //постановка билда в очередь
         CreateBuildResponse createdBuild = new ValidatedCrudRequester<CreateBuildResponse>(
-                RequestSpecs.adminAuthSpec(),
+                RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.BUILD_QUEUE,
-                ResponseSpecs.entityWasCreated()).post(build);
+                ResponseSpecs.requestReturnsOK()).post(build);
         ModelAssertions.assertThatModels(build, createdBuild).match();
 
-        //узнает id проекта, чтобы его удалить
-        String projectId = createdBuild.getBuildType().getProjectId();
+        softly.assertThat(createdBuild.getBuildType().getId()).isEqualTo(buildTypeId);
+        softly.assertThat(createdBuild.getState()).isEqualTo("queued");
+        softly.assertThat(createdBuild.getId()).isNotNull();
+        softly.assertThat(createdBuild.getHref()).isNotBlank();
+        softly.assertThat(createdBuild.getWebUrl()).isNotBlank();
 
-        //проверим, что такой билд действительно появился
+       //проверим, что такой билд действительно появился
         GetBuildResponse getBuildResponse = BuildSteps.getBuildFromQueue(createdBuild);
         softly.assertThat(getBuildResponse.getBuildTypeId()).isEqualTo(createdBuild.getBuildType().getId());
         softly.assertThat(getBuildResponse.getId()).isEqualTo(createdBuild.getId());
-
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
     }
 
-    @Test
+  @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanGetBuild(){
-        //создадим проект и buildType
-        String createdBuildType = BuildSteps.setEnvironmentToCreateBuild();
+    public void userCanGetBuild() {
+      //создать проект
+      CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
+      //создать buildType в нем
+      String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-        //создать билд
-        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
-        Integer buildId = createdBuild.getId();
+      //создать билд
+      CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
+      Integer buildId = createdBuild.getId();
 
-        //вернуть билд по его id
-        GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
-                RequestSpecs.adminAuthSpec(),
-                Endpoint.GET_BUILD,
-                ResponseSpecs.requestReturnsOK()).get(buildId);
-        ModelAssertions.assertThatModels(createdBuild, getBuildResponse).match();
+      //вернуть билд по его id
+      GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
+              RequestSpecs.userAuthSpecWithToken(),
+              Endpoint.GET_BUILD,
+              ResponseSpecs.requestReturnsOK()).get(buildId);
+      ModelAssertions.assertThatModels(createdBuild, getBuildResponse).match();
 
-        softly.assertThat(getBuildResponse.getBuildTypeId()).isEqualTo(createdBuild.getBuildType().getId());
-        softly.assertThat(getBuildResponse.getId()).isEqualTo(createdBuild.getId());
-
-        //узнает id проекта, чтобы его удалить
-        String projectId = createdBuild.getBuildType().getProjectId();
-
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
+        softly.assertThat(getBuildResponse.getId()).isEqualTo(buildId);
+        softly.assertThat(getBuildResponse.getBuildType().getId()).isEqualTo(createdBuildType);
     }
 
-    @Test
+   @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanDeleteBuild(){
-        //создадим проект и buildType
-        String createdBuildType = BuildSteps.setEnvironmentToCreateBuild();
+    public void userCanDeleteBuild() {
+       //создать проект
+       CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-        //создать билд
-        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
-        Integer buildId = createdBuild.getId();
+       //создать buildType в нем
+       String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-        //узнает id проекта, чтобы его удалить
-        String projectId = createdBuild.getBuildType().getProjectId();
+       //создать билд
+       CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
 
         new ValidatedCrudRequester<BaseModel>(
-                RequestSpecs.adminAuthSpec(),
-                Endpoint.DELETE_BUILD_FROM_QUEUE,
-                ResponseSpecs.requestReturnsNoContent()).delete(buildId);
+               RequestSpecs.userAuthSpecWithToken(),
+               Endpoint.DELETE_BUILD_FROM_QUEUE,
+               ResponseSpecs.requestReturnsNoContent()).deleteNoContent(createdBuild.getId());
 
-        //убедиться, что билд удален
+        //убедиться, что билд удален (с помощью get)
         BuildSteps.checkIfBuildIsDeleted(createdBuild);
-
-
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
-
     }
 
     @Test
     @DisplayName("Cancel build from queue via API")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanCancelBuild(TestInfo testInfo){
-        //создадим проект и buildType
-        String createdBuildType = BuildSteps.setEnvironmentToCreateBuild();
+    public void userCanCancelBuild(TestInfo testInfo) {
+        //создать проект
+        CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
+
+        //создать buildType в нем
+        String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
         //создать билд
         CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
-        Integer buildId = createdBuild.getId();
-
-        //узнает id проекта, чтобы его удалить
-        String projectId = createdBuild.getBuildType().getProjectId();
 
         //подготовили комментарий
         String comment = BuildSteps.prepareCommentForCancellingBuild(testInfo.getDisplayName());
@@ -128,18 +120,23 @@ public class BuildTestPositive extends BaseTest {
                 .build();
 
         CancelBuildResponse canceledBuild = new ValidatedCrudRequester<CancelBuildResponse>(
-                RequestSpecs.adminAuthSpec(),
+                RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.CANCEL_BUILD,
-                ResponseSpecs.requestReturnsOK()).post(createdBuild, createdBuild.getId());
+                ResponseSpecs.requestReturnsOK()).post(cancelBody, createdBuild.getId());
 
-        ModelAssertions.assertThatModels(createdBuild, canceledBuild).match();
+        softly.assertThat(canceledBuild.getId()).isEqualTo(createdBuild.getId());
         softly.assertThat(canceledBuild.getState()).isEqualTo("finished");
+        softly.assertThat(canceledBuild.getStatusText()).containsIgnoringCase("canceled");
+        softly.assertThat(canceledBuild.getBuildType().getId()).isEqualTo(createdBuildType);
+        softly.assertThat(canceledBuild.getBuildType().getProjectId()).isEqualTo(createdProject.id);
+        softly.assertThat(canceledBuild.getCanceledInfo()).isNotNull();
+        softly.assertThat(canceledBuild.getCanceledInfo().getText()).isEqualTo(comment);
 
-        //убедиться, что билд действительно отменен
-        BuildSteps.checkIfBuildIsCancelled(createdBuild);
-
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
-
+        //убедиться, что билд действительно отменен и его нет в очереди (статус finished)
+        GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.GET_BUILD,
+                ResponseSpecs.requestReturnsOK()).get(createdBuild.getId());
+        softly.assertThat(getBuildResponse.getState()).isEqualTo("finished");
     }
 }
