@@ -2,7 +2,7 @@ package api.builds;
 
 import api.BaseTest;
 import api.comparison.ModelAssertions;
-import api.models.buildconfiguration.BuildType;
+import api.models.buildConfiguration.BuildType;
 import api.models.BaseModel;
 import api.models.builds.*;
 import api.models.project.CreateProjectResponse;
@@ -95,7 +95,7 @@ public class BuildTestPositive extends BaseTest {
                ResponseSpecs.requestReturnsNoContent()).deleteNoContent(createdBuild.getId());
 
         //убедиться, что билд удален (с помощью get)
-        BuildSteps.checkIfBuildIsDeleted(createdBuild);
+        BuildSteps.checkIfBuildHasAlreadyDeleted(createdBuild);
     }
 
     @Test

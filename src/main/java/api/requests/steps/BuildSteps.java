@@ -1,8 +1,10 @@
 package api.requests.steps;
 
 import api.models.BaseModel;
-import api.models.buildconfiguration.BuildType;
+import api.requests.skelethon.requesters.CrudRequester;
+import api.models.buildConfiguration.BuildType;
 import api.models.builds.CancelBuildRequest;
+import api.models.builds.BuildQueueResponse;
 import api.models.builds.CreateBuildRequest;
 import api.models.builds.CreateBuildResponse;
 import api.models.builds.GetBuildResponse;
@@ -39,16 +41,16 @@ public class BuildSteps {
 
     }
 
-    public static void checkIfBuildIsDeleted(CreateBuildResponse response){
-        GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
+    public static void checkIfBuildHasAlreadyDeleted(CreateBuildResponse response){
+        new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.GET_BUILD,
                 ResponseSpecs.requestReturns404NotFound()).get(response.getId());
     }
 
     public static void deleteBuildFromQueue(CreateBuildResponse response){
-        new ValidatedCrudRequester<BaseModel>(
-        RequestSpecs.adminAuthSpec(),
+        new CrudRequester(
+        RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
                 ResponseSpecs.requestReturnsNoContent()).delete(response.getId());
     }
@@ -59,6 +61,14 @@ public class BuildSteps {
                 testName,
                 java.time.LocalDateTime.now()
         );
+    }
+
+    public static BuildQueueResponse getBuildQueue() {
+        return new ValidatedCrudRequester<BuildQueueResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.GET_BUILDS_QUEUE,
+                ResponseSpecs.requestReturnsOK()
+        ).get();
     }
 
     public static void cancelBuild(CreateBuildResponse response){

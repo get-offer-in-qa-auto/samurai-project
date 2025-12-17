@@ -1,16 +1,20 @@
 package api.builds;
 
 import api.BaseTest;
-import api.models.BaseModel;
+import api.models.buildConfiguration.BuildType;
 import api.models.builds.*;
+import api.models.error.ErrorResponse;
+import api.models.project.CreateProjectResponse;
 import api.models.users.Roles;
 import api.requests.skelethon.Endpoint;
+import api.requests.skelethon.requesters.CrudRequester;
 import api.requests.skelethon.requesters.ValidatedCrudRequester;
 import api.requests.steps.BuildSteps;
 import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
+import common.errors.BuildErrorMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -20,106 +24,112 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static common.errors.BuildErrorMessage.NOTHING_FOUND_BY_LOCATOR;
+import static common.errors.BuildErrorMessage.NO_BUILD_TYPE_NOR_TEMPLATE_IS_FOUND_BY_ID;
+
 public class BuildTestNegative extends BaseTest {
+
     public static Stream<Arguments> invalidBuildType(){
         return Stream.of(
-                Arguments.of(
-                        ""
-
-                ),
-                Arguments.of(
-                        "   "
-                ),
-                Arguments.of(
-                        null
-                )
+                Arguments.of("", NOTHING_FOUND_BY_LOCATOR),
+                Arguments.of("   ", NO_BUILD_TYPE_NOR_TEMPLATE_IS_FOUND_BY_ID)
         );
-
     }
 
+    //Тест 1: создать билд с невалидным buildType
     @ParameterizedTest
     @MethodSource("invalidBuildType")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanNotCreateBuildWithInvalidBuildType(String buildTypeId){
+    public void userCanNotCreateBuildWithInvalidBuildType(String buildTypeId, BuildErrorMessage expectedError) {
+//создаю проект
+        CreateProjectResponse project =
+                UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
 
-        //cоздать проект, взяли id проекта
-        String projectId = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken()).getId();
+        //записываю, сколько билдов в очереди ДО
+        int before = BuildSteps.getBuildQueue().getCount();
 
+
+    //не создаю buildConfiguration, он подается извне, создаю сам билд
         CreateBuildRequest build = CreateBuildRequest.builder()
                 .buildType(
-                        CreateBuildRequest.BuildType.builder()
+                        BuildType.builder()
                                 .id(buildTypeId)
                                 .build()
                 )
                 .build();
 
-        new ValidatedCrudRequester<CreateBuildResponse>(
-                RequestSpecs.adminAuthSpec(),
+        var response = new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.BUILD_QUEUE,
-                ResponseSpecs.requestReturns400BadRequest()).post(build);
+                ResponseSpecs.requestReturns404NotFound()).post(build);
 
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
+        ErrorResponse errorResponse = extractError(response);
+        softly.assertThat(errorResponse.getErrors()).isNotEmpty();
+        assertErrorMessageContains(errorResponse, expectedError);
 
+        //проверка, что билд не создался: вызовем очередь и проверим, добавилось ли в нее что-то новое и сравним
+        int after = BuildSteps.getBuildQueue().getCount();
+        softly.assertThat(before).isEqualTo(after);
     }
 
     public static Stream<Arguments> invalidBuildId(){
         return Stream.of(
-                Arguments.of(
-                        Integer.MAX_VALUE
-
-                ),
-                Arguments.of(
-                        Integer.MIN_VALUE
-                )
+                Arguments.of(Integer.MAX_VALUE),
+                Arguments.of(Integer.MIN_VALUE)
         );
 
     }
 
+    //Тест 2: попытаться вернуть билд из очереди, используя невалидный id/вернуть несуществующий билд
     @ParameterizedTest
     @MethodSource("invalidBuildId")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCantGetNonExitedBuild(Integer invalidId){
-        //cоздать проект, взяли id проекта
-        String projectId = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken()).getId();
-
-        new ValidatedCrudRequester<GetBuildResponse>(
-                RequestSpecs.adminAuthSpec(),
+        //создаю проект
+        CreateProjectResponse project =
+                UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
+        var response = new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.GET_BUILD,
                 ResponseSpecs.requestReturns404NotFound()).get(invalidId);
 
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
+        ErrorResponse errorResponse = extractError(response);
+
+        softly.assertThat(errorResponse.getErrors()).isNotEmpty();
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
+                .contains(BuildErrorMessage.NO_BUILD_FOUND_BY_ID.getMessage());
     }
 
+    //Тест 3: удалить несуществующий билд
     @ParameterizedTest
     @MethodSource("invalidBuildId")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    //удалить несуществующий
 
     public void userCantDeleteNonExistedBuild(Integer invalidId){
-        //cоздать проект, взяли id проекта
-        String projectId = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken()).getId();
+        //создаю проект
+        CreateProjectResponse project =
+                UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
 
-        new ValidatedCrudRequester<BaseModel>(
-                RequestSpecs.adminAuthSpec(),
+        var response= new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
                 ResponseSpecs.requestReturns404NotFound()).delete(invalidId);
+        ErrorResponse errorResponse = extractError(response);
 
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
-
+        softly.assertThat(errorResponse.getErrors()).isNotEmpty();
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
+                .contains(BuildErrorMessage.NO_BUILD_FOUND_BY_ID.getMessage());
     }
 
-    //отменить несуществующий
+    //Тест 4: отменить несуществующий билд
     @ParameterizedTest
     @MethodSource("invalidBuildId")
     @DisplayName("Cant cancel non-existed build from queue via API")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCantCancelNonExistedBuild(Integer invalidId, TestInfo testInfo){
-        //cоздать проект, взяли id проекта
-        String projectId = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken()).getId();
-
+        //создаю проект
+        CreateProjectResponse project =
+                UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
 
         //подготовили комментарий
         String comment = BuildSteps.prepareCommentForCancellingBuild(testInfo.getDisplayName());
@@ -128,58 +138,70 @@ public class BuildTestNegative extends BaseTest {
                 .readdIntoQueue(false)
                 .build();
 
-        new ValidatedCrudRequester<CancelBuildResponse>(
+        var response = new CrudRequester(
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.CANCEL_BUILD,
                 ResponseSpecs.requestReturns404NotFound()).post(cancelBody, invalidId);
+        ErrorResponse errorResponse = extractError(response);
 
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
+        softly.assertThat(errorResponse.getErrors()).isNotEmpty();
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
+                .contains(BuildErrorMessage.NO_BUILD_FOUND_BY_ID.getMessage());
+
     }
 
-    //удалить удаленный билд
-    public void userCantRemoveAlreadyRemovedBuild(){
-       //создали проект и buildId
-        String buildType = BuildSteps.setEnvironmentToCreateBuild();
+    //Тест 5: удалить удаленный билд
+    @Test
+    @WithAuthUser(role = Roles.AGENT_MANAGER)
+    public void userCannotDeleteBuildTwice(){
+        //создать проект
+        CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-        // создаем билд
-        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(buildType);
-        String projectId = createdBuild.getBuildType().getProjectId();
+        //создать buildType в нем
+        String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-        //удаляем билд
+        //создать билд
+        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
+
+       //удаляем билд
         BuildSteps.deleteBuildFromQueue(createdBuild);
 
-        //убедиться, что билд удален
-        BuildSteps.checkIfBuildIsDeleted(createdBuild);
+      //убедиться, что билд удален
+       BuildSteps.checkIfBuildHasAlreadyDeleted(createdBuild);
 
-        //Пытаемся удалить еще раз
-        new ValidatedCrudRequester<BaseModel>(
-                RequestSpecs.adminAuthSpec(),
+      //Пытаемся удалить еще раз
+        var response = new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
                 ResponseSpecs.requestReturns404NotFound()).delete(createdBuild.getId());
 
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
+        ErrorResponse errorResponse = extractError(response);
+
+        softly.assertThat(errorResponse.getErrors()).isNotEmpty();
+        softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
+                .contains(BuildErrorMessage.NO_BUILD_FOUND_BY_ID.getMessage());
     }
 
-
+    //Тест 6: отменить уже отмененный билд -- кажется, здесь ошибка, потому что всегда будет 200
     @Test
     @DisplayName("Cancel build from queue via API")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    //отменить отмененный -- кажется, здесь ошибка, потому что всегда будет 200
-    public void userCantCancelAlreadyCancelledBuild(TestInfo testInfo){
-        //создали проект и buildId
-        String buildType = BuildSteps.setEnvironmentToCreateBuild();
 
-        // создаем билд
-        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(buildType);
-        String projectId = createdBuild.getBuildType().getProjectId();
+    public void userCannotCancelBuildTwice(TestInfo testInfo){
+        //создать проект
+        CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
+
+        //создать buildType в нем
+        String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
+
+        //создать билд
+        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
 
         //отменяет билд
         BuildSteps.cancelBuild(createdBuild);
 
-        //отменить отмененный билд
-            //подготовили комментарий
+         //отменить отмененный билд
+        //подготовили комментарий
         String comment = BuildSteps.prepareCommentForCancellingBuild(testInfo.getDisplayName());
 
         CancelBuildRequest cancelBody = CancelBuildRequest.builder()
@@ -190,10 +212,6 @@ public class BuildTestNegative extends BaseTest {
         CancelBuildResponse canceledBuild = new ValidatedCrudRequester<CancelBuildResponse>(
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.CANCEL_BUILD,
-                ResponseSpecs.requestReturnsOK()).post(createdBuild, createdBuild.getId());
-
-        //удалим проект и все его содержимое
-        BuildSteps.cleanEnvironmentAfterBuilds(projectId,RequestSpecs.userAuthSpecWithToken());
+                ResponseSpecs.requestReturnsOK()).post(createdBuild, createdBuild.getId()); //кажется, это ошибка?
     }
-
 }

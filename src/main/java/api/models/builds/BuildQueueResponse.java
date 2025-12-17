@@ -1,12 +1,13 @@
 package api.models.builds;
 
 import api.models.BaseModel;
-import api.models.buildConfiguration.BuildType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 
 @Data
@@ -14,11 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GetBuildResponse extends BaseModel {
-    private Integer id;
-    private String buildTypeId;
-    private String state;
-    private String href;
-    private String webUrl;
-    private BuildType buildType;
+public class BuildQueueResponse extends BaseModel {
+    private Integer count;
+    private List<BuildQueueItem> build;
 }
