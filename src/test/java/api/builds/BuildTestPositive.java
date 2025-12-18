@@ -18,6 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import static common.states.BuildState.*;
+
 public class BuildTestPositive extends BaseTest {
 
     @Test
@@ -43,7 +45,7 @@ public class BuildTestPositive extends BaseTest {
         ModelAssertions.assertThatModels(build, createdBuild).match();
 
         softly.assertThat(createdBuild.getBuildType().getId()).isEqualTo(buildTypeId);
-        softly.assertThat(createdBuild.getState()).isEqualTo("queued");
+        softly.assertThat(createdBuild.getState()).isEqualTo(QUEUED.getMessage());
         softly.assertThat(createdBuild.getId()).isNotNull();
         softly.assertThat(createdBuild.getHref()).isNotBlank();
         softly.assertThat(createdBuild.getWebUrl()).isNotBlank();
@@ -125,8 +127,8 @@ public class BuildTestPositive extends BaseTest {
                 ResponseSpecs.requestReturnsOK()).post(cancelBody, createdBuild.getId());
 
         softly.assertThat(canceledBuild.getId()).isEqualTo(createdBuild.getId());
-        softly.assertThat(canceledBuild.getState()).isEqualTo("finished");
-        softly.assertThat(canceledBuild.getStatusText()).containsIgnoringCase("canceled");
+        softly.assertThat(canceledBuild.getState()).isEqualTo(FINISHED.getMessage());
+        softly.assertThat(canceledBuild.getStatusText()).containsIgnoringCase(CANCELED.getMessage());
         softly.assertThat(canceledBuild.getBuildType().getId()).isEqualTo(createdBuildType);
         softly.assertThat(canceledBuild.getBuildType().getProjectId()).isEqualTo(createdProject.id);
         softly.assertThat(canceledBuild.getCanceledInfo()).isNotNull();
@@ -137,6 +139,6 @@ public class BuildTestPositive extends BaseTest {
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.GET_BUILD,
                 ResponseSpecs.requestReturnsOK()).get(createdBuild.getId());
-        softly.assertThat(getBuildResponse.getState()).isEqualTo("finished");
+        softly.assertThat(getBuildResponse.getState()).isEqualTo(FINISHED.getMessage());
     }
 }
