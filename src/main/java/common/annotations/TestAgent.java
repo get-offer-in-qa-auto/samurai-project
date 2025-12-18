@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Agent {
+public @interface TestAgent {
     boolean authorized() default false;
     boolean enabled() default false;
 }
