@@ -1,7 +1,7 @@
 package common.extensions;
 
 import api.models.agent.AgentPool;
-import common.annotations.Agent;
+import common.annotations.TestAgent;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -14,9 +14,7 @@ public class AgentExtension implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void beforeEach(ExtensionContext extensionContext) {
-        Agent annotation = extensionContext.getRequiredTestMethod().getAnnotation(Agent.class);
-
-
+        TestAgent annotation = extensionContext.getRequiredTestMethod().getAnnotation(TestAgent.class);
         if (annotation != null) {
 
             boolean needAuthorized = annotation.authorized();
@@ -27,10 +25,9 @@ public class AgentExtension implements BeforeEachCallback, AfterEachCallback {
         }
     }
 
-
     @Override
     public void afterEach(ExtensionContext extensionContext) {
-        Agent annotation = extensionContext.getRequiredTestMethod().getAnnotation(Agent.class);
+        TestAgent annotation = extensionContext.getRequiredTestMethod().getAnnotation(TestAgent.class);
         if (annotation != null) {
             api.models.agent.Agent agent = CURRENT_AGENT.get();
             if (agent != null) {
