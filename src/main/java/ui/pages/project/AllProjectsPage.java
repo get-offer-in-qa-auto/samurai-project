@@ -18,13 +18,13 @@ public class AllProjectsPage extends BasePage<AllProjectsPage> {
         return "/favorite/projects";
     }
 
-    public CreateProjectPage gotoCreateProject() {
-        createProjectButton.shouldBe(visible, enabled).click();
+    public CreateProjectPage openCreationProjectPage() {
+        click(createProjectButton);
         return new CreateProjectPage();
     }
 
-    public CertainProjectPage gotoProject(String name) {
-        $(Selectors.byTitle(name)).shouldBe(visible, enabled).click();
+    public CertainProjectPage openCertainProject(String name) {
+        click($(Selectors.byTitle(name)));
         return new CertainProjectPage(name);
     }
 

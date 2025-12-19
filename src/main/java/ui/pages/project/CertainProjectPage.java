@@ -4,14 +4,15 @@ import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import ui.pages.BasePage;
 
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.visible;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import static com.codeborne.selenide.Selenide.$;
 
 public class CertainProjectPage extends BasePage<CertainProjectPage> {
     private final String projectName;
 
-    protected final SelenideElement projectSettingsButton = $(Selectors.byAttribute("aria-label", "Settings"));
+    private final SelenideElement projectSettingsButton = $(Selectors.byAttribute("aria-label", "Settings"));
 
     public CertainProjectPage(String name) {
         projectName = name;
@@ -19,11 +20,11 @@ public class CertainProjectPage extends BasePage<CertainProjectPage> {
 
     @Override
     public String url() {
-        return "/project/" + projectName;
+        return "/project/" + URLEncoder.encode(projectName, StandardCharsets.UTF_8);
     }
 
-    public EditProjectPage gotoSettings() {
-        projectSettingsButton.shouldBe(visible, enabled).click();
+    public EditProjectPage openProjectSettingsPage() {
+        click(projectSettingsButton);
         return new EditProjectPage();
 
     }

@@ -24,7 +24,7 @@ public class CreateProjectTest extends BaseUiTest {
     public void userCanCreateProjectManually() {
         CreateProjectManuallyRequest projectModel = RandomModelGenerator.generate(CreateProjectManuallyRequest.class);
 
-        var resultMsg = new AllProjectsPage().open().gotoCreateProject()
+        var resultMsg = new AllProjectsPage().open().openCreationProjectPage()
                 .createProjectManually(RandomData.getProjectName(), projectModel.getId())
                 .getMessageForManually();
         softly.assertThat(resultMsg).as("Проверка сообщения об успешном создании проекта")
@@ -41,7 +41,7 @@ public class CreateProjectTest extends BaseUiTest {
     public void userCanCreateProjectFromRepository() {
         var projectName = RandomData.getProjectName();
 
-        var resultMsg = new AllProjectsPage().open().gotoCreateProject()
+        var resultMsg = new AllProjectsPage().open().openCreationProjectPage()
                 .createProjectFromRepository(projectName)
                 .getMessageForFromRepository();
         softly.assertThat(resultMsg).as("Проверка сообщения об успешном создании проекта")
@@ -57,7 +57,7 @@ public class CreateProjectTest extends BaseUiTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanNotCreateProjectManuallyWithEmptyId() {
         var projectName = RandomData.getProjectName();
-        var resultMsg = new AllProjectsPage().open().gotoCreateProject()
+        var resultMsg = new AllProjectsPage().open().openCreationProjectPage()
                 .inputData(projectName, "")
                 .getUnsuccessIdMessageForManually();
         softly.assertThat(resultMsg).as("Проверка сообщения об ошибке")

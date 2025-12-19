@@ -23,8 +23,8 @@ public class UpdateProjectTest extends BaseUiTest {
         var newDescription = getProjectName();
 
         var resultMsg = new AllProjectsPage().open()
-                .gotoProject(project.getName())
-                .gotoSettings()
+                .openCertainProject(project.getName())
+                .openProjectSettingsPage()
                 .updateDescription(newDescription)
                 .getUpdateMessage();
 

@@ -32,14 +32,30 @@ public class EditProjectPage extends BasePage {
         return messageProjectCreatedFromRepository.getText();
     }
 
+    private void openActionsPopup() {
+        click(actionsPopup);
+    }
+
+    private void clickDeleteButton() {
+        click(deleteButton);
+    }
+
+    private void setDescription(String value) {
+       setValue(descriptionInput, value);
+    }
+
+    private void clickSaveButton() {
+        click(saveButton);
+    }
+
     public void deleteProject() {
-        actionsPopup.shouldBe(visible, enabled).click();
-        deleteButton.shouldBe(visible, enabled).click();
+        openActionsPopup();
+        clickDeleteButton();
     }
 
     public EditProjectPage updateDescription(String value) {
-        descriptionInput.shouldBe(visible, enabled).setValue(value);
-        saveButton.shouldBe(visible, enabled).click();
+        setDescription(value);
+        clickSaveButton();
         return this;
     }
 

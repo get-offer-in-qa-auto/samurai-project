@@ -21,8 +21,8 @@ public class DeleteProjectTest extends BaseUiTest {
         var name = project.getName();
 
         new AllProjectsPage().open()
-                .gotoProject(name)
-                .gotoSettings()
+                .openCertainProject(name)
+                .openProjectSettingsPage()
                 .deleteProject();
 
         softly.assertThat(new AllProjectsPage().projectShouldNotPresent(name)).isTrue();
