@@ -153,6 +153,12 @@ public enum Endpoint {
             BaseModel.class,
             IdentityFormat.TEAMCITY_ID
     ),
+    PROJECT_DELETE_BY_NAME(
+            "/projects/{name}",
+            BaseModel.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_NAME
+    ),
     GET_ALL_PROJECTS(
             "/projects",
             BaseModel.class,

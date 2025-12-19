@@ -27,7 +27,7 @@ public class DeleteProjectTest extends BaseTest {
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_DELETE,
                 ResponseSpecs.requestReturnsNoContent())
-                .delete(project.getId());
+                .deleteById(project.getId());
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount - 1);
@@ -42,7 +42,7 @@ public class DeleteProjectTest extends BaseTest {
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_DELETE,
                 ResponseSpecs.requestReturns404NotFound())
-                .delete(getProjectName());
+                .deleteById(getProjectName());
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount);

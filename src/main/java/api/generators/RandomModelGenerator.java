@@ -1,5 +1,6 @@
 package api.generators;
 
+import api.configs.Config;
 import api.models.project.Property;
 import api.models.project.VcsRoot;
 import api.models.project.VcsRootEntry;
@@ -118,7 +119,7 @@ public class RandomModelGenerator {
                                 RandomData.getProjectName(),
                                 "jetbrains.git",
                                 List.of(
-                                        new Property("url", "https://github.com/filangelin/repository-for-teamcity"),
+                                        new Property("url", Config.getProperty("repositoryForProject")),
                                         new Property("branch", "refs/heads/main"),
                                         new Property("authMethod", "ANONYMOUS")
                                 )

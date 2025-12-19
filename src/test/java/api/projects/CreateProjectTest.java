@@ -57,7 +57,7 @@ public class CreateProjectTest extends BaseTest {
     public void userCanCreateProjectManually(String id) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
-        CreateProjectFromRepositoryRequest requestModel = RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class);
+        CreateProjectManuallyRequest requestModel = RandomModelGenerator.generate(CreateProjectManuallyRequest.class);
         requestModel.setId(id);
 
         CreateProjectResponse response = new ValidatedCrudRequester<CreateProjectResponse>(

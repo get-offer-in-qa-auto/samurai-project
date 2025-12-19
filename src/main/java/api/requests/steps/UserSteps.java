@@ -64,7 +64,7 @@ public class UserSteps {
                 requestSpec,
                 Endpoint.PROJECT_CREATE_MANUALLY,
                 ResponseSpecs.requestReturnsOK())
-                .post(RandomModelGenerator.generate(CreateProjectManuallyRequest.class));
+                .post(CreateProjectManuallyRequest.builder().name(RandomData.getProjectName()).id(RandomData.getProjectId(20)).build());
     }
 
     public static CreateProjectResponse createProjectFromRepository(RequestSpecification requestSpec) {
@@ -158,12 +158,31 @@ public class UserSteps {
                 .getCount();
     }
 
-    public static void deleteProject(CreateProjectResponse project, RequestSpecification requestSpec) {
+    public static List<Project> getProjects(RequestSpecification requestSpec) {
+        return new CrudRequester(
+                requestSpec,
+                Endpoint.GET_ALL_PROJECTS,
+                ResponseSpecs.requestReturnsOK())
+                .get()
+                .extract()
+                .as(GetProjectsResponse.class)
+                .project;
+    }
+
+    public static void deleteProjectById(CreateProjectResponse project, RequestSpecification requestSpec) {
         new CrudRequester(
                 requestSpec,
                 Endpoint.PROJECT_DELETE,
                 ResponseSpecs.ignoreErrors())
-                .delete(project.getId());
+                .deleteById(project.getId());
+    }
+
+    public static void deleteProjectByName(String name, RequestSpecification requestSpec) {
+        new CrudRequester(
+                requestSpec,
+                Endpoint.PROJECT_DELETE_BY_NAME,
+                ResponseSpecs.ignoreErrors())
+                .deleteByName(name);
     }
 
     public static Project getProjectById(String projectId, RequestSpecification requestSpec) {
@@ -195,7 +214,7 @@ public class UserSteps {
                 requestSpec,
                 Endpoint.DELETE_BUILD_CONFIGURATION,
                 ResponseSpecs.ignoreErrors())
-                .delete(project.getId());
+                .deleteById(project.getId());
     }
 
     public static String getBuildTypeById(String buildId, RequestSpecification requestSpec) {
