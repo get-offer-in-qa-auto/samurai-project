@@ -1,7 +1,6 @@
 package ui.pages;
 
 import api.requests.steps.AdminSteps;
-import api.specs.RequestSpecs;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
