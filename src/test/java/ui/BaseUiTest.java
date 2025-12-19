@@ -3,7 +3,7 @@ package ui;
 import api.BaseTest;
 import api.configs.Config;
 import com.codeborne.selenide.Configuration;
-import common.errors.UserUiAlertMessage;
+import common.messages.UserUiAlertMessage;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.util.Arrays;

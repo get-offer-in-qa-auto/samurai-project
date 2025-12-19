@@ -8,14 +8,14 @@ import api.models.users.Roles;
 import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.ProjectUiMessage;
+import common.messages.ProjectUiMessage;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
 import ui.pages.project.AllProjectsPage;
 
 import java.util.List;
 
-import static common.errors.ProjectUiMessage.PROJECT_CREATED;
+import static common.messages.ProjectUiMessage.PROJECT_CREATED;
 
 public class CreateProjectTest extends BaseUiTest {
 

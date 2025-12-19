@@ -10,7 +10,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.ProjectErrorMessage;
+import common.messages.ProjectErrorMessage;
 import org.junit.jupiter.api.Test;
 
 import static api.generators.RandomData.getProjectName;

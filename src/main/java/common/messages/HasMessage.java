@@ -1,4 +1,4 @@
-package common.errors;
+package common.messages;
 
 public interface HasMessage {
     String getMessage();

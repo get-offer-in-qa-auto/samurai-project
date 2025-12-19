@@ -5,7 +5,7 @@ import api.models.users.Roles;
 import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.ProjectUiMessage;
+import common.messages.ProjectUiMessage;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
 import ui.pages.project.AllProjectsPage;

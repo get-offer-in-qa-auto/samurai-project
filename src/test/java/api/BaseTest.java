@@ -1,7 +1,7 @@
 package api;
 
 import api.models.error.ErrorResponse;
-import common.errors.HasMessage;
+import common.messages.HasMessage;
 import common.extensions.AgentExtension;
 import common.extensions.AuthUserExtension;
 import common.extensions.ProjectCleanupExtension;

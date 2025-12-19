@@ -8,19 +8,17 @@ import api.models.agent.GetAgentsResponse;
 import api.models.error.ErrorResponse;
 import api.models.users.CreateUserRequest;
 import api.models.users.Roles;
-import api.models.users.User;
 import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.requesters.CrudRequester;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.Agent;
 import common.annotations.WithAuthUser;
-import common.errors.AgentErrorMessage;
+import common.messages.AgentErrorMessage;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
