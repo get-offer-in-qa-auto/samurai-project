@@ -15,16 +15,15 @@ import api.specs.ResponseSpecs;
 
 
 public class BuildSteps {
-    public static CreateBuildResponse addBuildToQueue(String createdBuildType){
+    public static CreateBuildResponse addBuildToQueue(String buildTypeId){
         CreateBuildRequest build = CreateBuildRequest.builder()
                 .buildType(
                         BuildType.builder()
-                                .id(createdBuildType)
+                                .id(buildTypeId)
                                 .build()
                 )
                 .build();
 
-        //постановка билда в очередь
         CreateBuildResponse createdBuild = new ValidatedCrudRequester<CreateBuildResponse>(
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.BUILD_QUEUE,

@@ -37,7 +37,6 @@ public class BuildTestPositive extends BaseTest {
                                 .build()
                 )
                 .build();
-        //постановка билда в очередь
         CreateBuildResponse createdBuild = new ValidatedCrudRequester<CreateBuildResponse>(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.BUILD_QUEUE,
@@ -59,16 +58,13 @@ public class BuildTestPositive extends BaseTest {
   @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanGetBuild() {
-      //создать проект
       CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
-      //создать buildType в нем
+
       String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-      //создать билд
       CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
       Integer buildId = createdBuild.getId();
 
-      //вернуть билд по его id
       GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
               RequestSpecs.userAuthSpecWithToken(),
               Endpoint.GET_BUILD,
@@ -82,13 +78,10 @@ public class BuildTestPositive extends BaseTest {
    @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanDeleteBuild() {
-       //создать проект
        CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-       //создать buildType в нем
        String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-       //создать билд
        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
 
         new ValidatedCrudRequester<BaseModel>(
@@ -104,13 +97,10 @@ public class BuildTestPositive extends BaseTest {
     @DisplayName("Cancel build from queue via API")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanCancelBuild(TestInfo testInfo) {
-        //создать проект
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-        //создать buildType в нем
         String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-        //создать билд
         CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
 
         //подготовили комментарий

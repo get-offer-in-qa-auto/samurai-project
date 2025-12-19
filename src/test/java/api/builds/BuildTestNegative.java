@@ -41,15 +41,11 @@ public class BuildTestNegative extends BaseTest {
     @MethodSource("invalidBuildType")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanNotCreateBuildWithInvalidBuildType(String buildTypeId, BuildErrorMessage expectedError) {
-//создаю проект
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
 
         //записываю, сколько билдов в очереди ДО
         int before = BuildSteps.getBuildQueue().getCount();
-
-
-    //не создаю buildConfiguration, он подается извне, создаю сам билд
         CreateBuildRequest build = CreateBuildRequest.builder()
                 .buildType(
                         BuildType.builder()
@@ -85,7 +81,6 @@ public class BuildTestNegative extends BaseTest {
     @MethodSource("invalidBuildId")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCantGetNonExitedBuild(Integer invalidId){
-        //создаю проект
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
         var response = new CrudRequester(
@@ -106,10 +101,8 @@ public class BuildTestNegative extends BaseTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
 
     public void userCantDeleteNonExistedBuild(Integer invalidId){
-        //создаю проект
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
-
         var response= new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
@@ -127,10 +120,8 @@ public class BuildTestNegative extends BaseTest {
     @DisplayName("Cant cancel non-existed build from queue via API")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCantCancelNonExistedBuild(Integer invalidId, TestInfo testInfo){
-        //создаю проект
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
-
         //подготовили комментарий
         String comment = BuildSteps.prepareCommentForCancellingBuild(testInfo.getDisplayName());
         CancelBuildRequest cancelBody = CancelBuildRequest.builder()
@@ -147,27 +138,21 @@ public class BuildTestNegative extends BaseTest {
         softly.assertThat(errorResponse.getErrors()).isNotEmpty();
         softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
                 .contains(BuildErrorMessage.NO_BUILD_FOUND_BY_ID.getMessage());
-
     }
 
     //Тест 5: удалить удаленный билд
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCannotDeleteBuildTwice(){
-        //создать проект
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-        //создать buildType в нем
         String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-        //создать билд
         CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
 
-       //удаляем билд
         BuildSteps.deleteBuildFromQueue(createdBuild);
 
-      //убедиться, что билд удален
-       BuildSteps.checkIfBuildHasAlreadyDeleted(createdBuild);
+        BuildSteps.checkIfBuildHasAlreadyDeleted(createdBuild);
 
       //Пытаемся удалить еще раз
         var response = new CrudRequester(
@@ -188,18 +173,12 @@ public class BuildTestNegative extends BaseTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
 
     public void userCannotCancelBuildTwice(TestInfo testInfo){
-        //создать проект
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-        //создать buildType в нем
         String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-        //создать билд
         CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
-
-        //отменяет билд
         BuildSteps.cancelBuild(createdBuild);
-
          //отменить отмененный билд
         //подготовили комментарий
         String comment = BuildSteps.prepareCommentForCancellingBuild(testInfo.getDisplayName());
@@ -212,6 +191,6 @@ public class BuildTestNegative extends BaseTest {
         CancelBuildResponse canceledBuild = new ValidatedCrudRequester<CancelBuildResponse>(
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.CANCEL_BUILD,
-                ResponseSpecs.requestReturnsOK()).post(createdBuild, createdBuild.getId()); //кажется, это ошибка?
+                ResponseSpecs.requestReturnsOK()).post(createdBuild, createdBuild.getId()); //не ясно, ошибка это или так и должно быть
     }
 }
