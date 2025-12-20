@@ -14,7 +14,7 @@ import api.requests.steps.AdminSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.UserErrorMessage;
+import common.messages.UserErrorMessage;
 import common.extensions.AuthUserExtension;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

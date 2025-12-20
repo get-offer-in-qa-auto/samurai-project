@@ -23,7 +23,7 @@ public interface CrudEndpointInterface {
 
     Object delete(int id);
 
-    Object delete(String id);
+    Object deleteById(String id);
 
     Object deleteNoContent(int id);
 }

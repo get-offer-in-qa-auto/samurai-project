@@ -14,7 +14,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.BuildErrorMessage;
+import common.messages.BuildErrorMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -24,8 +24,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static common.errors.BuildErrorMessage.NOTHING_FOUND_BY_LOCATOR;
-import static common.errors.BuildErrorMessage.NO_BUILD_TYPE_NOR_TEMPLATE_IS_FOUND_BY_ID;
+import static common.messages.BuildErrorMessage.NOTHING_FOUND_BY_LOCATOR;
+import static common.messages.BuildErrorMessage.NO_BUILD_TYPE_NOR_TEMPLATE_IS_FOUND_BY_ID;
 
 public class BuildTestNegative extends BaseTest {
 

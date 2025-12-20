@@ -1,7 +1,12 @@
 package api.requests.skelethon;
 
 import api.models.BaseModel;
-import api.models.builds.*;
+import api.models.builds.CancelBuildRequest;
+import api.models.builds.CreateBuildRequest;
+import api.models.builds.CreateBuildResponse;
+import api.models.builds.CancelBuildResponse;
+import api.models.builds.BuildQueueResponse;
+import api.models.builds.GetBuildResponse;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
 import api.models.buildConfiguration.CreateBuildTypeRequest;
@@ -148,6 +153,12 @@ public enum Endpoint {
             BaseModel.class,
             BaseModel.class,
             IdentityFormat.TEAMCITY_ID
+    ),
+    PROJECT_DELETE_BY_NAME(
+            "/projects/{name}",
+            BaseModel.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_NAME
     ),
     GET_ALL_PROJECTS(
             "/projects",

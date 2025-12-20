@@ -18,7 +18,7 @@ import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.TestAgent;
 import common.annotations.WithAuthUser;
-import common.errors.AgentErrorMessage;
+import common.messages.AgentErrorMessage;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;

@@ -5,7 +5,6 @@ import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.HttpRequest;
 import api.requests.skelethon.interfaces.CrudEndpointInterface;
 import api.requests.skelethon.interfaces.GetWithQueryParams;
-import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
@@ -132,10 +131,21 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface,
     }
 
     @Override
-    public ValidatableResponse delete(String id) {
+    public ValidatableResponse deleteById(String id) {
         String formattedId = endpoint.formatId(id);
         return given()
                 .pathParam("id", formattedId)
+                .spec(requestSpec)
+                .urlEncodingEnabled(false)
+                .delete(endpoint.getUrl())
+                .then()
+                .spec(responseSpec);
+    }
+
+    public void deleteByName(String name) {
+        String formattedId = endpoint.formatId(name);
+        given()
+                .pathParam("name", formattedId)
                 .spec(requestSpec)
                 .urlEncodingEnabled(false)
                 .delete(endpoint.getUrl())

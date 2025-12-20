@@ -10,7 +10,7 @@ import api.requests.skelethon.requesters.CrudRequester;
 import api.requests.steps.AdminSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
-import common.errors.UserErrorMessage;
+import common.messages.UserErrorMessage;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

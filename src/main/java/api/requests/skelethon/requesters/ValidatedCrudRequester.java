@@ -105,9 +105,9 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
     }
 
     @Override
-    public T delete(String id) {
+    public T deleteById(String id) {
         return (T) crudRequester
-                .delete(id)
+                .deleteById(id)
                 .extract()
                 .as(endpoint.getResponseModel());
     }

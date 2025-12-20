@@ -1,6 +1,6 @@
 package common.states;
 
-import common.errors.HasMessage;
+import common.messages.HasMessage;
 import lombok.Getter;
 
 
