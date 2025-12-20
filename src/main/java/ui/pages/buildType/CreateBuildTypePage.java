@@ -3,6 +3,7 @@ package ui.pages.buildType;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import common.errors.BuildTypeUiAlertMessage;
+import common.messages.BuildTypeErrorMessage;
 import ui.pages.BankAlert;
 import ui.pages.BasePage;
 
@@ -83,7 +84,7 @@ public class CreateBuildTypePage extends BasePage<CreateBuildTypePage> {
     public CreateBuildTypePage shouldSeeDuplicateNameError(String buildTypeName) {
 
         $("body")
-                .shouldHave(text(BuildTypeUiAlertMessage.CREATE_DUPLICATE_NAME.getMessage()))
+                .shouldHave(text(BuildTypeErrorMessage.CREATE_DUPLICATE_NAME.getMessage()))
                 .shouldHave(text("\"" + buildTypeName + "\""))
                 .shouldHave(text("already exists"));
 

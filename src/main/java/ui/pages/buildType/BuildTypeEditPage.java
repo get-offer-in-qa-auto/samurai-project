@@ -1,7 +1,7 @@
 package ui.pages.buildType;
 
 import com.codeborne.selenide.SelenideElement;
-import common.errors.BuildTypeUiAlertMessage;
+import common.messages.BuildTypeErrorMessage;
 import ui.pages.BankAlert;
 import ui.pages.BasePage;
 
@@ -66,7 +66,7 @@ public class BuildTypeEditPage extends BasePage<BuildTypeEditPage> {
     public BuildTypeEditPage shouldSeeDuplicateNameError(String buildTypeName) {
 
         $("body")
-                .shouldHave(text(BuildTypeUiAlertMessage.EDIT_DUPLICATE_NAME.getMessage()));
+                .shouldHave(text(BuildTypeErrorMessage.EDIT_DUPLICATE_NAME.getMessage()));
 
         return this;
     }
