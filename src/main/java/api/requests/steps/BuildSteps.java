@@ -1,8 +1,10 @@
 package api.requests.steps;
 
 import api.models.BaseModel;
+import api.requests.skelethon.requesters.CrudRequester;
 import api.models.buildConfiguration.BuildType;
 import api.models.builds.CancelBuildRequest;
+import api.models.builds.BuildQueueResponse;
 import api.models.builds.CreateBuildRequest;
 import api.models.builds.CreateBuildResponse;
 import api.models.builds.GetBuildResponse;
@@ -11,41 +13,67 @@ import api.requests.skelethon.requesters.ValidatedCrudRequester;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 
+
 public class BuildSteps {
-    public static CreateBuildRequest addBuildToQueue(BuildType buildType){
+    public static CreateBuildResponse addBuildToQueue(String buildTypeId){
         CreateBuildRequest build = CreateBuildRequest.builder()
                 .buildType(
-                        CreateBuildRequest.BuildType.builder()
-                                .id(buildType.getId())
+                        BuildType.builder()
+                                .id(buildTypeId)
                                 .build()
                 )
                 .build();
-        new ValidatedCrudRequester<CreateBuildResponse>(
+
+        CreateBuildResponse createdBuild = new ValidatedCrudRequester<CreateBuildResponse>(
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.BUILD_QUEUE,
-                ResponseSpecs.entityWasCreated()).post(build);
-        return build;
+                ResponseSpecs.requestReturnsOK()).post(build);
+        return createdBuild;
     }
 
     public static GetBuildResponse getBuildFromQueue(CreateBuildResponse response){
         GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
-                    RequestSpecs.adminAuthSpec(),
+                    RequestSpecs.userAuthSpecWithToken(),
                     Endpoint.GET_BUILD,
                     ResponseSpecs.requestReturnsOK()).get(response.getId());
             return getBuildResponse;
 
     }
 
+    public static void checkIfBuildHasAlreadyDeleted(CreateBuildResponse response){
+        new CrudRequester(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.GET_BUILD,
+                ResponseSpecs.requestReturns404NotFound()).get(response.getId());
+    }
+
     public static void deleteBuildFromQueue(CreateBuildResponse response){
-        new ValidatedCrudRequester<BaseModel>(
-        RequestSpecs.adminAuthSpec(),
+        new CrudRequester(
+        RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
                 ResponseSpecs.requestReturnsNoContent()).delete(response.getId());
     }
 
+    public static String prepareCommentForCancellingBuild(String testName){
+        return String.format(
+                "Canceled by API test [%s] at %s",
+                testName,
+                java.time.LocalDateTime.now()
+        );
+    }
+
+    public static BuildQueueResponse getBuildQueue() {
+        return new ValidatedCrudRequester<BuildQueueResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.GET_BUILDS_QUEUE,
+                ResponseSpecs.requestReturnsOK()
+        ).get();
+    }
+
     public static void cancelBuild(CreateBuildResponse response){
+        String comment = "Cancelled by automated test";
         CancelBuildRequest cancelBody = CancelBuildRequest.builder()
-                .comment("Cancelled by automated test")
+                .comment(comment)
                 .readdIntoQueue(false)
                 .build();
 

@@ -1,10 +1,7 @@
 package api.requests.skelethon;
 
 import api.models.BaseModel;
-import api.models.builds.CancelBuildRequest;
-import api.models.builds.CreateBuildRequest;
-import api.models.builds.CreateBuildResponse;
-import api.models.builds.GetBuildResponse;
+import api.models.builds.*;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
 import api.models.buildConfiguration.CreateBuildTypeRequest;
@@ -127,25 +124,24 @@ public enum Endpoint {
             IdentityFormat.TEAMCITY_ID
     ),
     BUILD_QUEUE(
-            "/app/rest/buildQueue",
+            "/buildQueue",
                 CreateBuildRequest.class,
                 CreateBuildResponse.class
     ),
     GET_BUILD(
-            "/app/rest/builds/{id}",
+            "/builds/{id}",
             BaseModel.class,
             GetBuildResponse.class
     ),
     DELETE_BUILD_FROM_QUEUE(
-            "/app/rest/buildQueue/{id}",
+            "/builds/id:{id}",
             BaseModel.class,
             BaseModel.class
     ),
     CANCEL_BUILD(
-            "/app/rest/builds/{id}/cancel",
+            "/builds/{id}",
             CancelBuildRequest.class,
-            BaseModel.class,
-            IdentityFormat.TEAMCITY_ID
+            CancelBuildResponse.class
     ),
     PROJECT_DELETE(
             "/projects/{id}",
@@ -168,6 +164,11 @@ public enum Endpoint {
             "/projects/{id}/description",
             BaseModel.class,
             BaseModel.class
+    ),
+    GET_BUILDS_QUEUE(
+            "/buildQueue",
+            BaseModel.class,
+            BuildQueueResponse.class
     );
     private final String url;
     private final Class<? extends BaseModel> requestModel;
