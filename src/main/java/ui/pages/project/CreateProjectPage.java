@@ -85,7 +85,6 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
         clickCreateProjectFromRepository();
         setRepositoryUrl(Config.getProperty("repositoryForProject"));
         clickProceedButton();
-        loader.should(disappear);
         waitForLoaderIfExists();
         setFromRepositoryProjectName(name);
         clickProceedButton();

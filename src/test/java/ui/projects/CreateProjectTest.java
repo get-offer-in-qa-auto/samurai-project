@@ -3,7 +3,7 @@ package ui.projects;
 import api.generators.RandomData;
 import api.generators.RandomModelGenerator;
 import api.models.project.CreateProjectManuallyRequest;
-import api.models.project.GetProjectsResponse;
+import api.models.project.GetProjectsResponse.Project;
 import api.models.users.Roles;
 import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
@@ -30,9 +30,9 @@ public class CreateProjectTest extends BaseUiTest {
         softly.assertThat(resultMsg).as("Проверка сообщения об успешном создании проекта")
                 .contains(PROJECT_CREATED.getMessage());
 
-        List<GetProjectsResponse.Project> projects = UserSteps.getProjects(RequestSpecs.userAuthSpecWithToken());
+        List<Project> projects = UserSteps.getProjects(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(projects).as("Проверка через API, что проект создался")
-                .extracting(GetProjectsResponse.Project::getId)
+                .extracting(Project::getId)
                 .containsOnlyOnce(projectModel.getId());
     }
 
@@ -47,9 +47,9 @@ public class CreateProjectTest extends BaseUiTest {
         softly.assertThat(resultMsg).as("Проверка сообщения об успешном создании проекта")
                 .contains(PROJECT_CREATED.getMessage());
 
-        List<GetProjectsResponse.Project> projects = UserSteps.getProjects(RequestSpecs.userAuthSpecWithToken());
+        List<Project> projects = UserSteps.getProjects(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(projects).as("Проверка через API, что проект создался")
-                .extracting(GetProjectsResponse.Project::getName)
+                .extracting(Project::getName)
                 .containsOnlyOnce(projectName);
     }
 
@@ -63,9 +63,9 @@ public class CreateProjectTest extends BaseUiTest {
         softly.assertThat(resultMsg).as("Проверка сообщения об ошибке")
                 .isEqualTo(ProjectUiMessage.ID_MUST_NOT_BE_EMPTY.getMessage());
 
-        List<GetProjectsResponse.Project> projects = UserSteps.getProjects(RequestSpecs.userAuthSpecWithToken());
+        List<Project> projects = UserSteps.getProjects(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(projects).as("Проверка через API, что проект не создался")
-                .extracting(GetProjectsResponse.Project::getId)
+                .extracting(Project::getId)
                 .doesNotContain(projectName);
     }
 }
