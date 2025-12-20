@@ -1,8 +1,10 @@
 package common.messages;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum ProjectErrorMessage implements HasMessage {
     PROJECT_NAME_EMPTY("Project name cannot be empty"),
     PROJECT_NAME_EXISTS("Project with this name already exists"),
@@ -17,7 +19,4 @@ public enum ProjectErrorMessage implements HasMessage {
 
     private final String message;
 
-    ProjectErrorMessage(String message) {
-        this.message = message;
-    }
 }

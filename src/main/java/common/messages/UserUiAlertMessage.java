@@ -1,8 +1,10 @@
 package common.messages;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum UserUiAlertMessage implements HasMessage {
     USERNAME_EMPTY("Username is empty"),
     PASSWORD_EMPTY("Password is empty"),
@@ -14,7 +16,4 @@ public enum UserUiAlertMessage implements HasMessage {
 
     private final String message;
 
-    UserUiAlertMessage(String message) {
-        this.message = message;
-    }
 }
