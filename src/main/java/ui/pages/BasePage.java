@@ -1,7 +1,6 @@
 package ui.pages;
 
 import api.requests.steps.AdminSteps;
-import api.specs.RequestSpecs;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.Cookie;
@@ -13,6 +12,10 @@ public abstract class BasePage<T extends BasePage> {
 
     public T open() {
         return Selenide.open(url(), (Class<T>) this.getClass());
+    }
+
+    public T open(String url) {
+        return Selenide.open(url, (Class<T>) this.getClass());
     }
 
     public <T extends BasePage> T getPage(Class<T> pageClass) {

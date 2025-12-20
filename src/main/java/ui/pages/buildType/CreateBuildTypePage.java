@@ -2,7 +2,7 @@ package ui.pages.buildType;
 
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
-import common.errors.BuildTypeErrorMessage;
+import common.errors.BuildTypeUiAlertMessage;
 import ui.pages.BankAlert;
 import ui.pages.BasePage;
 
@@ -17,16 +17,17 @@ public class CreateBuildTypePage extends BasePage<CreateBuildTypePage> {
     private final SelenideElement buildTypeExternalIdInput = $("#buildTypeExternalId");
 
 
-        private static final String URL_TEMPLATE =
-                "/admin/createObjectMenu.html?projectId=%s&showMode=createBuildTypeMenu";
+    private static final String URL_TEMPLATE =
+            "/admin/createObjectMenu.html?projectId=%s&showMode=createBuildTypeMenu";
 
-        public String url () {
-            return String.format(URL_TEMPLATE, "Test");
-        }
+    public String url() {
+        return String.format(URL_TEMPLATE, "Test");
+    }
 
-        public CreateBuildTypePage openForProject (String projectId){
-            return open(String.format(URL_TEMPLATE, projectId));
-        }
+    public CreateBuildTypePage openForProject(String projectId) {
+        return open(String.format(URL_TEMPLATE, projectId));
+    }
+
     public CreateBuildTypePage createBuildTypeManually(String buildTypeName) {
 
         clickManually();
@@ -35,7 +36,7 @@ public class CreateBuildTypePage extends BasePage<CreateBuildTypePage> {
 
         return this;
     }
-    //@Step("Создать build configuration вручную с именем: {buildTypeName}")
+
     public String createBuildTypeManuallyAndGetId(String buildTypeName) {
 
         clickManually();
@@ -46,22 +47,22 @@ public class CreateBuildTypePage extends BasePage<CreateBuildTypePage> {
         return buildTypeId;
     }
 
-    //@Step("Нажать кнопку Manually")
+    //("Нажать кнопку Manually")
     private void clickManually() {
         manuallyButton.shouldBe(visible, enabled).click();
     }
 
-    //@Step("Ввести имя build configuration: {name}")
+    //("Ввести имя build configuration: {name}")
     private void fillName(String name) {
         inputBuildTypeName.shouldBe(visible, enabled).setValue(name);
     }
 
-    //@Step("Нажать кнопку Create")
+    //("Нажать кнопку Create")
     private void clickCreate() {
         createButton.shouldBe(visible, enabled).click();
     }
 
-    //@Step("Проверить, что build configuration успешно создан")
+    //("Проверить, что build configuration успешно создан")
     public CreateBuildTypePage shouldSeeSuccessMessage() {
 
         successMessage
@@ -72,20 +73,19 @@ public class CreateBuildTypePage extends BasePage<CreateBuildTypePage> {
         return this;
     }
 
-    //@Step("Дождаться генерации Build Configuration ID и получить его")
+    //("Дождаться генерации Build Configuration ID и получить его")
     public String getGeneratedBuildTypeExternalId() {
         return buildTypeExternalIdInput
                 .shouldBe(visible)
                 .getValue();
     }
 
-    public CreateBuildTypePage shouldSeeValidationError(
-            BuildTypeErrorMessage error, String value) {
+    public CreateBuildTypePage shouldSeeDuplicateNameError(String buildTypeName) {
 
-        $("span[data-error]")
-                .shouldBe(visible)
-                .shouldHave(text(error.getMessage()))
-                .shouldHave(text(value));
+        $("body")
+                .shouldHave(text(BuildTypeUiAlertMessage.CREATE_DUPLICATE_NAME.getMessage()))
+                .shouldHave(text("\"" + buildTypeName + "\""))
+                .shouldHave(text("already exists"));
 
         return this;
     }
