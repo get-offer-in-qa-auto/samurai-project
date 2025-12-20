@@ -1,16 +1,27 @@
 package ui.pages;
 
 import api.requests.steps.AdminSteps;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.Cookie;
 
+import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.refresh;
 
 public abstract class BasePage<T extends BasePage> {
+    protected SelenideElement profileBar = $x("//div[@data-test='ring-dropdown']");
+    protected ElementsCollection actionProfileBar = $$x("//div[@data-test='ring-popup']");
+    protected SelenideElement usernameField = $x("//input[@id='input_teamcityUsername']");
+    protected SelenideElement nameField = $x("//input[@id='name']");
+    protected SelenideElement emailField = $x("//input[@id='input_teamcityEmail']");
+    protected SelenideElement newPasswordField = $x("//input[@id='password1']");
+    protected SelenideElement confirmPasswordField = $x("//input[@id='retypedPassword']");
+
     public abstract String url();
 
     public T open() {

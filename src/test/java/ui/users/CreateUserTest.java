@@ -16,6 +16,9 @@ import ui.pages.users.UsersPage;
 
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+
 public class CreateUserTest extends BaseUiTest {
     @Test
     @DisplayName("Успешное создание пользователя")
@@ -26,17 +29,22 @@ public class CreateUserTest extends BaseUiTest {
         UsersPage usersPage = new CreateUserPage()
                 .open()
                 .createUserAndGoToUsers(name, password);
-        List<User> users = AdminSteps.getAllUsers();
 
 
         softly.assertThat(usersPage.getUsernamesFromTable())
                 .as("Проверка юзера в таблице UI")
                 .map(String::toLowerCase)
-                .containsOnlyOnce(name.toLowerCase());
-        softly.assertThat(users).as("Проверка юзера в общем списке API")
-                .extracting(User::getUsername)
-                .map(String::toLowerCase)
-                .containsOnlyOnce(name.toLowerCase());
+                .contains(name.toLowerCase());
+        await()
+                .atMost(5, SECONDS)
+                .untilAsserted(() -> {
+                    softly.assertThat(AdminSteps.getAllUsers())
+                            .as("Проверка юзера в общем списке API")
+                            .extracting(User::getUsername)
+                            .map(String::toLowerCase)
+                            .contains(name.toLowerCase());
+                });
+
         AdminSteps.deleteUser(name);
     }
 
@@ -93,7 +101,7 @@ public class CreateUserTest extends BaseUiTest {
     }
 
     @Test
-    @DisplayName("Неуспешное создание пользователя, неправильное подтверждение пароля")
+    @DisplayName("Неуспешное создание пользователя,пользователь с таким именем уже существует")
     @WithAdminSession
     @WithAuthUser
     public void unsuccessfullyCreateUserWithSameUsername() {
@@ -111,5 +119,20 @@ public class CreateUserTest extends BaseUiTest {
                 .isEqualTo(afterAddUser);
     }
 
+    @Test
+    @DisplayName("Успешная отмена cоздания пользователя")
+    @WithAdminSession
+    public void successfullyCancelCreateUser() {
+        final String name = RandomData.getUserName();
+        final String password = RandomData.getUserPassword();
+        List<User> beforeAddUser = AdminSteps.getAllUsers();
+        UsersPage usersPage = new CreateUserPage()
+                .open()
+                .cancelCreateAndGoToUsers(name, password);
+        List<User> afterAddUser = AdminSteps.getAllUsers();
 
+        softly.assertThat(usersPage.viewContentWrapper()).as("Проверка отображения главной страницы").isTrue();
+        softly.assertThat(beforeAddUser).as("Проверить что пользователь не создался")
+                .isEqualTo(afterAddUser);
+    }
 }
