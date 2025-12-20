@@ -5,7 +5,7 @@ import api.configs.Config;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.ElementsCollection;
-import common.errors.HasMessage;
+import common.messages.HasMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.Alert;
 
@@ -19,11 +19,12 @@ import static java.util.Arrays.stream;
 public class BaseUiTest extends BaseTest {
     @BeforeAll
     public static void setupSelenoid() {
-        //настроить Property
+
 //        Configuration.remote = Config.getProperty("uiRemote");
         Configuration.baseUrl = Config.getProperty("server");
         Configuration.browser = Config.getProperty("browser");
         Configuration.browserSize = Config.getProperty("browserSize");
+        Configuration.headless = false;
 
         Configuration.browserCapabilities.setCapability("selenoid:options",
                 Map.of("enableVNC", true, "enableLog", true)

@@ -16,7 +16,7 @@ import java.util.List;
 public class CreateProjectFromRepositoryRequest extends BaseModel {
 
     private ParentProject parentProject;
-    @GeneratingRule(regex = "^.{1,80}$")
+    @GeneratingRule(regex = "^[^#\\^<!}{(\"`.[] ]{1,80}$")
     private String name;
     @GeneratingRule(regex = "^[A-Za-z][A-Za-z0-9_]{0,224}$")
     private String id;
