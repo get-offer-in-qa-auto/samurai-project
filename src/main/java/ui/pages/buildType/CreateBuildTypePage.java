@@ -2,7 +2,6 @@ package ui.pages.buildType;
 
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
-import common.errors.BuildTypeUiAlertMessage;
 import common.messages.BuildTypeErrorMessage;
 import ui.pages.BankAlert;
 import ui.pages.BasePage;

@@ -5,12 +5,11 @@ import api.models.users.User;
 import api.requests.steps.AdminSteps;
 import common.annotations.WithAdminSession;
 import common.annotations.WithAuthUser;
-import common.errors.UserUiAlertMessage;
 import common.extensions.AuthUserExtension;
+import common.messages.UserUiAlertMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
-import ui.pages.users.CreateUserPage;
 import ui.pages.users.UsersPage;
 
 import static java.util.concurrent.TimeUnit.SECONDS;

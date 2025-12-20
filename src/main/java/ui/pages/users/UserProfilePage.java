@@ -1,11 +1,11 @@
 package ui.pages.users;
 
 import com.codeborne.selenide.SelenideElement;
-import common.errors.UserUiAlertMessage;
+import common.messages.UserUiAlertMessage;
 import ui.pages.BasePage;
 
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$x;
 
 public class UserProfilePage extends BasePage<UserProfilePage> {
