@@ -5,7 +5,7 @@ import api.models.users.User;
 import api.requests.steps.AdminSteps;
 import common.annotations.WithAdminSession;
 import common.annotations.WithAuthUser;
-import common.errors.UserUiAlertMessage;
+import common.messages.UserUiAlertMessage;
 import common.extensions.AuthUserExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

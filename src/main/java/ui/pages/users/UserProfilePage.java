@@ -1,7 +1,7 @@
 package ui.pages.users;
 
 import com.codeborne.selenide.SelenideElement;
-import common.errors.UserUiAlertMessage;
+import common.messages.UserUiAlertMessage;
 import ui.pages.BasePage;
 
 import static com.codeborne.selenide.Condition.visible;
