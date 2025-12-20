@@ -10,7 +10,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.ProjectErrorMessage;
+import common.messages.ProjectErrorMessage;
 import org.junit.jupiter.api.Test;
 
 import static api.generators.RandomData.getProjectName;
@@ -27,7 +27,7 @@ public class DeleteProjectTest extends BaseTest {
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_DELETE,
                 ResponseSpecs.requestReturnsNoContent())
-                .delete(project.getId());
+                .deleteById(project.getId());
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount - 1);
@@ -42,7 +42,7 @@ public class DeleteProjectTest extends BaseTest {
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.PROJECT_DELETE,
                 ResponseSpecs.requestReturns404NotFound())
-                .delete(getProjectName());
+                .deleteById(getProjectName());
 
         int finalCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(finalCount).isEqualTo(initialCount);

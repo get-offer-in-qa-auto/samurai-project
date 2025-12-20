@@ -4,6 +4,8 @@ import api.models.BaseModel;
 import api.models.builds.CancelBuildRequest;
 import api.models.builds.CreateBuildRequest;
 import api.models.builds.CreateBuildResponse;
+import api.models.builds.CancelBuildResponse;
+import api.models.builds.BuildQueueResponse;
 import api.models.builds.GetBuildResponse;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
@@ -127,31 +129,36 @@ public enum Endpoint {
             IdentityFormat.TEAMCITY_ID
     ),
     BUILD_QUEUE(
-            "/app/rest/buildQueue",
+            "/buildQueue",
                 CreateBuildRequest.class,
                 CreateBuildResponse.class
     ),
     GET_BUILD(
-            "/app/rest/builds/{id}",
+            "/builds/{id}",
             BaseModel.class,
             GetBuildResponse.class
     ),
     DELETE_BUILD_FROM_QUEUE(
-            "/app/rest/buildQueue/{id}",
+            "/builds/id:{id}",
             BaseModel.class,
             BaseModel.class
     ),
     CANCEL_BUILD(
-            "/app/rest/builds/{id}/cancel",
+            "/builds/{id}",
             CancelBuildRequest.class,
-            BaseModel.class,
-            IdentityFormat.TEAMCITY_ID
+            CancelBuildResponse.class
     ),
     PROJECT_DELETE(
             "/projects/{id}",
             BaseModel.class,
             BaseModel.class,
             IdentityFormat.TEAMCITY_ID
+    ),
+    PROJECT_DELETE_BY_NAME(
+            "/projects/{name}",
+            BaseModel.class,
+            BaseModel.class,
+            IdentityFormat.TEAMCITY_NAME
     ),
     GET_ALL_PROJECTS(
             "/projects",
@@ -168,6 +175,11 @@ public enum Endpoint {
             "/projects/{id}/description",
             BaseModel.class,
             BaseModel.class
+    ),
+    GET_BUILDS_QUEUE(
+            "/buildQueue",
+            BaseModel.class,
+            BuildQueueResponse.class
     );
     private final String url;
     private final Class<? extends BaseModel> requestModel;

@@ -26,7 +26,7 @@ public class DeleteBuildTypeTest extends BaseTest {
                 RequestSpecs.userAuthTextSpecWithToken(),
                 Endpoint.DELETE_BUILD_CONFIGURATION,
                 ResponseSpecs.requestReturnsNoContent())
-                .delete(buildId);
+                .deleteById(buildId);
 
         int countBuildTypeAfter = UserSteps.getBuildTypeCount(RequestSpecs.userAuthSpecWithToken());
         softly.assertThat(countBuildTypeBefore).isEqualTo(countBuildTypeAfter);

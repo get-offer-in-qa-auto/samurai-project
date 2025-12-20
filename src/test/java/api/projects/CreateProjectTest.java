@@ -15,7 +15,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
-import common.errors.ProjectErrorMessage;
+import common.messages.ProjectErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -57,7 +57,7 @@ public class CreateProjectTest extends BaseTest {
     public void userCanCreateProjectManually(String id) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
-        CreateProjectFromRepositoryRequest requestModel = RandomModelGenerator.generate(CreateProjectFromRepositoryRequest.class);
+        CreateProjectManuallyRequest requestModel = RandomModelGenerator.generate(CreateProjectManuallyRequest.class);
         requestModel.setId(id);
 
         CreateProjectResponse response = new ValidatedCrudRequester<CreateProjectResponse>(
