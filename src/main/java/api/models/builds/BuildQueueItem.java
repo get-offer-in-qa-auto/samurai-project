@@ -1,8 +1,6 @@
 package api.models.builds;
 
-
 import api.models.BaseModel;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CancelBuildRequest extends BaseModel {
-    private String comment;
-    private Boolean readdIntoQueue;
+public class BuildQueueItem extends BaseModel {
+    private Integer id;
+    private String state;
+    private String buildTypeId;
+    private String href;
+    private String webUrl;
 }
