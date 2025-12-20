@@ -1,8 +1,10 @@
 package common.messages;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum BuildErrorMessage implements HasMessage {
 
     NOTHING_FOUND_BY_LOCATOR("Nothing is found by locator"),
@@ -11,9 +13,4 @@ public enum BuildErrorMessage implements HasMessage {
 
 
     private final String message;
-
-    BuildErrorMessage(String message) {
-        this.message = message;
-    }
-
 }

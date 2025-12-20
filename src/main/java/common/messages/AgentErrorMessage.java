@@ -1,8 +1,10 @@
 package common.messages;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum AgentErrorMessage implements HasMessage {
 
     USER_NOT_FOUND("No agent can be found by id '%s'."),
@@ -11,11 +13,6 @@ public enum AgentErrorMessage implements HasMessage {
 
 
     private final String message;
-
-
-    AgentErrorMessage(String message) {
-        this.message = message;
-    }
 
     public String format(Object... args) {
         return String.format(message, args);
