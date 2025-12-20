@@ -1,6 +1,5 @@
 package api.models.buildConfiguration;
 
-import api.generators.GeneratingRule;
 import api.models.BaseModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -28,6 +28,10 @@ public abstract class BasePage<T extends BasePage> {
         return Selenide.open(url(), (Class<T>) this.getClass());
     }
 
+    public T open(String url) {
+        return Selenide.open(url, (Class<T>) this.getClass());
+    }
+
     public <T extends BasePage> T getPage(Class<T> pageClass) {
         return Selenide.page(pageClass);
     }
