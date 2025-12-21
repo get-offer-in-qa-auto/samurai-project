@@ -1,6 +1,7 @@
 package ui.pages.agents;
 
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.BasePage;
 import ui.pages.agents.modalWindows.AuthorizeModalWindow;
 import ui.pages.agents.modalWindows.DisableModalWindow;
@@ -30,78 +31,105 @@ public class AgentsPage extends BasePage<AgentsPage> {
     private final SelenideElement setAuthorizationStatusButton = $("button[data-test-authorize-agent='true']");
 
     public AgentsPage agentsPageShouldBeOpen() {
-        agentsPageTitle.shouldBe(visible).shouldHave(text("Overview"));
-        return this;
+        return StepLogger.log("Проверка, что страница агентов открыта", () -> {
+            agentsPageTitle.shouldBe(visible).shouldHave(text("Overview"));
+            return this;
+        });
     }
 
     public AgentsPage agentPageTitleShouldHaveName(String agentName) {
-        agentPageTitle.shouldBe(visible).shouldHave(text(agentName));
-        return this;
+        return StepLogger.log("Проверка отображения имени агента в заголовке страницы: " + agentName, () -> {
+            agentPageTitle.shouldBe(visible).shouldHave(text(agentName));
+            return this;
+        });
     }
 
     public AgentsPage agentShouldHaveConnectionStatus(String status) {
-        agentConnectionStatus.shouldBe(visible).shouldHave(text(status));
-        return this;
+        return StepLogger.log("Проверка статуса Connected у агента: " + status, () -> {
+            agentConnectionStatus.shouldBe(visible).shouldHave(text(status));
+            return this;
+        });
     }
 
     public AgentsPage agentShouldHaveAuthorizationStatus(String status) {
-        agentAuthorizationStatus.shouldBe(visible).shouldHave(text(status));
-        return this;
+        return StepLogger.log("Проверка статуса авторизации у агента: " + status, () -> {
+            agentAuthorizationStatus.shouldBe(visible).shouldHave(text(status));
+            return this;
+        });
     }
 
     public AgentsPage agentShouldHaveCommentToAuthorizationStatus(String comment) {
-        agentAuthorizationStatusComment.shouldBe(visible).shouldHave(text(comment));
-        return this;
+        return StepLogger.log("Проверка комментария к статусу авторизации: " + comment, () -> {
+            agentAuthorizationStatusComment.shouldBe(visible).shouldHave(text(comment));
+            return this;
+        });
     }
 
     public AgentsPage agentShouldHaveEnabledStatus(String status) {
-        agentEnabledStatus.shouldBe(visible).shouldHave(text(status));
-        return this;
+        return StepLogger.log("Проверка статуса активности агента: " + status, () -> {
+            agentEnabledStatus.shouldBe(visible).shouldHave(text(status));
+            return this;
+        });
     }
 
     public AgentsPage agentShouldHaveCommentToEnabledStatus(String comment) {
-        agentEnabledStatusComment.shouldBe(visible).shouldHave(text(comment));
-        return this;
+        return StepLogger.log("Проверка комментария к статусу активности: " + comment, () -> {
+            agentEnabledStatusComment.shouldBe(visible).shouldHave(text(comment));
+            return this;
+        });
     }
 
     public AgentsPage userShouldNotSeeSetAgentStatusButtons() {
-        setEnabledStatusButton.shouldNotBe(visible);
-        setAuthorizationStatusButton.shouldNotBe(visible);
-        return this;
+        return StepLogger.log("Проверка отсутствия кнопок изменения статуса агента", () -> {
+            setEnabledStatusButton.shouldNotBe(visible);
+            setAuthorizationStatusButton.shouldNotBe(visible);
+            return this;
+        });
     }
 
     public EnableModalWindow clickSetEnabledStatusButton() {
-        EnableModalWindow enableModalWindow = new EnableModalWindow();
-        setEnabledStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.ENABLE.getMessage()));
-        setEnabledStatusButton.click();
-        return enableModalWindow;
+        return StepLogger.log("Клик по кнопке включения агента", () -> {
+            EnableModalWindow enableModalWindow = new EnableModalWindow();
+            setEnabledStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.ENABLE.getMessage()));
+            setEnabledStatusButton.click();
+            return enableModalWindow;
+        });
     }
 
     public DisableModalWindow clickSetDisabledStatusButton() {
-        DisableModalWindow disableModalWindow = new DisableModalWindow();
-        setEnabledStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.DISABLE.getMessage()));
-        setEnabledStatusButton.click();
-        return disableModalWindow;
+        return StepLogger.log("Клик по кнопке выключения агента", () -> {
+            DisableModalWindow disableModalWindow = new DisableModalWindow();
+            setEnabledStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.DISABLE.getMessage()));
+            setEnabledStatusButton.click();
+            return disableModalWindow;
+        });
     }
 
     public AuthorizeModalWindow clickSetAuthorizationStatusButton() {
-        AuthorizeModalWindow authorizeModalWindow = new AuthorizeModalWindow();
-        setAuthorizationStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.AUTHORIZE.getMessage()));
-        setAuthorizationStatusButton.click();
-        return authorizeModalWindow;
+        return StepLogger.log("Клик по кнопке авторизации агента", () -> {
+            AuthorizeModalWindow authorizeModalWindow = new AuthorizeModalWindow();
+            setAuthorizationStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.AUTHORIZE.getMessage()));
+            setAuthorizationStatusButton.click();
+            return authorizeModalWindow;
+        });
     }
 
     public UnAuthorizeModalWindow clickSetAnAuthorizationStatusButton() {
-        UnAuthorizeModalWindow anAuthorizeModalWindow = new UnAuthorizeModalWindow();
-        setAuthorizationStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.UNAUTHORIZE.getMessage()));
-        setAuthorizationStatusButton.click();
-        return anAuthorizeModalWindow;
+        return StepLogger.log("Клик по кнопке деавторизации агента", () -> {
+            UnAuthorizeModalWindow anAuthorizeModalWindow = new UnAuthorizeModalWindow();
+            setAuthorizationStatusButton.shouldBe(visible).shouldHave(text(AgentStatus.UNAUTHORIZE.getMessage()));
+            setAuthorizationStatusButton.click();
+            return anAuthorizeModalWindow;
+        });
     }
 
     public AgentsPage checkAllAgentStatuses(String connectionStatus, String authorizationStatus, String enabledStatus) {
-        agentShouldHaveConnectionStatus(connectionStatus);
-        agentShouldHaveAuthorizationStatus(authorizationStatus);
-        agentShouldHaveEnabledStatus(enabledStatus);
-        return this;
+        return StepLogger.log("Проверка всех статусов агента: соединение=" + connectionStatus +
+                ", авторизация=" + authorizationStatus + ", включение=" + enabledStatus, () -> {
+            agentShouldHaveConnectionStatus(connectionStatus);
+            agentShouldHaveAuthorizationStatus(authorizationStatus);
+            agentShouldHaveEnabledStatus(enabledStatus);
+            return this;
+        });
     }
 }

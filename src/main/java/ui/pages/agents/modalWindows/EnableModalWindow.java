@@ -1,6 +1,7 @@
 package ui.pages.agents.modalWindows;
 
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.agents.AgentsPage;
 
 import static com.codeborne.selenide.Condition.text;
@@ -16,19 +17,24 @@ public class EnableModalWindow {
     private final SelenideElement submitButton = modalWindowButtons.$("[type='submit']");
 
     public EnableModalWindow setEnableModalWindowShouldHaveTitle(String agentName) {
-        modalWindowTitle.shouldBe(visible).shouldHave(text(ENABLE.getMessage() + " " + agentName));
-        return this;
+        return StepLogger.log("Проверка заголовка модального окна включения агента " + agentName, () -> {
+            modalWindowTitle.shouldBe(visible).shouldHave(text(ENABLE.getMessage() + " " + agentName));
+            return this;
+        });
     }
 
     public EnableModalWindow setComment(String comment) {
-        commentModule.shouldBe(visible).shouldHave(text("Comment"));
-        inputCommentField.shouldBe(visible).setValue(comment);
-        return this;
+        return StepLogger.log("Установка комментария для включения: " + comment, () -> {
+            commentModule.shouldBe(visible).shouldHave(text("Comment"));
+            inputCommentField.shouldBe(visible).setValue(comment);
+            return this;
+        });
     }
 
     public AgentsPage clickConfirmButton() {
-        AgentsPage agentsPage = new AgentsPage();
-        submitButton.shouldBe(visible).click();
-        return agentsPage;
+        return StepLogger.log("Подтверждение включения агента", () -> {
+            submitButton.shouldBe(visible).click();
+            return new AgentsPage();
+        });
     }
 }

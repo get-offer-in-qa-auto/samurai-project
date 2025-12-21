@@ -1,6 +1,7 @@
 package ui.pages.agents.modalWindows;
 
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.agents.AgentsPage;
 
 import static com.codeborne.selenide.Condition.text;
@@ -14,13 +15,17 @@ public class UnAuthorizeModalWindow {
     private final SelenideElement submitButton = modalWindowButtons.$("[type='submit']");
 
     public UnAuthorizeModalWindow unAuthoriseModalWindowShouldHaveTitle(String agentName) {
-        modalWindowTitle.shouldBe(visible).shouldHave(text(UNAUTHORIZE.getMessage() + " " + agentName));
-        return this;
+        return StepLogger.log("Проверка заголовка модального окна деавторизации агента " + agentName, () -> {
+            modalWindowTitle.shouldBe(visible).shouldHave(text(UNAUTHORIZE.getMessage() + " " + agentName));
+            return this;
+        });
     }
 
     public AgentsPage clickConfirmButton() {
-        AgentsPage agentsPage = new AgentsPage();
-        submitButton.shouldBe(visible).click();
-        return agentsPage;
+        return StepLogger.log("Подтверждение деавторизации агента", () -> {
+            AgentsPage agentsPage = new AgentsPage();
+            submitButton.shouldBe(visible).click();
+            return agentsPage;
+        });
     }
 }
