@@ -1,6 +1,7 @@
 package api;
 
 import api.models.error.ErrorResponse;
+import common.extensions.MultiUserExtension;
 import common.messages.HasMessage;
 import common.extensions.AgentExtension;
 import common.extensions.AuthUserExtension;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 
-
+@ExtendWith(MultiUserExtension.class)
 @ExtendWith(AuthUserExtension.class)
 @ExtendWith(AgentExtension.class)
 @ExtendWith({AuthUserExtension.class, ProjectCleanupExtension.class})
