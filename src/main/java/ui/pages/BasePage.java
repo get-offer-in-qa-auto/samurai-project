@@ -50,6 +50,7 @@ public abstract class BasePage<T extends BasePage> {
     protected void click(SelenideElement element) {
         element.shouldBe(visible, enabled).click();
     }
+
     protected void setValue(SelenideElement element, String value) {
         element.shouldBe(visible, enabled).setValue(value);
     }

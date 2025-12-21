@@ -41,7 +41,7 @@ public class EditProjectPage extends BasePage {
     }
 
     private void setDescription(String value) {
-       setValue(descriptionInput, value);
+        setValue(descriptionInput, value);
     }
 
     private void clickSaveButton() {

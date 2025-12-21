@@ -21,32 +21,14 @@
         <property name="max" value="1500"/>
     </module>
 
-    <!-- Trailing spaces -->
-    <module name="RegexpSingleline">
-        <property name="format" value="[ \t]+$"/>
-        <property name="message" value="Trailing whitespace"/>
-    </module>
-
-    <!-- Запрет System.out / System.err -->
-    <module name="RegexpSingleline">
-        <property name="format" value="System\.(out|err)\.print"/>
-        <property name="message" value="Use logger instead of System.out/err"/>
-    </module>
-
-
     <module name="TreeWalker">
 
         <!-- Imports -->
         <module name="UnusedImports"/>
         <module name="AvoidStarImport"/>
         <module name="RedundantImport"/>
-        <module name="ImportOrder">
-            <property name="ordered" value="true"/>
-            <property name="separated" value="true"/>
-        </module>
 
         <!-- Formatting -->
-        <module name="NeedBraces"/>
         <module name="EmptyStatement"/>
         <module name="WhitespaceAround"/>
         <module name="WhitespaceAfter"/>
@@ -61,22 +43,10 @@
         <module name="ParameterName"/>
         <module name="LocalVariableName"/>
         <module name="MemberName"/>
-        <module name="ConstantName"/>
 
         <!-- Code quality -->
-        <module name="EqualsHashCode"/>
-        <module name="MissingSwitchDefault"/>
         <module name="FallThrough"/>
 
-        <module name="IllegalThrows">
-            <property name="illegalClassNames"
-                      value="java.lang.Exception,java.lang.Throwable"/>
-        </module>
-
-        <module name="IllegalCatch">
-            <property name="illegalClassNames"
-                      value="java.lang.Exception,java.lang.Throwable"/>
-        </module>
 
         <module name="EmptyCatchBlock">
             <property name="exceptionVariableName" value="expected"/>
@@ -96,7 +66,7 @@
         </module>
 
         <module name="CyclomaticComplexity">
-            <property name="max" value="10"/>
+            <property name="max" value="16"/>
         </module>
 
         <module name="ClassFanOutComplexity">

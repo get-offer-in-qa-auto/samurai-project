@@ -2,19 +2,15 @@ package api.specs;
 
 import api.configs.Config;
 import api.models.users.AuthUser;
-import com.codeborne.selenide.Selenide;
 import common.extensions.AuthUserExtension;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import java.util.List;
-
-import static io.restassured.RestAssured.given;
 
 public class RequestSpecs {
     private RequestSpecs() {

@@ -8,10 +8,10 @@ import common.annotations.WithAuthUser;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
 import ui.pages.agents.AgentsPage;
+import ui.pages.agents.AgentsSidebar;
 import ui.pages.agents.modalWindows.AuthorizeModalWindow;
 import ui.pages.agents.modalWindows.DisableModalWindow;
 import ui.pages.agents.modalWindows.EnableModalWindow;
-import ui.pages.agents.AgentsSidebar;
 import ui.pages.agents.modalWindows.UnAuthorizeModalWindow;
 
 import java.util.List;
@@ -19,17 +19,9 @@ import java.util.stream.Collectors;
 
 import static api.models.agent.GetAgentsRequest.AGENT_AUTHORIZATION;
 import static api.models.agent.GetAgentsRequest.AGENT_ENABLING;
-import static api.requests.steps.UserSteps.getAgentEnabledInfo;
-import static api.requests.steps.UserSteps.getAllAgents;
-import static api.requests.steps.UserSteps.getAuthorizedAgentInfo;
+import static api.requests.steps.UserSteps.*;
 import static common.extensions.AgentExtension.getCurrentAgent;
-import static ui.pages.agents.AgentStatus.AUTHORIZED;
-import static ui.pages.agents.AgentStatus.CONNECTED;
-import static ui.pages.agents.AgentStatus.DISABLED;
-import static ui.pages.agents.AgentStatus.EMPTY_STATUS;
-import static ui.pages.agents.AgentStatus.ENABLED;
-import static ui.pages.agents.AgentStatus.UNAUTHORIZED;
-import static ui.pages.agents.AgentStatus.IDLE;
+import static ui.pages.agents.AgentStatus.*;
 
 public class AgentsUiTest extends BaseUiTest {
     private AgentsPage agentsPage = new AgentsPage();

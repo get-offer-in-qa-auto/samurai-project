@@ -154,7 +154,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface,
     }
 
     @Override
-    public ValidatableResponse deleteNoContent(int id){
+    public ValidatableResponse deleteNoContent(int id) {
         return given()
                 .spec(requestSpec)
                 .pathParam("id", endpoint.formatId(id))

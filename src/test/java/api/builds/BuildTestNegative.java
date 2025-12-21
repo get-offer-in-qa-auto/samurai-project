@@ -2,7 +2,10 @@ package api.builds;
 
 import api.BaseTest;
 import api.models.buildConfiguration.BuildType;
-import api.models.builds.*;
+import api.models.builds.CancelBuildRequest;
+import api.models.builds.CancelBuildResponse;
+import api.models.builds.CreateBuildRequest;
+import api.models.builds.CreateBuildResponse;
 import api.models.error.ErrorResponse;
 import api.models.project.CreateProjectResponse;
 import api.models.users.Roles;
@@ -29,7 +32,7 @@ import static common.messages.BuildErrorMessage.NO_BUILD_TYPE_NOR_TEMPLATE_IS_FO
 
 public class BuildTestNegative extends BaseTest {
 
-    public static Stream<Arguments> invalidBuildType(){
+    public static Stream<Arguments> invalidBuildType() {
         return Stream.of(
                 Arguments.of("", NOTHING_FOUND_BY_LOCATOR),
                 Arguments.of("   ", NO_BUILD_TYPE_NOR_TEMPLATE_IS_FOUND_BY_ID)
@@ -68,7 +71,7 @@ public class BuildTestNegative extends BaseTest {
         softly.assertThat(before).isEqualTo(after);
     }
 
-    public static Stream<Arguments> invalidBuildId(){
+    public static Stream<Arguments> invalidBuildId() {
         return Stream.of(
                 Arguments.of(Integer.MAX_VALUE),
                 Arguments.of(Integer.MIN_VALUE)
@@ -80,7 +83,7 @@ public class BuildTestNegative extends BaseTest {
     @ParameterizedTest
     @MethodSource("invalidBuildId")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCantGetNonExitedBuild(Integer invalidId){
+    public void userCantGetNonExitedBuild(Integer invalidId) {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
         var response = new CrudRequester(
@@ -100,10 +103,10 @@ public class BuildTestNegative extends BaseTest {
     @MethodSource("invalidBuildId")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
 
-    public void userCantDeleteNonExistedBuild(Integer invalidId){
+    public void userCantDeleteNonExistedBuild(Integer invalidId) {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
-        var response= new CrudRequester(
+        var response = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
                 ResponseSpecs.requestReturns404NotFound()).delete(invalidId);
@@ -119,7 +122,7 @@ public class BuildTestNegative extends BaseTest {
     @MethodSource("invalidBuildId")
     @DisplayName("Cant cancel non-existed build from queue via API")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCantCancelNonExistedBuild(Integer invalidId, TestInfo testInfo){
+    public void userCantCancelNonExistedBuild(Integer invalidId, TestInfo testInfo) {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
         //подготовили комментарий
@@ -143,7 +146,7 @@ public class BuildTestNegative extends BaseTest {
     //Тест 5: удалить удаленный билд
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCannotDeleteBuildTwice(){
+    public void userCannotDeleteBuildTwice() {
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
         String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
@@ -154,7 +157,7 @@ public class BuildTestNegative extends BaseTest {
 
         BuildSteps.checkIfBuildHasAlreadyDeleted(createdBuild);
 
-      //Пытаемся удалить еще раз
+        //Пытаемся удалить еще раз
         var response = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
@@ -172,14 +175,14 @@ public class BuildTestNegative extends BaseTest {
     @DisplayName("Cancel build from queue via API")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
 
-    public void userCannotCancelBuildTwice(TestInfo testInfo){
+    public void userCannotCancelBuildTwice(TestInfo testInfo) {
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
         String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
         CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
         BuildSteps.cancelBuild(createdBuild);
-         //отменить отмененный билд
+        //отменить отмененный билд
         //подготовили комментарий
         String comment = BuildSteps.prepareCommentForCancellingBuild(testInfo.getDisplayName());
 
