@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+# Allure CLI
+.allure/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

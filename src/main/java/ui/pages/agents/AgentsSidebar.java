@@ -3,6 +3,7 @@ package ui.pages.agents;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import lombok.Getter;
 
 import java.util.Map;
@@ -12,8 +13,6 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
 public class AgentsSidebar {
@@ -27,51 +26,64 @@ public class AgentsSidebar {
     private final SelenideElement agentPoolsExpandButton = $("[data-test='agent-pool']").$("button");
 
     public AgentsSidebar checkAgentsSideBarTitle() {
-        agentsPageTitle.shouldHave(text("Agents"));
-        return this;
+        return StepLogger.log("Проверка заголовка боковой панели 'Agents'", () -> {
+            agentsPageTitle.shouldHave(text("Agents"));
+            return this;
+        });
     }
 
     public AgentsSidebar expandListOfAgents() {
-        agentsExpandButton.shouldBe(visible).click();
-        return this;
+        return StepLogger.log("Развернуть список агентов в боковой панели", () -> {
+            agentsExpandButton.shouldBe(visible).click();
+            return this;
+        });
     }
 
     public AgentsSidebar checkStatusAgentByName(String agentName, String expectedStatus) {
-        Map<String, String> agentNames = getAgentNameAndStatusMap();
-        assertEquals(agentNames.get(agentName), expectedStatus.toLowerCase());
-        return this;
+        return StepLogger.log("Проверка, что  статус агента '" + agentName + "' соотвествует ожидаемому: " + expectedStatus, () -> {
+            Map<String, String> agentNames = getAgentNameAndStatusMap();
+            assertEquals(agentNames.get(agentName), expectedStatus.toLowerCase());
+            return this;
+        });
     }
 
     public AgentsSidebar findAgentInPoolsByName(String agentName) {
-
         String buttonTitle = agentPoolsExpandButton.getAttribute("title");
-        if (!"Collapse".equals(buttonTitle)) {
-            agentPoolsExpandButton.shouldBe(visible).click();
-        }
-        agentElements.findBy(text(agentName)).shouldBe(visible);
-        return this;
+        return StepLogger.log("Поиск агента '" + agentName + "' в пуле агентов", () -> {
+            if (!"Collapse".equals(buttonTitle)) {
+                agentPoolsExpandButton.shouldBe(visible).click();
+            }
+            agentElements.findBy(text(agentName)).shouldBe(visible);
+            return this;
+        });
     }
 
     public AgentsPage clickAgentByName(String agentName) {
-        AgentsPage agentsPage = new AgentsPage();
-        agentElements.findBy(Condition.text(agentName)).shouldBe(visible).click();
-        return agentsPage;
+        return StepLogger.log("Клик по агенту по имени'" + agentName + "' в основном списке", () -> {
+            AgentsPage agentsPage = new AgentsPage();
+            agentElements.findBy(Condition.text(agentName)).shouldBe(visible).click();
+            return agentsPage;
+        });
     }
 
     public AgentsPage clickAgentInPoolsByName(String agentName) {
-        AgentsPage agentsPage = new AgentsPage();
-        agentPoolsExpandButton.shouldBe(visible).click();
-        agentElements.findBy(Condition.text(agentName)).shouldBe(visible).click();
-        return agentsPage;
+        return StepLogger.log("Клик по агенту по имени '" + agentName + "' в списке авторизованныз агентов", () -> {
+            AgentsPage agentsPage = new AgentsPage();
+            agentPoolsExpandButton.shouldBe(visible).click();
+            agentElements.findBy(Condition.text(agentName)).shouldBe(visible).click();
+            return agentsPage;
+        });
     }
 
     public Map<String, String> getAgentNameAndStatusMap() {
-        return agentElements.stream()
-                .map(SelenideElement::getText)
-                .filter(text -> !text.isEmpty())
-                .collect(Collectors.toMap(
-                        text -> text.split("\n")[0],     // ключ: имя агента
-                        text -> text.split("\n").length > 1 ? text.split("\n")[1] : ""
-                ));
+        return StepLogger.log("Получение списка имен и статусов всех агентов", () ->
+                agentElements.stream()
+                        .map(SelenideElement::getText)
+                        .filter(text -> !text.isEmpty())
+                        .collect(Collectors.toMap(
+                                text -> text.split("\n")[0],     // ключ: имя агента
+                                text -> text.split("\n").length > 1 ? text.split("\n")[1] : ""
+                        ))
+        );
     }
 }
