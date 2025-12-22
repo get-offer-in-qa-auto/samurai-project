@@ -1,6 +1,7 @@
 package ui.pages.agents.modalWindows;
 
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.agents.AgentsPage;
 
 import static com.codeborne.selenide.Condition.text;
@@ -16,19 +17,25 @@ public class AuthorizeModalWindow {
     private final SelenideElement submitButton = modalWindowButtons.$("[type='submit']");
 
     public AuthorizeModalWindow authorizeModalWindowShouldHaveTitle(String agentName) {
-        modalWindowTitle.shouldBe(visible).shouldHave(text(AUTHORIZE.getMessage() + " " + agentName));
-        return this;
+        return StepLogger.log("Проверка заголовка модального окна авторизации агента " + agentName, () -> {
+            modalWindowTitle.shouldBe(visible).shouldHave(text(AUTHORIZE.getMessage() + " " + agentName));
+            return this;
+        });
     }
 
     public AuthorizeModalWindow setAuthorizeComment(String comment) {
-        commentModule.shouldBe(visible).shouldHave(text("Comment"));
-        inputCommentField.shouldBe(visible).setValue(comment);
-        return this;
+        return StepLogger.log("Установка комментария для авторизации: " + comment, () -> {
+            commentModule.shouldBe(visible).shouldHave(text("Comment"));
+            inputCommentField.shouldBe(visible).setValue(comment);
+            return this;
+        });
     }
 
     public AgentsPage clickConfirmButton() {
-        AgentsPage agentsPage = new AgentsPage();
-        submitButton.shouldBe(visible).click();
-        return agentsPage;
+        return StepLogger.log("Подтверждение авторизации агента", () -> {
+            AgentsPage agentsPage = new AgentsPage();
+            submitButton.shouldBe(visible).click();
+            return agentsPage;
+        });
     }
 }

@@ -14,4 +14,6 @@ import java.lang.annotation.Target;
 @ExtendWith(AuthUserExtension.class)
 public @interface WithAuthUser {
     Roles role() default Roles.USER_ROLE;
+
+    int count() default 1;
 }

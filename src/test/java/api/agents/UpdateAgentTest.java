@@ -182,7 +182,10 @@ public class UpdateAgentTest extends BaseTest {
         AgentStatusUpdateResponse result1 = setEnabledStatusToAgent(enableRequest, agentId);
         AgentStatusUpdateResponse result2 = setEnabledStatusToAgent(enableRequest, agentId);
 
-        softly.assertThat(result1).isEqualTo(result2);
+        softly.assertThat(result1)
+                .usingRecursiveComparison()
+                .ignoringFields("comment.timestamp")
+                .isEqualTo(result2);
         softly.assertThat(result1.getStatus()).isTrue();
     }
 

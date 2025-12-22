@@ -48,12 +48,31 @@ public class AdminSteps {
         return userRequest;
     }
 
+    public static CreateUserRequest createTemporaryUser(String username, String password) {
+
+        CreateUserRequest userRequest = CreateUserRequest.builder()
+                .username(username)
+                .password(password)
+                .build();
+
+        CreateUserResponse userResponse = new CrudRequester(
+                adminAuthSpec(),
+                Endpoint.USER_CREATE,
+                ResponseSpecs.ignoreErrors()
+        ).post(userRequest)
+                .extract()
+                .as(CreateUserResponse.class);
+
+        userRequest.setId(userResponse.getId());
+
+        return userRequest;
+    }
+
     public static CreateUserRoleRequest addRoleForUser(CreateUserRequest request, Roles role) {
         CreateUserRoleRequest addRoleRequest = CreateUserRoleRequest.builder()
                 .roleId(role.name())
                 .scope("p:_Root")
                 .build();
-
 
         return new CrudRequester(
                 adminAuthSpec(),

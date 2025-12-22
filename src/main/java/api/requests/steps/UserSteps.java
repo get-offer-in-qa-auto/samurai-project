@@ -36,6 +36,7 @@ import static api.models.agent.GetAgentsRequest.AGENT_ENABLING;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 public class UserSteps {
     public static CreateUserTokenResponse createTokenForUser(CreateUserRequest request) {
         String tokenName = RandomData.getTokenName();

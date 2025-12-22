@@ -3,6 +3,7 @@ package api.specs;
 import api.configs.Config;
 import api.models.users.AuthUser;
 import common.extensions.AuthUserExtension;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -21,7 +22,7 @@ public class RequestSpecs {
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .addFilters(List.of(new RequestLoggingFilter(),
-                        new ResponseLoggingFilter()))
+                        new ResponseLoggingFilter(), new AllureRestAssured()))
                 .setBaseUri(Config.getProperty("server") + Config.getProperty("api.basePath"));
     }
 
