@@ -5,9 +5,7 @@ import common.messages.BuildTypeErrorMessage;
 import ui.pages.BankAlert;
 import ui.pages.BasePage;
 
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
 public class BuildTypeEditPage extends BasePage<BuildTypeEditPage> {
