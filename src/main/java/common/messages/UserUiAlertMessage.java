@@ -15,5 +15,4 @@ public enum UserUiAlertMessage implements HasMessage {
     DELETE_ALERT("Are you sure you want to delete");
 
     private final String message;
-
 }

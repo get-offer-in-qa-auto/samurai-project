@@ -1,6 +1,6 @@
 package api.models.users;
-import api.models.BaseModel;
 
+import api.models.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

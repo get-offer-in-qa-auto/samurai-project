@@ -2,7 +2,11 @@ package api.requests.steps;
 
 import api.generators.RandomData;
 import api.generators.RandomModelGenerator;
-import api.models.agent.*;
+import api.models.agent.Agent;
+import api.models.agent.AgentStatusUpdateRequest;
+import api.models.agent.AgentStatusUpdateResponse;
+import api.models.agent.Comment;
+import api.models.agent.GetAgentsResponse;
 import api.models.buildConfiguration.CreateBuildTypeRequest;
 import api.models.buildConfiguration.CreateBuildTypeResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
@@ -25,7 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import static api.generators.RandomData.getBuildName;
-import static api.models.agent.GetAgentsRequest.*;
+import static api.models.agent.GetAgentsRequest.AGENT_AUTHORIZATION;
+import static api.models.agent.GetAgentsRequest.AGENT_DEAUTHORIZATION;
+import static api.models.agent.GetAgentsRequest.AGENT_DISABLING;
+import static api.models.agent.GetAgentsRequest.AGENT_ENABLING;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 

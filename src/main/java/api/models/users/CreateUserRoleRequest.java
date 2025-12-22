@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateUserRoleRequest extends BaseModel {
     private String roleId;
-    private  String scope;
-    private  String href;
+    private String scope;
+    private String href;
 }

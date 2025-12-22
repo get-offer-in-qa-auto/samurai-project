@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateBuildTypeRequest extends BaseModel {
-        private String name;
-        private Project project;
+    private String name;
+    private Project project;
 }

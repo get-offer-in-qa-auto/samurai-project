@@ -2,8 +2,8 @@ package api.builds;
 
 import api.BaseTest;
 import api.comparison.ModelAssertions;
-import api.models.buildConfiguration.BuildType;
 import api.models.BaseModel;
+import api.models.buildConfiguration.BuildType;
 import api.models.builds.*;
 import api.models.project.CreateProjectResponse;
 import api.models.users.Roles;
@@ -23,7 +23,7 @@ import static common.states.BuildState.*;
 public class BuildTestPositive extends BaseTest {
 
     @Test
-   @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanCreateBuild() {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
@@ -49,45 +49,45 @@ public class BuildTestPositive extends BaseTest {
         softly.assertThat(createdBuild.getHref()).isNotBlank();
         softly.assertThat(createdBuild.getWebUrl()).isNotBlank();
 
-       //проверим, что такой билд действительно появился
+        //проверим, что такой билд действительно появился
         GetBuildResponse getBuildResponse = BuildSteps.getBuildFromQueue(createdBuild);
         softly.assertThat(getBuildResponse.getBuildTypeId()).isEqualTo(createdBuild.getBuildType().getId());
         softly.assertThat(getBuildResponse.getId()).isEqualTo(createdBuild.getId());
     }
 
-  @Test
+    @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanGetBuild() {
-      CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
+        CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-      String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
+        String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-      CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
-      Integer buildId = createdBuild.getId();
+        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
+        Integer buildId = createdBuild.getId();
 
-      GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
-              RequestSpecs.userAuthSpecWithToken(),
-              Endpoint.GET_BUILD,
-              ResponseSpecs.requestReturnsOK()).get(buildId);
-      ModelAssertions.assertThatModels(createdBuild, getBuildResponse).match();
+        GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.GET_BUILD,
+                ResponseSpecs.requestReturnsOK()).get(buildId);
+        ModelAssertions.assertThatModels(createdBuild, getBuildResponse).match();
 
         softly.assertThat(getBuildResponse.getId()).isEqualTo(buildId);
         softly.assertThat(getBuildResponse.getBuildType().getId()).isEqualTo(createdBuildType);
     }
 
-   @Test
+    @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanDeleteBuild() {
-       CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
+        CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
-       String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
+        String createdBuildType = UserSteps.createBuildType(createdProject.getId(), RequestSpecs.userAuthSpecWithToken());
 
-       CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
+        CreateBuildResponse createdBuild = BuildSteps.addBuildToQueue(createdBuildType);
 
         new ValidatedCrudRequester<BaseModel>(
-               RequestSpecs.userAuthSpecWithToken(),
-               Endpoint.DELETE_BUILD_FROM_QUEUE,
-               ResponseSpecs.requestReturnsNoContent()).deleteNoContent(createdBuild.getId());
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.DELETE_BUILD_FROM_QUEUE,
+                ResponseSpecs.requestReturnsNoContent()).deleteNoContent(createdBuild.getId());
 
         //убедиться, что билд удален (с помощью get)
         BuildSteps.checkIfBuildHasAlreadyDeleted(createdBuild);
