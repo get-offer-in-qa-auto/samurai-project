@@ -35,8 +35,7 @@ public class RequestSpecs {
 
     public static RequestSpecification adminAuthSpec() {
         return defaultRequestSpecBuilder()
-                .setAuth(RestAssured.basic(
-                        Config.getProperty("admin.username"),
+                .setAuth(RestAssured.basic("",
                         Config.getProperty("admin.password")))
                 .build();
     }
