@@ -85,7 +85,7 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
 
     @Override
     public String put(String id, String text) {
-        return  crudRequester
+        return crudRequester
                 .put(id, text)
                 .extract()
                 .asString();
@@ -98,9 +98,9 @@ public class ValidatedCrudRequester<T extends BaseModel> extends HttpRequest imp
                 .extract()
                 .as(endpoint.getResponseModel());
     }
-    
+
     @Override
-    public ValidatableResponse deleteNoContent(int id){
+    public ValidatableResponse deleteNoContent(int id) {
         return crudRequester.deleteNoContent(id);
     }
 

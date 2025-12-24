@@ -1,6 +1,7 @@
 package ui.pages.agents.modalWindows;
 
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.agents.AgentsPage;
 
 import static com.codeborne.selenide.Condition.text;
@@ -14,13 +15,16 @@ public class DisableModalWindow {
     private final SelenideElement submitButton = modalWindowButtons.$("[type='submit']");
 
     public DisableModalWindow disableModalWindowShouldHaveTitle(String agentName) {
+        return StepLogger.log("Проверка заголовка модального окна выключения агента " + agentName, () -> {
         modalWindowTitle.shouldBe(visible).shouldHave(text(DISABLE.getMessage() + " " + agentName));
         return this;
+        });
     }
 
     public AgentsPage clickConfirmButton() {
-        AgentsPage agentsPage = new AgentsPage();
+        return StepLogger.log("Подтверждение выключения агента", () -> {
         submitButton.shouldBe(visible).click();
-        return agentsPage;
+        return new AgentsPage();
+        });
     }
 }

@@ -1,17 +1,17 @@
 package api.requests.skelethon;
 
 import api.models.BaseModel;
-import api.models.builds.CancelBuildRequest;
-import api.models.builds.CreateBuildRequest;
-import api.models.builds.CreateBuildResponse;
-import api.models.builds.CancelBuildResponse;
-import api.models.builds.BuildQueueResponse;
-import api.models.builds.GetBuildResponse;
 import api.models.agent.AgentStatusUpdateResponse;
 import api.models.agent.GetAgentsResponse;
 import api.models.buildConfiguration.CreateBuildTypeRequest;
 import api.models.buildConfiguration.CreateBuildTypeResponse;
 import api.models.buildConfiguration.GetAllBuildTypeResponse;
+import api.models.builds.BuildQueueResponse;
+import api.models.builds.CancelBuildRequest;
+import api.models.builds.CancelBuildResponse;
+import api.models.builds.CreateBuildRequest;
+import api.models.builds.CreateBuildResponse;
+import api.models.builds.GetBuildResponse;
 import api.models.project.CreateProjectFromRepositoryRequest;
 import api.models.project.CreateProjectManuallyRequest;
 import api.models.project.CreateProjectResponse;
@@ -130,8 +130,8 @@ public enum Endpoint {
     ),
     BUILD_QUEUE(
             "/buildQueue",
-                CreateBuildRequest.class,
-                CreateBuildResponse.class
+            CreateBuildRequest.class,
+            CreateBuildResponse.class
     ),
     GET_BUILD(
             "/builds/{id}",
@@ -189,6 +189,7 @@ public enum Endpoint {
     Endpoint(String url, Class<? extends BaseModel> requestModel, Class<? extends BaseModel> responseModel) {
         this(url, requestModel, responseModel, IdentityFormat.NUMBER);
     }
+
     public String formatId(int id) {
         if (idFormat == null || idFormat == IdentityFormat.NUMBER) {
             return String.valueOf(id);

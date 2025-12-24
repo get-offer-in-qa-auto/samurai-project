@@ -34,13 +34,13 @@ public class BuildTests extends BaseUiTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanCancelBuildFromQueue(){
+    public void userCanCancelBuildFromQueue() {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
 
         String buildTypeId = UserSteps.createBuildType(project.getId(), RequestSpecs.adminAuthSpec());
 
-        CreateBuildResponse createBuildResponse= BuildSteps.addBuildToQueue(buildTypeId);
+        CreateBuildResponse createBuildResponse = BuildSteps.addBuildToQueue(buildTypeId);
         String projectId = project.getId();
 
         new ProjectPage()

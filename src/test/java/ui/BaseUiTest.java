@@ -5,7 +5,9 @@ import api.configs.Config;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.logevents.SelenideLogger;
 import common.messages.HasMessage;
+import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.Alert;
 
@@ -25,10 +27,14 @@ public class BaseUiTest extends BaseTest {
         Configuration.browser = Config.getProperty("browser");
         Configuration.browserSize = Config.getProperty("browserSize");
         Configuration.headless = false;
-
         Configuration.browserCapabilities.setCapability("selenoid:options",
                 Map.of("enableVNC", true, "enableLog", true)
         );
+
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
+                .screenshots(true)
+                .savePageSource(false)
+                .includeSelenideSteps(true));
     }
 
     private List<String> getUiErrors() {
@@ -60,7 +66,6 @@ public class BaseUiTest extends BaseTest {
                     .as("Проверка UI-ошибки (частичное вхождение): " + expected.name())
                     .anyMatch(error -> error.contains(expected.getMessage()));
         }
-
     }
 
     protected <E extends Enum<E> & HasMessage> void checkAlertMessageAndAccept(E alertText) {

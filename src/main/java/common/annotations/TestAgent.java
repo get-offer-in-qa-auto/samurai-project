@@ -9,5 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TestAgent {
     boolean authorized() default false;
+
     boolean enabled() default false;
 }

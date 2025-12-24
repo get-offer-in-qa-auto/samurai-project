@@ -11,12 +11,13 @@ import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 public class DeleteBuildTypeTest extends BaseTest {
 
     @Test
     @DisplayName("Успешное удаление Build Type")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    public void userCanDeleteBuildType(){
+    public void userCanDeleteBuildType() {
         CreateProjectResponse projectForTest = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
         String idProject = projectForTest.getId();
         int countBuildTypeBefore = UserSteps.getBuildTypeCount(RequestSpecs.userAuthSpecWithToken());
