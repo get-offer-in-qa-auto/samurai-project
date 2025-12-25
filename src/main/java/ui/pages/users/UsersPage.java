@@ -3,6 +3,7 @@ package ui.pages.users;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.BasePage;
 
 import java.util.List;
@@ -33,36 +34,49 @@ public class UsersPage extends BasePage<UsersPage> {
 
 
     public UsersPage findUser(String name) {
-        searchUsersField.shouldBe(visible, enabled).setValue(name);
-        buttonFilter.click();
-        return this;
+        return StepLogger.log("Найти пользователя в таблице", () -> {
+            searchUsersField.shouldBe(visible, enabled).setValue(name);
+            buttonFilter.click();
+            return this;
+        });
     }
 
     public UsersPage openEditPage(String name) {
-        table.findBy(text(name)).shouldBe(visible).click();
-        return this;
+        return StepLogger.log("Открыть модальное окно редактирования пользователя", () -> {
+            table.findBy(text(name)).shouldBe(visible).click();
+            return this;
+        });
     }
 
     public List<String> getUsernamesFromTable() {
-        table.shouldBe(CollectionCondition.sizeGreaterThan(0));
-        return table.stream()
-                .map(SelenideElement::getText)
-                .toList();
+        return StepLogger.log("Найти имя пользователя в таблице", () -> {
+            table.shouldBe(CollectionCondition.sizeGreaterThan(0));
+            return table.stream()
+                    .map(SelenideElement::getText)
+                    .toList();
+        });
     }
 
     public boolean viewContentWrapper() {
-        return contentWrapper.isDisplayed();
+        return StepLogger.log(
+                "Проверить отображение content wrapper",
+                contentWrapper::isDisplayed
+        );
     }
 
     public UsersPage selectUserById(int userId) {
-        userCheckboxById(userId)
-                .closest("span")
-                .click();
-        return this;
+        return StepLogger.log("Нажать чек бокс на выбранном пользователе", () -> {
+            userCheckboxById(userId)
+                    .closest("span")
+                    .click();
+            return this;
+        });
     }
 
     public UsersPage clickButtonRemove() {
-        buttonRemove.shouldBe(visible, enabled).click();
-        return this;
+        return StepLogger.log("Нажать на кнопку Remove", () -> {
+            buttonRemove.shouldBe(visible, enabled).click();
+            return this;
+        });
     }
 }
