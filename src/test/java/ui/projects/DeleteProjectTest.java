@@ -6,6 +6,7 @@ import api.models.users.Roles;
 import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import common.annotations.WithAuthUser;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
 import ui.pages.project.AllProjectsPage;
@@ -16,6 +17,7 @@ public class DeleteProjectTest extends BaseUiTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Удаление проекта")
     public void userCanDeleteProject() {
         CreateProjectResponse project = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
         var name = project.getName();

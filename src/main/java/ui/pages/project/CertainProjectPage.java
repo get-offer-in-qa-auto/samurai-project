@@ -2,6 +2,7 @@ package ui.pages.project;
 
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.BasePage;
 
 import java.net.URLEncoder;
@@ -24,8 +25,10 @@ public class CertainProjectPage extends BasePage<CertainProjectPage> {
     }
 
     public EditProjectPage openProjectSettingsPage() {
-        click(projectSettingsButton);
-        return new EditProjectPage();
-
+        return StepLogger.log("Переход на страницу редактирования проекта", () -> {
+            click(projectSettingsButton);
+            return new EditProjectPage();
+        });
     }
+
 }
