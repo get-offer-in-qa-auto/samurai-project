@@ -21,6 +21,7 @@ import common.annotations.WithAuthUser;
 import common.messages.AgentErrorMessage;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
+    @DisplayName("Успешная авторизация агента")
     public void userCanAuthorizedAgentTest() {
         // 1. Получаем агента
         api.models.agent.Agent agent = getCurrentAgent();
@@ -76,6 +78,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent(authorized = true)
+    @DisplayName("Успешная деавторизация агента")
     public void userCanDeAuthorizeAgentTest() {
         // 1. Получаем id агента
         Agent agent = getCurrentAgent();
@@ -103,6 +106,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
+    @DisplayName("Успешное подключение агента")
     public void userCanEnableAgentTest() {
         // 1. Получаем ID агента
         Agent agent = getCurrentAgent();
@@ -129,6 +133,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent(enabled = true)
+    @DisplayName("Успешное выключение агента")
     public void userCanDisableAgentTest() {
         // 1. Получаем ID  агента
         Agent agent = getCurrentAgent();
@@ -155,6 +160,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
+    @DisplayName("Успешное повторное подключение агента")
     public void reEnablingAgentReturnsSameResultTest() {
         Agent agent = getCurrentAgent();
         int agentId = agent.getId();
@@ -172,6 +178,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
+    @DisplayName("Успешная повторная авторизация агента")
     public void reAuthorizationAgentReturnsSameResultTest() {
         Agent agent = getCurrentAgent();
         int agentId = agent.getId();
@@ -193,6 +200,7 @@ public class UpdateAgentTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.USER_ROLE)
+    @DisplayName("Неуспешная авторизация агента по несуществующему id")
     public void agentManagerCanNotAuthorizedExistentAgentTest() {
         int fakeAgentId = RandomData.getId();
 
@@ -219,6 +227,7 @@ public class UpdateAgentTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неуспешное подключение агента по несуществующему id")
     public void agentManagerCannotEnableNonExistentAgent() {
         int fakeAgentId = RandomData.getId();
 
@@ -245,6 +254,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @TestAgent
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешная авторизация агента пользователем с ролью 'USER'")
     public void nonAgentManagerCanNotAuthorizedAgentTest() {
         api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
@@ -275,6 +285,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @TestAgent
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное подключение агента пользователем с ролью 'USER'")
     public void nonAgentManagerCanNotEnableNonExistentAgentTest() {
         api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
