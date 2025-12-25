@@ -1,4 +1,5 @@
 package api.models.buildConfiguration;
+
 import lombok.Data;
 
 @Data

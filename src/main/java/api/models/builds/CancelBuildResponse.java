@@ -1,13 +1,13 @@
 package api.models.builds;
 
 import api.models.BaseModel;
+import api.models.buildConfiguration.BuildType;
 import api.models.users.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import api.models.buildConfiguration.BuildType;
 
 @Data
 @AllArgsConstructor

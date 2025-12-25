@@ -1,4 +1,5 @@
 package api.models.buildConfiguration;
+
 import api.models.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;

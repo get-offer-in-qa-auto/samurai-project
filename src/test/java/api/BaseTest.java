@@ -1,10 +1,12 @@
 package api;
 
 import api.models.error.ErrorResponse;
+import common.extensions.MultiUserExtension;
 import common.messages.HasMessage;
 import common.extensions.AgentExtension;
 import common.extensions.AuthUserExtension;
 import common.extensions.ProjectCleanupExtension;
+import common.messages.HasMessage;
 import io.restassured.response.ValidatableResponse;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 
-
+@ExtendWith(MultiUserExtension.class)
 @ExtendWith(AuthUserExtension.class)
 @ExtendWith(AgentExtension.class)
 @ExtendWith({AuthUserExtension.class, ProjectCleanupExtension.class})

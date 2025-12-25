@@ -5,12 +5,13 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
+import common.helpers.StepLogger;
 import org.openqa.selenium.Cookie;
 
-import static com.codeborne.selenide.Selenide.$x;
-import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$$x;
+import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.refresh;
 
 public abstract class BasePage<T extends BasePage> {
@@ -25,7 +26,13 @@ public abstract class BasePage<T extends BasePage> {
     public abstract String url();
 
     public T open() {
-        return Selenide.open(url(), (Class<T>) this.getClass());
+        return StepLogger.log("Открытие страницы: " + url(), () ->
+                Selenide.open(url(), (Class<T>) this.getClass())
+        );
+    }
+
+    public T open(String url) {
+        return Selenide.open(url, (Class<T>) this.getClass());
     }
 
     public T open(String url) {
@@ -50,6 +57,7 @@ public abstract class BasePage<T extends BasePage> {
     protected void click(SelenideElement element) {
         element.shouldBe(visible, enabled).click();
     }
+
     protected void setValue(SelenideElement element, String value) {
         element.shouldBe(visible, enabled).setValue(value);
     }

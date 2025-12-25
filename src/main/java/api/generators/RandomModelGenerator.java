@@ -5,11 +5,16 @@ import api.models.project.Property;
 import api.models.project.VcsRoot;
 import api.models.project.VcsRootEntry;
 import com.github.curiousoddman.rgxgen.RgxGen;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class RandomModelGenerator {
 

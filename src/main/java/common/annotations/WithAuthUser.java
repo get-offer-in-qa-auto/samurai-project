@@ -9,9 +9,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(AuthUserExtension.class)
 public @interface WithAuthUser {
     Roles role() default Roles.USER_ROLE;
+
+    int count() default 1;
 }

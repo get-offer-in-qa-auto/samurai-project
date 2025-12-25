@@ -1,18 +1,22 @@
 package api.requests.steps;
 
 import api.generators.RandomData;
+import api.models.users.CreateUserRequest;
+import api.models.users.CreateUserResponse;
+import api.models.users.CreateUserRoleRequest;
+import api.models.users.CreateUserRoleResponse;
+import api.models.users.GetAllUsersResponse;
+import api.models.users.GetUserRoleResponse;
+import api.models.users.Roles;
 import api.models.users.User;
-import api.models.users.*;
 import api.requests.skelethon.Endpoint;
 import api.requests.skelethon.requesters.CrudRequester;
 import api.requests.skelethon.requesters.ValidatedCrudRequester;
-import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 
 import java.util.List;
-import java.util.OptionalInt;
 
 import static api.specs.RequestSpecs.adminAuthSpec;
 import static io.restassured.RestAssured.given;
@@ -44,12 +48,31 @@ public class AdminSteps {
         return userRequest;
     }
 
+    public static CreateUserRequest createTemporaryUser(String username, String password) {
+
+        CreateUserRequest userRequest = CreateUserRequest.builder()
+                .username(username)
+                .password(password)
+                .build();
+
+        CreateUserResponse userResponse = new CrudRequester(
+                adminAuthSpec(),
+                Endpoint.USER_CREATE,
+                ResponseSpecs.ignoreErrors()
+        ).post(userRequest)
+                .extract()
+                .as(CreateUserResponse.class);
+
+        userRequest.setId(userResponse.getId());
+
+        return userRequest;
+    }
+
     public static CreateUserRoleRequest addRoleForUser(CreateUserRequest request, Roles role) {
         CreateUserRoleRequest addRoleRequest = CreateUserRoleRequest.builder()
                 .roleId(role.name())
                 .scope("p:_Root")
                 .build();
-
 
         return new CrudRequester(
                 adminAuthSpec(),

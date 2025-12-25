@@ -1,21 +1,21 @@
 package api.requests.steps;
 
 import api.models.BaseModel;
-import api.requests.skelethon.requesters.CrudRequester;
 import api.models.buildConfiguration.BuildType;
-import api.models.builds.CancelBuildRequest;
 import api.models.builds.BuildQueueResponse;
+import api.models.builds.CancelBuildRequest;
 import api.models.builds.CreateBuildRequest;
 import api.models.builds.CreateBuildResponse;
 import api.models.builds.GetBuildResponse;
 import api.requests.skelethon.Endpoint;
+import api.requests.skelethon.requesters.CrudRequester;
 import api.requests.skelethon.requesters.ValidatedCrudRequester;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 
 
 public class BuildSteps {
-    public static CreateBuildResponse addBuildToQueue(String buildTypeId){
+    public static CreateBuildResponse addBuildToQueue(String buildTypeId) {
         CreateBuildRequest build = CreateBuildRequest.builder()
                 .buildType(
                         BuildType.builder()
@@ -31,30 +31,30 @@ public class BuildSteps {
         return createdBuild;
     }
 
-    public static GetBuildResponse getBuildFromQueue(CreateBuildResponse response){
+    public static GetBuildResponse getBuildFromQueue(CreateBuildResponse response) {
         GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
-                    RequestSpecs.userAuthSpecWithToken(),
-                    Endpoint.GET_BUILD,
-                    ResponseSpecs.requestReturnsOK()).get(response.getId());
-            return getBuildResponse;
+                RequestSpecs.userAuthSpecWithToken(),
+                Endpoint.GET_BUILD,
+                ResponseSpecs.requestReturnsOK()).get(response.getId());
+        return getBuildResponse;
 
     }
 
-    public static void checkIfBuildHasAlreadyDeleted(CreateBuildResponse response){
+    public static void checkIfBuildHasAlreadyDeleted(CreateBuildResponse response) {
         new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.GET_BUILD,
                 ResponseSpecs.requestReturns404NotFound()).get(response.getId());
     }
 
-    public static void deleteBuildFromQueue(CreateBuildResponse response){
+    public static void deleteBuildFromQueue(CreateBuildResponse response) {
         new CrudRequester(
-        RequestSpecs.userAuthSpecWithToken(),
+                RequestSpecs.userAuthSpecWithToken(),
                 Endpoint.DELETE_BUILD_FROM_QUEUE,
                 ResponseSpecs.requestReturnsNoContent()).delete(response.getId());
     }
 
-    public static String prepareCommentForCancellingBuild(String testName){
+    public static String prepareCommentForCancellingBuild(String testName) {
         return String.format(
                 "Canceled by API test [%s] at %s",
                 testName,
@@ -70,7 +70,7 @@ public class BuildSteps {
         ).get();
     }
 
-    public static void cancelBuild(CreateBuildResponse response){
+    public static void cancelBuild(CreateBuildResponse response) {
         String comment = "Cancelled by automated test";
         CancelBuildRequest cancelBody = CancelBuildRequest.builder()
                 .comment(comment)

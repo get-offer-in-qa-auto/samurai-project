@@ -2,12 +2,15 @@ package ui.users;
 
 import api.generators.RandomData;
 import api.models.users.AuthUser;
+import api.models.users.Roles;
 import api.models.users.User;
 import api.requests.steps.AdminSteps;
 import common.annotations.WithAdminSession;
 import common.annotations.WithAuthUser;
-import common.messages.UserUiAlertMessage;
 import common.extensions.AuthUserExtension;
+import common.messages.UserUiAlertMessage;
+import common.storage.UserSession;
+import common.storage.UserSessionStore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
@@ -30,7 +33,7 @@ public class CreateUserTest extends BaseUiTest {
                 .open()
                 .createUserAndGoToUsers(name, password);
 
-
+        UserSessionStore.registerUiUser(name, password);
         softly.assertThat(usersPage.getUsernamesFromTable())
                 .as("Проверка юзера в таблице UI")
                 .map(String::toLowerCase)
@@ -44,8 +47,6 @@ public class CreateUserTest extends BaseUiTest {
                             .map(String::toLowerCase)
                             .contains(name.toLowerCase());
                 });
-
-        AdminSteps.deleteUser(name);
     }
 
     @Test

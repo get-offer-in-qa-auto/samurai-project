@@ -1,6 +1,7 @@
 package ui.pages.users;
 
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import common.messages.UserUiAlertMessage;
 import ui.pages.BasePage;
 
@@ -20,36 +21,51 @@ public class UserProfilePage extends BasePage<UserProfilePage> {
 
 
     public UserProfilePage fillName(String name) {
-        nameField.shouldBe(visible, enabled).setValue(name);
-        return this;
+        return StepLogger.log("Заполнить поле name", () -> {
+            nameField.shouldBe(visible, enabled).setValue(name);
+            return this;
+        });
     }
 
     public UserProfilePage fillEmail(String email) {
-        emailField.shouldBe(visible, enabled).setValue(email);
-        return this;
+        return StepLogger.log("Заполнить поле email", () -> {
+            emailField.shouldBe(visible, enabled).setValue(email);
+            return this;
+        });
     }
 
     public UserProfilePage fillCurrentPassword(String password) {
-        currentPassword.shouldBe(visible, enabled).setValue(password);
-        return this;
+        return StepLogger.log("Заполнить поле Current Password", () -> {
+            currentPassword.shouldBe(visible, enabled).setValue(password);
+            return this;
+        });
     }
 
     public UserProfilePage fillNewPassword(String password) {
-        newPasswordField.shouldBe(visible, enabled).setValue(password);
-        return this;
+        return StepLogger.log("Заполнить поле New Password", () -> {
+            newPasswordField.shouldBe(visible, enabled).setValue(password);
+            return this;
+        });
     }
 
     public UserProfilePage fillConfirmPassword(String password) {
-        confirmPasswordField.shouldBe(visible, enabled).setValue(password);
-        return this;
+        return StepLogger.log("Заполнить поле Confirm Password", () -> {
+            confirmPasswordField.shouldBe(visible, enabled).setValue(password);
+            return this;
+        });
     }
 
     public UserProfilePage pressSaveButton() {
-        buttonSaveChanges.shouldBe(visible, enabled).scrollTo().click();
-        return this;
+        return StepLogger.log("Нажать на кнопку Save", () -> {
+            buttonSaveChanges.shouldBe(visible, enabled).scrollTo().click();
+            return this;
+        });
     }
 
     public boolean viewSuccessMessage(UserUiAlertMessage message) {
-        return successChangeMessage.scrollTo().shouldBe(visible, enabled).isDisplayed();
+        return StepLogger.log(
+                "Проверить отображение успешного сообщения",
+                () -> successChangeMessage.scrollTo().shouldBe(visible, enabled).isDisplayed()
+        );
     }
 }

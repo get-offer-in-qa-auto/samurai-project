@@ -1,8 +1,11 @@
 package common.messages;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 
 @Getter
+@RequiredArgsConstructor
 public enum UserErrorMessage implements HasMessage {
     USERNAME_EMPTY("Username must not be empty when creating user."),
     USERNAME_DUPLICATE("Cannot create user as user with the same username already exists"),
@@ -13,8 +16,4 @@ public enum UserErrorMessage implements HasMessage {
     USERNAME_DUPLICATE_UPDATE("is already in use by some other user.");
 
     private final String message;
-
-    UserErrorMessage(String message) {
-        this.message = message;
-    }
 }
