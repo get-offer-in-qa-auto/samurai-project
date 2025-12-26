@@ -228,6 +228,5 @@ public class AgentsUiTest extends BaseUiTest {
                 .expandListOfAgents();
         agentsPage
                 .userShouldNotSeeSetAgentStatusButtons();
-        setAgentAuthorizedStatus(true, agent.getId());
     }
 }

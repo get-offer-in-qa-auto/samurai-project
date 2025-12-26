@@ -254,7 +254,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @TestAgent
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    @DisplayName("Неспешная авторизация агента пользователем с ролью 'USER'")
+    @DisplayName("Неуспешная авторизация агента пользователем с ролью 'USER'")
     public void nonAgentManagerCanNotAuthorizedAgentTest() {
         api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
@@ -285,7 +285,7 @@ public class UpdateAgentTest extends BaseTest {
     @Test
     @TestAgent
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-    @DisplayName("Неспешное подключение агента пользователем с ролью 'USER'")
+    @DisplayName("Неуспешное подключение агента пользователем с ролью 'USER'")
     public void nonAgentManagerCanNotEnableNonExistentAgentTest() {
         api.models.agent.Agent agent = getCurrentAgent();
         int agentId = agent.getId();
