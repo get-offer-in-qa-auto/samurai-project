@@ -222,7 +222,6 @@ public class AgentsUiTest extends BaseUiTest {
     @DisplayName("Проверка отсутствия кнопок управления статусом агента у пользователя без прав")
     public void userShouldNotSeeSetAgentStatusButtons() {
         new AgentsPage().open();
-        Agent agent = getCurrentAgent();
         agentsPage.agentsPageShouldBeOpen();
         sidebarAgentsPanel
                 .expandListOfAgents();
