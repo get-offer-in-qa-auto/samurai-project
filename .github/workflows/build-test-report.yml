@@ -10,11 +10,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK
+      - name: Set up JDK and Maven
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: '21'
+          cache: maven
+          maven-version: '3.9.9'
 
       - name: Cache Maven repository
         uses: actions/cache@v4
