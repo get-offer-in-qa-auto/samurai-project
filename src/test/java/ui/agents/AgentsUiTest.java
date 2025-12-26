@@ -5,6 +5,7 @@ import api.models.agent.AgentStatusUpdateResponse;
 import api.models.users.Roles;
 import common.annotations.TestAgent;
 import common.annotations.WithAuthUser;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
 import ui.pages.agents.AgentsPage;
@@ -30,6 +31,7 @@ public class AgentsUiTest extends BaseUiTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
     @Test
+    @DisplayName("Проверка идентичности списка агентов в UI и API")
     public void shouldDisplaySameAgentsInUiAsInApi() {
         new AgentsPage().open();
         agentsPage.agentsPageShouldBeOpen();
@@ -49,6 +51,7 @@ public class AgentsUiTest extends BaseUiTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
     @Test
+    @DisplayName("Успешное подключение агента")
     public void userCanEnabledAgent() {
         new AgentsPage().open();
         agentsPage.agentsPageShouldBeOpen();
@@ -81,6 +84,7 @@ public class AgentsUiTest extends BaseUiTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent(enabled = true)
     @Test
+    @DisplayName("Успешное отключение агента")
     public void userCanDisabledAgent() {
         new AgentsPage().open();
         agentsPage.agentsPageShouldBeOpen();
@@ -109,6 +113,7 @@ public class AgentsUiTest extends BaseUiTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
     @Test
+    @DisplayName("Успешная авторизация агента")
     public void userCanAuthorizedAgent() {
         new AgentsPage().open();
         agentsPage.agentsPageShouldBeOpen();
@@ -141,6 +146,7 @@ public class AgentsUiTest extends BaseUiTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent(authorized = true)
     @Test
+    @DisplayName("Успешная деавторизация агента")
     public void userCanAnAuthorizedAgent() {
         new AgentsPage().open();
         agentsPage.agentsPageShouldBeOpen();
@@ -171,6 +177,7 @@ public class AgentsUiTest extends BaseUiTest {
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @TestAgent
     @Test
+    @DisplayName("Успешные авторизация и подключение агента")
     public void userCanAuthorizedAndEnabledAgent() {
         new AgentsPage().open();
         agentsPage.agentsPageShouldBeOpen();
@@ -212,6 +219,7 @@ public class AgentsUiTest extends BaseUiTest {
 
     @WithAuthUser(role = Roles.USER_ROLE)
     @Test
+    @DisplayName("Проверка отсутствия кнопок управления статусом агента у пользователя без прав")
     public void userShouldNotSeeSetAgentStatusButtons() {
         new AgentsPage().open();
         agentsPage.agentsPageShouldBeOpen();
