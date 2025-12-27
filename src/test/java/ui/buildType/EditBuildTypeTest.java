@@ -1,4 +1,4 @@
-package ui.BuildTypeTest;
+package ui.buildType;
 
 import api.models.project.CreateProjectResponse;
 import api.requests.steps.UserSteps;
@@ -11,7 +11,7 @@ import ui.pages.buildType.BuildTypeEditPage;
 
 import static api.generators.RandomData.getBuildName;
 
-public class EditBuildTypeName extends BaseUiTest {
+public class EditBuildTypeTest extends BaseUiTest {
 
     @Test
     @WithAdminSession
