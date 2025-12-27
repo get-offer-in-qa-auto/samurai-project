@@ -3,6 +3,7 @@ package ui.pages.builds;
 import api.models.builds.CreateBuildResponse;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.BasePage;
 
 import static com.codeborne.selenide.Condition.text;
@@ -19,36 +20,56 @@ public class BuildPage extends BasePage {
     private final SelenideElement stopButton = $x("//button[@title='Cancel build...']");
     private final SelenideElement modal = $("#stopBuildFormDialog");
     private final SelenideElement removeButtonInModal = $("input[value='Remove']");
+    private final SelenideElement cancelledBuildText = $x("//div[normalize-space()='Canceled']");
+
 
     public BuildPage findName(CreateBuildResponse createBuildResponse) {
-        SelenideElement name = $x("//span[normalize-space()='" + createBuildResponse.getBuildType().getName()
-                + "']]");
-        name.shouldBe(visible);
-        return this;
+        return StepLogger.log("Поиск имени билда на странице " + createBuildResponse, ()->{
+            SelenideElement name = $x("//span[normalize-space()='" + createBuildResponse.getBuildType().getName()
+                    + "']]");
+            name.shouldBe(visible);
+            return this;
+        });
+
     }
 
     public BuildPage openPage(CreateBuildResponse createBuildResponse) {
-        Selenide.open("/buildConfiguration/" + createBuildResponse.getBuildTypeId() + "/" + createBuildResponse.getId());
-        title.shouldBe(visible);
-        return this;
+        return StepLogger.log("Открытие страницы", ()-> {
+            Selenide.open("/buildConfiguration/" + createBuildResponse.getBuildTypeId() + "/" + createBuildResponse.getId());
+            title.shouldBe(visible);
+            return this;
+        });
     }
 
 
     public BuildPage stopBuild() {
-        stopButton.shouldBe(visible);
-        stopButton.click();
-        return this;
+        return StepLogger.log("Поиск кнопки остановки билда и ее нажатие ", ()->{
+            stopButton.shouldBe(visible);
+            stopButton.click();
+            return this;
+        });
     }
 
     public BuildPage findModal() {
-        modal.shouldBe(visible);
-        return this;
+        return StepLogger.log("Поиск модального окна на странице ", ()->{
+            modal.shouldBe(visible);
+            return this;
+        });
     }
 
     public BuildPage cancelBuildFromQueue() {
-        removeButtonInModal.shouldBe(visible);
-        removeButtonInModal.click();
-        return this;
+        return StepLogger.log("Найти кнопку остановки билда и нажать", ()->{
+            removeButtonInModal.shouldBe(visible);
+            removeButtonInModal.click();
+            return this;
+                });
+    }
+
+    public BuildPage checkIfBuildIsCancelled(){
+        return StepLogger.log("Проверка, что билд отменен", ()->{
+            cancelledBuildText.shouldBe(visible);
+            return this;
+                });
     }
 
     //не могу им пользоваться, тк моя ссылка формируется с помощью айди buildConfiguration + id самого билда
