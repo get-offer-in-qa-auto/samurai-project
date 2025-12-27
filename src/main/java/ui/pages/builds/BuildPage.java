@@ -8,9 +8,9 @@ import ui.pages.BasePage;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.$;
 
 
 public class BuildPage extends BasePage {
@@ -24,7 +24,7 @@ public class BuildPage extends BasePage {
 
 
     public BuildPage findName(CreateBuildResponse createBuildResponse) {
-        return StepLogger.log("Поиск имени билда на странице " + createBuildResponse, ()->{
+        return StepLogger.log("Поиск имени билда на странице " + createBuildResponse, () -> {
             SelenideElement name = $x("//span[normalize-space()='" + createBuildResponse.getBuildType().getName()
                     + "']]");
             name.shouldBe(visible);
@@ -34,7 +34,7 @@ public class BuildPage extends BasePage {
     }
 
     public BuildPage openPage(CreateBuildResponse createBuildResponse) {
-        return StepLogger.log("Открытие страницы", ()-> {
+        return StepLogger.log("Открытие страницы", () -> {
             Selenide.open("/buildConfiguration/" + createBuildResponse.getBuildTypeId() + "/" + createBuildResponse.getId());
             title.shouldBe(visible);
             return this;
@@ -43,7 +43,7 @@ public class BuildPage extends BasePage {
 
 
     public BuildPage stopBuild() {
-        return StepLogger.log("Поиск кнопки остановки билда и ее нажатие ", ()->{
+        return StepLogger.log("Поиск кнопки остановки билда и ее нажатие ", () -> {
             stopButton.shouldBe(visible);
             stopButton.click();
             return this;
@@ -51,25 +51,25 @@ public class BuildPage extends BasePage {
     }
 
     public BuildPage findModal() {
-        return StepLogger.log("Поиск модального окна на странице ", ()->{
+        return StepLogger.log("Поиск модального окна на странице ", () -> {
             modal.shouldBe(visible);
             return this;
         });
     }
 
     public BuildPage cancelBuildFromQueue() {
-        return StepLogger.log("Найти кнопку остановки билда и нажать", ()->{
+        return StepLogger.log("Найти кнопку остановки билда и нажать", () -> {
             removeButtonInModal.shouldBe(visible);
             removeButtonInModal.click();
             return this;
-                });
+        });
     }
 
-    public BuildPage checkIfBuildIsCancelled(){
-        return StepLogger.log("Проверка, что билд отменен", ()->{
+    public BuildPage checkIfBuildIsCancelled() {
+        return StepLogger.log("Проверка, что билд отменен", () -> {
             cancelledBuildText.shouldBe(visible);
             return this;
-                });
+        });
     }
 
     //не могу им пользоваться, тк моя ссылка формируется с помощью айди buildConfiguration + id самого билда

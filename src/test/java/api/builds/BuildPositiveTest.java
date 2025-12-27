@@ -127,7 +127,7 @@ public class BuildPositiveTest extends BaseTest {
         softly.assertThat(canceledBuild.getCanceledInfo()).isNotNull();
         softly.assertThat(canceledBuild.getCanceledInfo().getText()).isEqualTo(comment);
 
-       //убедиться, что билд действительно отменен и его нет в очереди (статус finished)
+        //убедиться, что билд действительно отменен и его нет в очереди (статус finished)
 
         BuildSteps.checkIfBuildIsAlreadyCanceled(createdBuild);
 
