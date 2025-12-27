@@ -11,6 +11,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static api.generators.RandomData.getProjectName;
@@ -19,6 +20,7 @@ public class GetProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Получение проекта")
     public void userCanGetProjectById() {
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
         GetProjectsResponse.Project gettedProject = new CrudRequester(
@@ -36,6 +38,7 @@ public class GetProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Невозможность получения проекта с невалидным id")
     public void userCannotGetProjectWithInvalidId() {
         int matchedCount = new CrudRequester(
                 RequestSpecs.userAuthSpecWithToken(),

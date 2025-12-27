@@ -2,8 +2,8 @@ package ui.pages.project;
 
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.BasePage;
-
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
@@ -18,16 +18,23 @@ public class AllProjectsPage extends BasePage<AllProjectsPage> {
     }
 
     public CreateProjectPage openCreationProjectPage() {
-        click(createProjectButton);
-        return new CreateProjectPage();
+        return StepLogger.log("Переход на страницу создания проекта", () -> {
+            click(createProjectButton);
+            return new CreateProjectPage();
+        });
     }
 
     public CertainProjectPage openCertainProject(String name) {
-        click($(Selectors.byTitle(name)));
-        return new CertainProjectPage(name);
+        return StepLogger.log("Открытие проекта: " + name, () -> {
+            click($(Selectors.byTitle(name)));
+            return new CertainProjectPage(name);
+        });
     }
 
     public boolean projectShouldNotPresent(String name) {
-        return $$(Selectors.byTitle(name)).isEmpty();
+        return StepLogger.log("Проверка отсутствия проекта: " + name, () ->
+                $$(Selectors.byTitle(name)).isEmpty()
+        );
     }
+
 }

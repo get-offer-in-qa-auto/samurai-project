@@ -9,6 +9,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import common.annotations.WithAuthUser;
 import common.messages.ProjectUiMessage;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
 import ui.pages.project.AllProjectsPage;
@@ -21,6 +22,7 @@ public class CreateProjectTest extends BaseUiTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Успешное создание проекта мануально")
     public void userCanCreateProjectManually() {
         CreateProjectManuallyRequest projectModel = RandomModelGenerator.generate(CreateProjectManuallyRequest.class);
 
@@ -38,6 +40,7 @@ public class CreateProjectTest extends BaseUiTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Успешное создание проекта из репозитория")
     public void userCanCreateProjectFromRepository() {
         var projectName = RandomData.getProjectName();
 
@@ -55,6 +58,7 @@ public class CreateProjectTest extends BaseUiTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта с пустым id")
     public void userCanNotCreateProjectManuallyWithEmptyId() {
         var projectName = RandomData.getProjectName();
         var resultMsg = new AllProjectsPage().open().openCreationProjectPage()
