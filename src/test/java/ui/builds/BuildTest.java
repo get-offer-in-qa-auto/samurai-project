@@ -38,7 +38,6 @@ public class BuildTest extends BaseUiTest {
         //проверим в апи
         BuildSteps.getBuildFromQueue(createdBuild);
 
-
     }
 
     @Test
@@ -70,6 +69,5 @@ public class BuildTest extends BaseUiTest {
 
         //проверим через апи
         BuildSteps.checkIfBuildIsAlreadyCanceled(createBuildResponse);
-
     }
 }
