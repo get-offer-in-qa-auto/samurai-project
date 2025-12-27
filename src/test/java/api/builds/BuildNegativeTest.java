@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import static common.messages.BuildErrorMessage.NOTHING_FOUND_BY_LOCATOR;
 import static common.messages.BuildErrorMessage.NO_BUILD_TYPE_NOR_TEMPLATE_IS_FOUND_BY_ID;
 
-public class BuildTestNegative extends BaseTest {
+public class BuildNegativeTest extends BaseTest {
 
     public static Stream<Arguments> invalidBuildType() {
         return Stream.of(
@@ -43,6 +43,7 @@ public class BuildTestNegative extends BaseTest {
     @ParameterizedTest
     @MethodSource("invalidBuildType")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Юзер не может создать билд с невалидным buildType")
     public void userCanNotCreateBuildWithInvalidBuildType(String buildTypeId, BuildErrorMessage expectedError) {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
@@ -83,6 +84,7 @@ public class BuildTestNegative extends BaseTest {
     @ParameterizedTest
     @MethodSource("invalidBuildId")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Юзер не может вернуть из очереди несуществующий билд")
     public void userCantGetNonExitedBuild(Integer invalidId) {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
@@ -96,13 +98,14 @@ public class BuildTestNegative extends BaseTest {
         softly.assertThat(errorResponse.getErrors()).isNotEmpty();
         softly.assertThat(errorResponse.getErrors().getFirst().getMessage())
                 .contains(BuildErrorMessage.NO_BUILD_FOUND_BY_ID.getMessage());
+
     }
 
     //Тест 3: удалить несуществующий билд
     @ParameterizedTest
     @MethodSource("invalidBuildId")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
-
+    @DisplayName("Юзер не может удалить несуществующий билд")
     public void userCantDeleteNonExistedBuild(Integer invalidId) {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
@@ -120,7 +123,7 @@ public class BuildTestNegative extends BaseTest {
     //Тест 4: отменить несуществующий билд
     @ParameterizedTest
     @MethodSource("invalidBuildId")
-    @DisplayName("Cant cancel non-existed build from queue via API")
+    @DisplayName("Юзер не может отменить несуществующий билд")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCantCancelNonExistedBuild(Integer invalidId, TestInfo testInfo) {
         CreateProjectResponse project =
@@ -146,6 +149,7 @@ public class BuildTestNegative extends BaseTest {
     //Тест 5: удалить удаленный билд
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Юзер не может удалить уже удаленный билд")
     public void userCannotDeleteBuildTwice() {
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
@@ -170,9 +174,9 @@ public class BuildTestNegative extends BaseTest {
                 .contains(BuildErrorMessage.NO_BUILD_FOUND_BY_ID.getMessage());
     }
 
-    //Тест 6: отменить уже отмененный билд -- кажется, здесь ошибка, потому что всегда будет 200
+    //Тест 6: отменить уже отмененный билд
     @Test
-    @DisplayName("Cancel build from queue via API")
+    @DisplayName("Юзер не может отменить уже отмененный билд")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
 
     public void userCannotCancelBuildTwice(TestInfo testInfo) {
@@ -194,6 +198,6 @@ public class BuildTestNegative extends BaseTest {
         CancelBuildResponse canceledBuild = new ValidatedCrudRequester<CancelBuildResponse>(
                 RequestSpecs.adminAuthSpec(),
                 Endpoint.CANCEL_BUILD,
-                ResponseSpecs.requestReturnsOK()).post(createdBuild, createdBuild.getId()); //не ясно, ошибка это или так и должно быть
+                ResponseSpecs.requestReturnsOK()).post(createdBuild, createdBuild.getId());
     }
 }
