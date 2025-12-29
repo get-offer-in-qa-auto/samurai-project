@@ -13,6 +13,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <test.includes>**/*Test.java</test.includes>
     </properties>
     <dependencies>
         <dependency>
@@ -87,60 +88,39 @@
     <profiles> <!-- Для запуска тестов по профилю -->
         <profile>
             <id>api</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.2.5</version>
-                        <configuration>
-                            <includes>
-                                <include>**/api/**/*Test.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+            <properties>
+                <test.includes>**/api/**/*Test.java</test.includes>
+            </properties>
         </profile>
+
         <profile>
             <id>ui</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.2.5</version>
-                        <configuration>
-                            <includes>
-                                <include>**/ui/**/*Test.java</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/ui/AuthorizationSuperUserTest.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+            <properties>
+                <test.includes>**/ui/**/*Test.java</test.includes>
+            </properties>
         </profile>
+
         <profile>
             <id>run-superuser-test</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <includes>
-                                <include>**/AuthorizationSuperUserTest.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+            <properties>
+                <test.includes>**/AuthorizationSuperUserTest.java</test.includes>
+            </properties>
         </profile>
     </profiles>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <includes>
+                        <include>${test.includes}</include>
+                    </includes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
@@ -151,7 +131,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <release>${java.version}</release>
+                    <release>21</release>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -159,9 +139,6 @@
                             <version>1.18.38</version>
                         </path>
                     </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
