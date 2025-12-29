@@ -31,16 +31,16 @@ jobs:
 
 
       - name: Run superuser tests
-        run: mvn test -P run-superuser-test
+        run: mvn clean test -P run-superuser-test
 
 
       - name: Run API tests
-        run: mvn test -P api
+        run: mvn clean test -P api
         continue-on-error: true
 
 
       - name: Run UI tests
-        run: mvn test -P ui
+        run: mvn clean test -P ui
         continue-on-error: true
 
 
