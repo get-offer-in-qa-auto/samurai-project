@@ -26,6 +26,9 @@ jobs:
             echo "== Lombok in local Maven repo =="
             find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1
 
+      - name: Ensure Lombok dependency is downloaded
+        run: mvn dependency:get -Dartifact=org.projectlombok:lombok:1.18.38
+
       - name: Cache Maven repository
         uses: actions/cache@v4
         with:
