@@ -26,21 +26,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Compile project
+        run: mvn clean compile -DskipTests
+
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
 
       - name: Run superuser tests
-        run: mvn clean test -P run-superuser-test
+        run: mvn  test -P run-superuser-test
 
 
       - name: Run API tests
-        run: mvn clean test -P api
+        run: mvn  test -P api
         continue-on-error: true
 
 
       - name: Run UI tests
-        run: mvn clean test -P ui
+        run: mvn  test -P ui
         continue-on-error: true
 
 
