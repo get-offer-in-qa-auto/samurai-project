@@ -17,6 +17,9 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Make Maven Wrapper executable
+        run: chmod +x ./mvnw
+
       - name: Compile project (download dependencies and Lombok)
         run: ./mvnw clean compile -DskipTests
 
@@ -57,4 +60,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: target/site/allure-maven-plugin
+          path: target/site
