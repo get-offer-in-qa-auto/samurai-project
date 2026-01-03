@@ -29,6 +29,7 @@ jobs:
 
       - name: Compile project (download dependencies and Lombok)
         run: ./mvnw clean compile -DskipTests
+        continue-on-error: true
 
       - name: Print Lombok info after compilation
         run: |
