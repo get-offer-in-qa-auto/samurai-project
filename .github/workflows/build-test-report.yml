@@ -26,11 +26,14 @@ jobs:
           java -version
           javac -version
           ./mvnw -v
-          echo "== Lombok in local Maven repo =="
-          find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1
 
       - name: Compile project (download dependencies and Lombok)
         run: ./mvnw clean compile -DskipTests
+
+      - name: Print Lombok info after compilation
+        run: |
+          echo "== Lombok in local Maven repo after compile =="
+          find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1 || echo "Lombok not found"
 
       - name: Cache Maven repository
         uses: actions/cache@v4
