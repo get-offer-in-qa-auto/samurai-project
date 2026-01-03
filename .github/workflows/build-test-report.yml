@@ -17,10 +17,6 @@ jobs:
           java-version: '21'
           cache: maven
           maven-version: '3.9.9'
-
-      - name: Compile project (download dependencies and Lombok)
-        run: mvn clean compile -DskipTests
-
       - name: Print environment info
         run: |
             echo "== Java & Maven info =="
@@ -29,6 +25,9 @@ jobs:
             mvn -version
             echo "== Lombok in local Maven repo =="
             find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1
+
+      - name: Compile project (download dependencies and Lombok)
+        run: mvn clean compile -DskipTests
 
       - name: Cache Maven repository
         uses: actions/cache@v4
