@@ -31,6 +31,9 @@ jobs:
         run: ./mvnw clean compile -DskipTests
         continue-on-error: true
 
+      - name: Check annotation processors
+        run: ./mvnw help:effective-pom
+
       - name: Print Lombok info after compilation
         run: |
           echo "== Lombok in local Maven repo after compile =="
