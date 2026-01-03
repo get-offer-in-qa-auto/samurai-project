@@ -20,6 +20,15 @@ jobs:
       - name: Make Maven Wrapper executable
         run: chmod +x ./mvnw
 
+      - name: Print environment info
+        run: |
+          echo "== Java & Maven info =="
+          java -version
+          javac -version
+          ./mvnw -v
+          echo "== Lombok in local Maven repo =="
+          find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1
+
       - name: Compile project (download dependencies and Lombok)
         run: ./mvnw clean compile -DskipTests
 
