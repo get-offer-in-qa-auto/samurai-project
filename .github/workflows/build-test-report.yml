@@ -34,7 +34,7 @@ jobs:
         run: ./mvnw dependency:tree | grep lombok || echo "Lombok not found"
 
       - name: Compile project (download dependencies and Lombok)
-        run: ./mvnw clean compile -DskipTests -Dmaven.compiler.showWarnings=true
+        run: ./mvnw clean install -DskipTests -Dmaven.compiler.showWarnings=true
         continue-on-error: true
 
       - name: List compiled classes with getMessage method
