@@ -16,18 +16,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: maven
-          maven-version: '3.9.9'
+
       - name: Print environment info
         run: |
-            echo "== Java & Maven info =="
-            java -version
-            javac -version
-            mvn -version
-            echo "== Lombok in local Maven repo =="
-            find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1
+          echo "== Java & Maven info =="
+          java -version
+          javac -version
+          ./mvnw -v
+          echo "== Lombok in local Maven repo =="
+          find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1
 
       - name: Compile project (download dependencies and Lombok)
-        run: mvn clean compile -DskipTests
+        run: ./mvnw clean compile -DskipTests
 
       - name: Cache Maven repository
         uses: actions/cache@v4
@@ -43,22 +43,22 @@ jobs:
 
 
       - name: Run superuser tests
-        run: mvn  test -P run-superuser-test
+        run: ./mvnw test -P run-superuser-test
 
 
       - name: Run API tests
-        run: mvn  test -P api
+        run: ./mvnw test -P api
         continue-on-error: true
 
 
       - name: Run UI tests
-        run: mvn  test -P ui
+        run: ./mvnw test -P ui
         continue-on-error: true
 
 
       - name: Generate Allure Report
         if: always()
-        run: mvn allure:report || true
+        run: ./mvnw allure:report || true
 
 
       - name: Upload Allure Report
