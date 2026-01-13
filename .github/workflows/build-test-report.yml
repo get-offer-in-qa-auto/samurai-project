@@ -22,26 +22,22 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-    
+            ${{ runner.os }}-maven-
 
       - name: Give execute permission to mvnw
         run: chmod +x mvnw
 
-
-
       - name: Verify Lombok download
         run: |
-         echo "=== Before compilation ==="
-         find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null || echo "No Lombok JAR found"
-    
-         echo "=== Download Lombok explicitly ==="
-         ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.36 -DoutputDirectory=/tmp
-    
-         echo "=== After download ==="
-         ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
-         find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null         
-
-
+          echo "=== Before compilation ==="
+          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null || echo "No Lombok JAR found"
+          
+          echo "=== Download Lombok explicitly ==="
+          ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.36 -DoutputDirectory=/tmp
+          
+          echo "=== After download ==="
+          ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
+          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null
 
       - name: Print environment info
         run: |
@@ -52,48 +48,48 @@ jobs:
 
       - name: Test compilation with simple javac
         run: |
-         echo "=== Direct javac compilation ==="
-
-    # Находим все Java файлы
-         find src/main/java -name "*.java" > sources.txt
-    
-    # Создаем директорию для классов
-         mkdir -p test-classes
-    
-    # Пробуем скомпилировать напрямую
-         if javac -d test-classes -cp "target/classes:$(find ~/.m2/repository -name "*.jar" | tr '\n' ':')" @sources.txt 2>&1 | grep -i "buildtype"; then
-         echo "Found BuildType issue with direct javac"
-         else
-         echo "Direct javac compilation OK"
-         fi
+          echo "=== Direct javac compilation ==="
+          
+          # Находим все Java файлы
+          find src/main/java -name "*.java" > sources.txt
+          
+          # Создаем директорию для классов
+          mkdir -p test-classes
+          
+          # Пробуем скомпилировать напрямую
+          if javac -d test-classes -cp "target/classes:$(find ~/.m2/repository -name "*.jar" | tr '\n' ':')" @sources.txt 2>&1 | grep -i "buildtype"; then
+            echo "Found BuildType issue with direct javac"
+          else
+            echo "Direct javac compilation OK"
+          fi
 
       - name: Check file encoding and paths
-  run: |
-    echo "=== Checking BuildType.java in CI ==="
-    file="src/main/java/api/models/buildConfiguration/BuildType.java"
-    
-    echo "File exists: $(ls -la "$file")"
-    echo "Encoding:"
-    file -i "$file"
-    
-    echo "First 10 lines:"
-    head -10 "$file"
-    
-    echo "Package declaration:"
-    grep "^package" "$file"
-    
-    echo "Class declaration:"
-    grep "class BuildType" "$file"    
+        run: |
+          echo "=== Checking BuildType.java in CI ==="
+          file="src/main/java/api/models/buildConfiguration/BuildType.java"
+          
+          echo "File exists: $(ls -la "$file")"
+          echo "Encoding:"
+          file -i "$file"
+          
+          echo "First 10 lines:"
+          head -10 "$file"
+          
+          echo "Package declaration:"
+          grep "^package" "$file"
+          
+          echo "Class declaration:"
+          grep "class BuildType" "$file"
 
       - name: Debug Lombok annotation processing
         run: |
           echo "=== Checking Lombok ==="
           ./mvnw help:effective-pom -Doutput=effective-pom.xml
           grep -A10 -B10 "annotationProcessorPaths" effective-pom.xml
-    
-           echo "=== Attempting compilation with debug ==="
-          ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30    
           
+          echo "=== Attempting compilation with debug ==="
+          ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30
+
       - name: Compile project
         run: ./mvnw clean compile -DskipTests -q
 
