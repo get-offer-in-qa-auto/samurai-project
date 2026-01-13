@@ -35,7 +35,7 @@ jobs:
          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null || echo "No Lombok JAR found"
     
          echo "=== Download Lombok explicitly ==="
-         ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.32 -DoutputDirectory=/tmp
+         ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.36 -DoutputDirectory=/tmp
     
          echo "=== After download ==="
          ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
