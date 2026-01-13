@@ -33,6 +33,15 @@ jobs:
           java -version
           javac -version
           ./mvnw -v
+          
+      - name: Debug Lombok annotation processing
+        run: |
+          echo "=== Checking Lombok ==="
+          ./mvnw help:effective-pom -Doutput=effective-pom.xml
+          grep -A10 -B10 "annotationProcessorPaths" effective-pom.xml
+    
+           echo "=== Attempting compilation with debug ==="
+          ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30    
 
 #      - name: Download dependencies (including Lombok)
 #        run: ./mvnw dependency:resolve
