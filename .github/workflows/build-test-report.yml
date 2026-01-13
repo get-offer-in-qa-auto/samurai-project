@@ -46,22 +46,7 @@ jobs:
           javac -version
           ./mvnw -v
 
-      - name: Test compilation with simple javac
-        run: |
-          echo "=== Direct javac compilation ==="
-          
-          # Находим все Java файлы
-          find src/main/java -name "*.java" > sources.txt
-          
-          # Создаем директорию для классов
-          mkdir -p test-classes
-          
-          # Пробуем скомпилировать напрямую
-          if javac -d test-classes -cp "target/classes:$(find ~/.m2/repository -name "*.jar" | tr '\n' ':')" @sources.txt 2>&1 | grep -i "buildtype"; then
-            echo "Found BuildType issue with direct javac"
-          else
-            echo "Direct javac compilation OK"
-          fi
+
 
       - name: Debug Lombok in CI
         run: |
@@ -84,6 +69,11 @@ jobs:
           
           echo "=== Attempting compilation with debug ==="
           ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30
+
+      - name: Clean workspace
+        run: |
+         rm -rf ~/.m2/repository
+         ./mvnw clean
 
       - name: Compile project
         run: ./mvnw clean compile -DskipTests -q
