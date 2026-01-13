@@ -16,6 +16,24 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Clear Lombok cache
+        run: |
+          echo "=== Clearing Lombok cache ==="
+          rm -rf ~/.m2/repository/org/projectlombok
+          echo "Cache cleared"    
+
+      - name: Verify Lombok download
+        run: |
+         echo "=== Before compilation ==="
+         find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null || echo "No Lombok JAR found"
+    
+         echo "=== Download Lombok explicitly ==="
+         ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.32 -DoutputDirectory=/tmp
+    
+         echo "=== After download ==="
+         ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
+         find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null         
+
       - name: Cache Maven repository
         uses: actions/cache@v4
         with:
@@ -33,7 +51,7 @@ jobs:
           java -version
           javac -version
           ./mvnw -v
-          
+
       - name: Debug Lombok annotation processing
         run: |
           echo "=== Checking Lombok ==="
