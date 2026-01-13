@@ -11,8 +11,9 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>21</java.version>
         <maven.surefire.version>3.2.5</maven.surefire.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>
@@ -27,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId> <!-- Уже включает engine и params -->
+            <artifactId>junit-jupiter</artifactId>
             <version>5.10.2</version>
         </dependency>
         <dependency>
@@ -55,39 +56,35 @@
             <artifactId>selenide</artifactId>
             <version>7.9.1</version>
         </dependency>
-        <!-- Подключение к JUnit 5 -->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency><!-- Подключение к JUnit 5 -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-junit5</artifactId>
-            <version>2.30.0</version>
+            <version>2.29.1</version>
         </dependency>
-        <!-- Для API тестов с RestAssured -->
-        <dependency>
+        <dependency> <!-- Для API тестов с RestAssured -->
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-rest-assured</artifactId>
-            <version>2.30.0</version>
+            <version>2.29.1</version>
         </dependency>
-        <!-- Для UI тестов с Selenide -->
-        <dependency>
+        <dependency><!-- Для UI тестов с Selenide -->
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-selenide</artifactId>
-            <version>2.30.0</version>
+            <version>2.29.1</version>
         </dependency>
-        <!-- Для улучшения отображения assertThat -->
-        <dependency>
+        <dependency> <!-- Для улучшения отображения assertThat -->
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-assertj</artifactId>
-            <version>2.30.0</version>
-        </dependency>
-        <!-- Swagger Coverage -->
-        <dependency>
-            <groupId>com.github.viclovsky</groupId>
-            <artifactId>swagger-coverage-rest-assured</artifactId>
-            <version>1.5.0</version>
+            <version>2.29.1</version>
         </dependency>
     </dependencies>
-    <!-- Плагины для выполнения тестов про профилю -->
-    <profiles>
+
+    <profiles> <!-- Для запуска тестов по профилю -->
         <profile>
             <id>api</id>
             <build>
@@ -105,7 +102,6 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>ui</id>
             <build>
@@ -118,22 +114,42 @@
                             <includes>
                                 <include>**/ui/**/*Test.java</include>
                             </includes>
+                            <excludes>
+                                <exclude>**/ui/AuthorizationSuperUserTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>run-superuser-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.5</version>
+                        <configuration>
+                            <includes>
+                                <include>**/AuthorizationSuperUserTest.java</include>
+                            </includes>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
+
     <build>
         <plugins>
-            <!-- Плагин для компиляции -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -147,26 +163,32 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-            <!-- Плагин для построения отчетов -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>3.2.5</version>
             </plugin>
-            <!-- Плагин checkstyle -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.6.0</version>
-                <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
-                </configuration>
-            </plugin>
-            <!-- Плагин allure-maven -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
                 <version>2.15.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configLocation>src/main/resources/checkstyle.xml</configLocation>
+                    <failOnViolation>true</failOnViolation>
+                </configuration>
             </plugin>
         </plugins>
     </build>
