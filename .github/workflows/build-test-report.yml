@@ -63,23 +63,18 @@ jobs:
             echo "Direct javac compilation OK"
           fi
 
-      - name: Check file encoding and paths
+      - name: Debug Lombok in CI
         run: |
-          echo "=== Checking BuildType.java in CI ==="
-          file="src/main/java/api/models/buildConfiguration/BuildType.java"
-          
-          echo "File exists: $(ls -la "$file")"
-          echo "Encoding:"
-          file -i "$file"
-          
-          echo "First 10 lines:"
-          head -10 "$file"
-          
-          echo "Package declaration:"
-          grep "^package" "$file"
-          
-          echo "Class declaration:"
-          grep "class BuildType" "$file"
+          echo "=== Checking Lombok annotation processing ==="
+
+          # Проверим annotation processing
+          ./mvnw help:effective-pom -Doutput=effective-pom.xml
+          echo "=== Annotation processor paths ==="
+          grep -A20 "annotationProcessorPaths" effective-pom.xml
+
+          echo "=== Checking if Lombok JAR is in annotation path ==="
+          find ~/.m2/repository/org/projectlombok -name "*.jar" | head -5
+
 
       - name: Debug Lombok annotation processing
         run: |
