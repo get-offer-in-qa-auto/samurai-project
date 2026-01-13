@@ -24,6 +24,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Give execute permission to mvnw
+        run: chmod +x mvnw
+
       - name: Print environment info
         run: |
           echo "== Java & Maven info =="
@@ -66,9 +69,6 @@ jobs:
 
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
-
-      - name: Give execute permission to mvnw
-        run: chmod +x mvnw
 
       - name: Run superuser tests
         run: ./mvnw test -P run-superuser-test
