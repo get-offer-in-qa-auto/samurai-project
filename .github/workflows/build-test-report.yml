@@ -16,11 +16,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Clear Lombok cache
-        run: |
-          echo "=== Clearing Lombok cache ==="
-          rm -rf ~/.m2/repository/org/projectlombok
-          echo "Cache cleared"    
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-    
+
+      - name: Give execute permission to mvnw
+        run: chmod +x mvnw
+
+
 
       - name: Verify Lombok download
         run: |
@@ -34,16 +41,7 @@ jobs:
          ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null         
 
-      - name: Cache Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
-      - name: Give execute permission to mvnw
-        run: chmod +x mvnw
 
       - name: Print environment info
         run: |
@@ -60,39 +58,9 @@ jobs:
     
            echo "=== Attempting compilation with debug ==="
           ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30    
-
-#      - name: Download dependencies (including Lombok)
-#        run: ./mvnw dependency:resolve
-#
-#      - name: Verify Lombok in dependencies
-#        run: ./mvnw dependency:tree | grep lombok || echo "Lombok not found"
-#
-#      - name: Compile project (download dependencies and Lombok)
-#        run: ./mvnw clean install -DskipTests -Dmaven.compiler.showWarnings=true
-#        continue-on-error: true
-#
-#      - name: List compiled classes with getMessage method
-#        run: find target/classes -name "*.class" -exec javap -cp target/classes {} \; | grep getMessage || echo "No getMessage method found"
-#
-#      - name: Force annotation processing debug
-#        run: ./mvnw compile -X | tee mvn_debug.log | grep lombok
-#
-#      - name: Check annotation processors
-#        run: ./mvnw help:effective-pom
-#
-#      - name: Print Lombok info after compilation
-#        run: |
-#          echo "== Lombok in local Maven repo after compile =="
-#          find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1 || echo "Lombok not found"
-
-#      - name: Cache Maven repository
-#        uses: actions/cache@v4
-#        with:
-#          path: ~/.m2/repository
-#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            ${{ runner.os }}-maven-
-
+          
+      - name: Compile project
+        run: ./mvnw clean compile -DskipTests
 
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
