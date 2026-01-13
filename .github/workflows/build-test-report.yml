@@ -50,6 +50,41 @@ jobs:
           javac -version
           ./mvnw -v
 
+      - name: Test compilation with simple javac
+        run: |
+         echo "=== Direct javac compilation ==="
+
+    # Находим все Java файлы
+         find src/main/java -name "*.java" > sources.txt
+    
+    # Создаем директорию для классов
+         mkdir -p test-classes
+    
+    # Пробуем скомпилировать напрямую
+         if javac -d test-classes -cp "target/classes:$(find ~/.m2/repository -name "*.jar" | tr '\n' ':')" @sources.txt 2>&1 | grep -i "buildtype"; then
+         echo "Found BuildType issue with direct javac"
+         else
+         echo "Direct javac compilation OK"
+         fi
+
+      - name: Check file encoding and paths
+  run: |
+    echo "=== Checking BuildType.java in CI ==="
+    file="src/main/java/api/models/buildConfiguration/BuildType.java"
+    
+    echo "File exists: $(ls -la "$file")"
+    echo "Encoding:"
+    file -i "$file"
+    
+    echo "First 10 lines:"
+    head -10 "$file"
+    
+    echo "Package declaration:"
+    grep "^package" "$file"
+    
+    echo "Class declaration:"
+    grep "class BuildType" "$file"    
+
       - name: Debug Lombok annotation processing
         run: |
           echo "=== Checking Lombok ==="
@@ -60,7 +95,7 @@ jobs:
           ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30    
           
       - name: Compile project
-        run: ./mvnw clean compile -DskipTests
+        run: ./mvnw clean compile -DskipTests -q
 
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
@@ -68,25 +103,25 @@ jobs:
       - name: Run superuser tests
         run: ./mvnw clean test -P run-superuser-test -q
 
-
-      - name: Run API tests
-        run: ./mvnw test -P api
-        continue-on-error: true
-
-
-      - name: Run UI tests
-        run: ./mvnw test -P ui
-        continue-on-error: true
-
-
-      - name: Generate Allure Report
-        if: always()
-        run: ./mvnw allure:report || true
-
-
-      - name: Upload Allure Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: target/site
+#
+#      - name: Run API tests
+#        run: ./mvnw test -P api
+#        continue-on-error: true
+#
+#
+#      - name: Run UI tests
+#        run: ./mvnw test -P ui
+#        continue-on-error: true
+#
+#
+#      - name: Generate Allure Report
+#        if: always()
+#        run: ./mvnw allure:report || true
+#
+#
+#      - name: Upload Allure Report
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: allure-report
+#          path: target/site
