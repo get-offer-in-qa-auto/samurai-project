@@ -30,14 +30,15 @@ declare -A volumes=(
 
 for name in "${!volumes[@]}"; do
     dir="${volumes[$name]}"
-    if [ -d "$dir" ]; then
-        echo "Checking $name directory: $dir"
-        sudo chown -R 1000:1000 "$dir"
-        chmod -R u+rwX "$dir"
-        echo "✅ Permissions fixed for $name"
-    else
-        echo "⚠️ Directory $dir does not exist, skipping..."
+    # Создаем директорию, если её нет
+    if [ ! -d "$dir" ]; then
+        echo "⚠️ Directory $dir does not exist, creating..."
+        mkdir -p "$dir"
     fi
+    echo "Checking $name directory: $dir"
+    sudo chown -R 1000:1000 "$dir"
+    chmod -R u+rwX "$dir"
+    echo "✅ Permissions fixed for $name"
 done
 
 echo "=== Permissions check finished ==="
