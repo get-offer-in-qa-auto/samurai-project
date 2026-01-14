@@ -19,7 +19,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.38</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -149,6 +148,7 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+
             <!-- Плагин для построения отчетов -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
