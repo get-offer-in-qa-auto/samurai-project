@@ -77,9 +77,8 @@ jobs:
 
       - name: Run superuser tests
         run: ./mvnw test -P run-superuser-test
-        env:
-          SERVER: http://teamcity-server:8111
-          UIREMOTE: http://selenoid:4444/wd/hub
+          -Dselenide.baseUrl=http://teamcity-server:8111 
+          -Dselenide.remote=http://selenoid:4444/wd/hub
 
       - name: Run API tests
         run: ./mvnw test -P api
