@@ -1,20 +1,55 @@
-#name: Build, UI & API Tests, Report
-#
-#on: [ push, workflow_dispatch ]
-#
-#jobs:
-#  run-tests:
-#    name: Build and run tests
-#    runs-on: ubuntu-latest
-#    steps:
+name: Build, UI & API Tests, Report
+
+on: [ push, workflow_dispatch ]
+
+jobs:
+  run-tests:
+    name: Build and run tests
+    runs-on: ubuntu-latest
+    steps:
 #      - name: Checkout repository
 #        uses: actions/checkout@v4
 #
-#      - name: Set up JDK
+#      - name: Set up JDK and Maven
 #        uses: actions/setup-java@v4
 #        with:
 #          distribution: 'temurin'
 #          java-version: '21'
+#          cache: maven
+#
+#      - name: Make Maven Wrapper executable
+#        run: chmod +x ./mvnw
+#
+#      - name: Print environment info
+#        run: |
+#          echo "== Java & Maven info =="
+#          java -version
+#          javac -version
+#          ./mvnw -v
+#
+#      - name: Download dependencies (including Lombok)
+#        run: ./mvnw dependency:resolve
+#
+#      - name: Verify Lombok in dependencies
+#        run: ./mvnw dependency:tree | grep lombok || echo "Lombok not found"
+#
+#      - name: Compile project (download dependencies and Lombok)
+#        run: ./mvnw clean install -DskipTests -Dmaven.compiler.showWarnings=true
+#        continue-on-error: true
+#
+#      - name: List compiled classes with getMessage method
+#        run: find target/classes -name "*.class" -exec javap -cp target/classes {} \; | grep getMessage || echo "No getMessage method found"
+#
+#      - name: Force annotation processing debug
+#        run: ./mvnw compile -X | tee mvn_debug.log | grep lombok
+#
+#      - name: Check annotation processors
+#        run: ./mvnw help:effective-pom
+#
+#      - name: Print Lombok info after compilation
+#        run: |
+#          echo "== Lombok in local Maven repo after compile =="
+#          find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1 || echo "Lombok not found"
 #
 #      - name: Cache Maven repository
 #        uses: actions/cache@v4
@@ -24,85 +59,54 @@
 #          restore-keys: |
 #            ${{ runner.os }}-maven-
 #
-#      - name: Give execute permission to mvnw
-#        run: chmod +x mvnw
-#
-#      - name: Verify Lombok download
-#        run: |
-#          echo "=== Before compilation ==="
-#          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null || echo "No Lombok JAR found"
-#
-#          echo "=== Download Lombok explicitly ==="
-#          ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.36 -DoutputDirectory=/tmp
-#
-#          echo "=== After download ==="
-#          ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
-#          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null
-#
-#      - name: Print environment info
-#        run: |
-#          echo "== Java & Maven info =="
-#          java -version
-#          javac -version
-#          ./mvnw -v
-#
-#
-#
-#      - name: Debug Lombok in CI
-#        run: |
-#          echo "=== Checking Lombok annotation processing ==="
-#
-#          # Проверим annotation processing
-#          ./mvnw help:effective-pom -Doutput=effective-pom.xml
-#          echo "=== Annotation processor paths ==="
-#          grep -A20 "annotationProcessorPaths" effective-pom.xml
-#
-#          echo "=== Checking if Lombok JAR is in annotation path ==="
-#          find ~/.m2/repository/org/projectlombok -name "*.jar" | head -5
-#
-#
-#      - name: Debug Lombok annotation processing
-#        run: |
-#          echo "=== Checking Lombok ==="
-#          ./mvnw help:effective-pom -Doutput=effective-pom.xml
-#          grep -A10 -B10 "annotationProcessorPaths" effective-pom.xml
-#
-#          echo "=== Attempting compilation with debug ==="
-#          ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30
-#
-#      - name: Clean workspace
-#        run: |
-#         rm -rf ~/.m2/repository
-#         ./mvnw clean
-#
-#      - name: Compile project
-#        run: ./mvnw clean compile -DskipTests -q
 #
 #      - name: Set up services
 #        run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
-#
-#      - name: Run superuser tests
-#        run: ./mvnw clean test -P run-superuser-test -q
 
-#
-#      - name: Run API tests
-#        run: ./mvnw test -P api
-#        continue-on-error: true
-#
-#
-#      - name: Run UI tests
-#        run: ./mvnw test -P ui
-#        continue-on-error: true
-#
-#
-#      - name: Generate Allure Report
-#        if: always()
-#        run: ./mvnw allure:report || true
-#
-#
-#      - name: Upload Allure Report
-#        if: always()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: allure-report
-#          path: target/site
+      - name: Checkout repository              # шаг 1 - копируем файлы репозитория внутрь CI агента
+        uses: actions/checkout@v4
+
+      - name: Set up JDK                       # шаг 2 - устанавливаем JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Maven repository           # шаг 3 - создаем cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up services                  # шаг 4 - запускаем restart_docker.sh
+        run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
+
+      - name: Give execute permission to mvnw  # шаг 5 - устанавливаем права доступа
+        run: chmod +x mvnw
+
+      - name: Run superuser tests
+        run: ./mvnw test -P run-superuser-test
+
+      - name: Run API tests
+        run: ./mvnw test -P api
+        continue-on-error: true
+
+
+      - name: Run UI tests
+        run: ./mvnw test -P ui
+        continue-on-error: true
+
+
+      - name: Generate Allure Report
+        if: always()
+        run: ./mvnw allure:report || true
+
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site
