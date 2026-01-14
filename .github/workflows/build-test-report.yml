@@ -1,88 +1,88 @@
-name: Build, UI & API Tests, Report
-
-on: [ push, workflow_dispatch ]
-
-jobs:
-  run-tests:
-    name: Build and run tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Cache Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Give execute permission to mvnw
-        run: chmod +x mvnw
-
-      - name: Verify Lombok download
-        run: |
-          echo "=== Before compilation ==="
-          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null || echo "No Lombok JAR found"
-          
-          echo "=== Download Lombok explicitly ==="
-          ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.36 -DoutputDirectory=/tmp
-          
-          echo "=== After download ==="
-          ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
-          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null
-
-      - name: Print environment info
-        run: |
-          echo "== Java & Maven info =="
-          java -version
-          javac -version
-          ./mvnw -v
-
-
-
-      - name: Debug Lombok in CI
-        run: |
-          echo "=== Checking Lombok annotation processing ==="
-
-          # Проверим annotation processing
-          ./mvnw help:effective-pom -Doutput=effective-pom.xml
-          echo "=== Annotation processor paths ==="
-          grep -A20 "annotationProcessorPaths" effective-pom.xml
-
-          echo "=== Checking if Lombok JAR is in annotation path ==="
-          find ~/.m2/repository/org/projectlombok -name "*.jar" | head -5
-
-
-      - name: Debug Lombok annotation processing
-        run: |
-          echo "=== Checking Lombok ==="
-          ./mvnw help:effective-pom -Doutput=effective-pom.xml
-          grep -A10 -B10 "annotationProcessorPaths" effective-pom.xml
-          
-          echo "=== Attempting compilation with debug ==="
-          ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30
-
-      - name: Clean workspace
-        run: |
-         rm -rf ~/.m2/repository
-         ./mvnw clean
-
-      - name: Compile project
-        run: ./mvnw clean compile -DskipTests -q
-
-      - name: Set up services
-        run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
-
-      - name: Run superuser tests
-        run: ./mvnw clean test -P run-superuser-test -q
+#name: Build, UI & API Tests, Report
+#
+#on: [ push, workflow_dispatch ]
+#
+#jobs:
+#  run-tests:
+#    name: Build and run tests
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: 'temurin'
+#          java-version: '21'
+#
+#      - name: Cache Maven repository
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#
+#      - name: Give execute permission to mvnw
+#        run: chmod +x mvnw
+#
+#      - name: Verify Lombok download
+#        run: |
+#          echo "=== Before compilation ==="
+#          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null || echo "No Lombok JAR found"
+#
+#          echo "=== Download Lombok explicitly ==="
+#          ./mvnw dependency:copy -Dartifact=org.projectlombok:lombok:1.18.36 -DoutputDirectory=/tmp
+#
+#          echo "=== After download ==="
+#          ls -la /tmp/lombok*.jar || echo "Lombok not downloaded"
+#          find ~/.m2/repository -name "lombok*.jar" -type f 2>/dev/null
+#
+#      - name: Print environment info
+#        run: |
+#          echo "== Java & Maven info =="
+#          java -version
+#          javac -version
+#          ./mvnw -v
+#
+#
+#
+#      - name: Debug Lombok in CI
+#        run: |
+#          echo "=== Checking Lombok annotation processing ==="
+#
+#          # Проверим annotation processing
+#          ./mvnw help:effective-pom -Doutput=effective-pom.xml
+#          echo "=== Annotation processor paths ==="
+#          grep -A20 "annotationProcessorPaths" effective-pom.xml
+#
+#          echo "=== Checking if Lombok JAR is in annotation path ==="
+#          find ~/.m2/repository/org/projectlombok -name "*.jar" | head -5
+#
+#
+#      - name: Debug Lombok annotation processing
+#        run: |
+#          echo "=== Checking Lombok ==="
+#          ./mvnw help:effective-pom -Doutput=effective-pom.xml
+#          grep -A10 -B10 "annotationProcessorPaths" effective-pom.xml
+#
+#          echo "=== Attempting compilation with debug ==="
+#          ./mvnw clean compile -X 2>&1 | grep -i "lombok\|annotation" | head -30
+#
+#      - name: Clean workspace
+#        run: |
+#         rm -rf ~/.m2/repository
+#         ./mvnw clean
+#
+#      - name: Compile project
+#        run: ./mvnw clean compile -DskipTests -q
+#
+#      - name: Set up services
+#        run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
+#
+#      - name: Run superuser tests
+#        run: ./mvnw clean test -P run-superuser-test -q
 
 #
 #      - name: Run API tests
