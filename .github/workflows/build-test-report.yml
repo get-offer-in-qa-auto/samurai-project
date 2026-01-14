@@ -41,13 +41,13 @@ jobs:
           curl -v http://localhost:4444/status || echo "Selenoid not reachable"
           curl -v http://localhost:8111 || echo "TeamCity not reachable"
 
-      - name: Wait for TeamCity ready
+      - name: Wait for TeamCity /mnt to be ready
         run: |
-          echo "Waiting for TeamCity to finish first start..."
-          for i in {1..30}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111)
+          echo "Waiting for TeamCity /mnt to be ready..."
+          for i in {1..60}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111/mnt)
             if [[ "$status" == "200" ]]; then
-              echo "TeamCity is ready"
+              echo "TeamCity /mnt is ready"
               break
             elif [[ "$status" == "503" ]]; then
               echo "TeamCity still starting..."
