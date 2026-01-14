@@ -41,6 +41,21 @@ jobs:
           curl -v http://localhost:4444/status || echo "Selenoid not reachable"
           curl -v http://localhost:8111 || echo "TeamCity not reachable"
 
+      - name: Wait for TeamCity ready
+        run: |
+          echo "Waiting for TeamCity to finish first start..."
+          for i in {1..30}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111)
+            if [[ "$status" == "200" ]]; then
+              echo "TeamCity is ready"
+              break
+            elif [[ "$status" == "503" ]]; then
+              echo "TeamCity still starting..."
+            else
+              echo "Unexpected response: $status"
+            fi
+            sleep 10
+          done
 
       - name: Run superuser tests
         run: ./mvnw test -P run-superuser-test
