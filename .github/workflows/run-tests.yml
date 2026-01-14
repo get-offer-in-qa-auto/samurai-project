@@ -1,18 +1,6 @@
 name: Run tests and Push Docker Image
 
-on:
-  # 1. При любом push в main/master с изменениями в src
-  #  push:
-  #    branches: [ main, master ]
-  #    paths:
-  #      - 'src/**'
-  #При любом push в другие ветки (для тестирования)
-  push:
-    paths:
-      - "src/**"
-
-    # 2. Ручной запуск
-  workflow_dispatch:
+on: [ push, workflow_dispatch ]
 
 jobs: # джобы, аналог этапов
   run-tests:
