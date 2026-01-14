@@ -70,12 +70,15 @@ jobs:
             fi
             sleep 5
           done
+          
+          
     
     
 
       - name: Run superuser tests
         run: ./mvnw test -P run-superuser-test
-
+        env:
+          SERVER: http://localhost:8111
 
       - name: Run API tests
         run: ./mvnw test -P api
