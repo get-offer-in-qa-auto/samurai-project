@@ -17,8 +17,32 @@ for image in $images; do
     echo "Pulling $image..."
     docker pull "$image"
 done
-
 echo
+echo "=== Fixing permissions for TeamCity Server and Agent volumes ==="
+
+
+declare -A volumes=(
+    ["TeamCity Server Data"]="infra/docker_compose/teamcity_server/datadir"
+    ["TeamCity Server Logs"]="infra/docker_compose/teamcity_server/logs"
+    ["TeamCity Agent Conf"]="infra/docker_compose/teamcity_agent/conf"
+    ["TeamCity Agent Logs"]="infra/docker_compose/teamcity_agent/logs"
+)
+
+for name in "${!volumes[@]}"; do
+    dir="${volumes[$name]}"
+    if [ -d "$dir" ]; then
+        echo "Checking $name directory: $dir"
+        sudo chown -R 1000:1000 "$dir"
+        chmod -R u+rwX "$dir"
+        echo "✅ Permissions fixed for $name"
+    else
+        echo "⚠️ Directory $dir does not exist, skipping..."
+    fi
+done
+
+echo "=== Permissions check finished ==="
+echo
+
 docker compose up -d
 
 echo
