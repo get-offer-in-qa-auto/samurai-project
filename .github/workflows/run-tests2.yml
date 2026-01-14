@@ -1,0 +1,24 @@
+name: Run tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+
+  linter:
+    name: linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: '21'
+
+      - name: Run Checkstyle
+        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true
