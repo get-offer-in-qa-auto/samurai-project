@@ -36,18 +36,10 @@ jobs:
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
-      - name: Check Docker and services
+      - name: Check services on localhost
         run: |
-                echo "=== Docker containers ==="
-                docker ps
-                echo "=== Docker networks ==="
-                docker network ls
-                echo "=== Inspect Selenoid container ==="
-                docker inspect $(docker ps -qf "name=selenoid")
-                echo "=== Check Selenoid status ==="
-                curl -v http://selenoid:4444/status || echo "Selenoid not reachable"
-                echo "=== Check TeamCity ==="
-                curl -v http://teamcity-server:8111 || echo "TeamCity not reachable"
+          curl -v http://localhost:4444/status || echo "Selenoid not reachable"
+          curl -v http://localhost:8111 || echo "TeamCity not reachable"
 
 
       - name: Run superuser tests
