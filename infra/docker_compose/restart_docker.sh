@@ -22,8 +22,8 @@ echo
 docker compose up -d
 
 echo
-echo "===== TeamCity Server logs (last 50 lines) ====="
-docker compose logs --tail 50 teamcity-server
+echo "===== all logs server (last 50 lines) ====="
+docker compose logs teamcity-server
 
 echo
 echo "===== TeamCity Agent logs (last 50 lines) ====="
