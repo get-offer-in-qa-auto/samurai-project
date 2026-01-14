@@ -20,36 +20,9 @@ jobs:
       - name: Make Maven Wrapper executable
         run: chmod +x ./mvnw
 
-      - name: Print environment info
-        run: |
-          echo "== Java & Maven info =="
-          java -version
-          javac -version
-          ./mvnw -v
-
-      - name: Download dependencies (including Lombok)
-        run: ./mvnw dependency:resolve
-
-      - name: Verify Lombok in dependencies
-        run: ./mvnw dependency:tree | grep lombok || echo "Lombok not found"
-
       - name: Compile project (download dependencies and Lombok)
         run: ./mvnw clean compile -DskipTests -Pcompile-lombok
         continue-on-error: true
-
-      - name: List compiled classes with getMessage method
-        run: find target/classes -name "*.class" -exec javap -cp target/classes {} \; | grep getMessage || echo "No getMessage method found"
-
-      - name: Force annotation processing debug
-        run: ./mvnw compile -X | tee mvn_debug.log | grep lombok
-
-      - name: Check annotation processors
-        run: ./mvnw help:effective-pom
-
-      - name: Print Lombok info after compilation
-        run: |
-          echo "== Lombok in local Maven repo after compile =="
-          find ~/.m2/repository/org/projectlombok/lombok -name "*.jar" | sort | tail -n 1 || echo "Lombok not found"
 
       - name: Cache Maven repository
         uses: actions/cache@v4
