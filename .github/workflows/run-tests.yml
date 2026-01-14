@@ -44,6 +44,9 @@ jobs: # джобы, аналог этапов
 #          APIBASEURL: http://localhost:4111
 #          UIBASEURL: http://nginx:80
 
+      - name: Compile project
+        run: ./mvnw clean compile -X
+
       - name: Run tests                        # шаг 7 - запуск тестов
         id: run-tests
         continue-on-error: true

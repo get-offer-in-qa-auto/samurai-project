@@ -18,7 +18,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.32</version>
+            <version>1.18.38</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -132,6 +133,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
+                    <source>21</source>
+                    <target>21</target>
+
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -139,6 +143,7 @@
                             <version>1.18.38</version>
                         </path>
                     </annotationProcessorPaths>
+
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
