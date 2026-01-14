@@ -20,3 +20,13 @@ done
 
 echo
 docker compose up -d
+
+echo "Waiting for TeamCity..."
+for i in {1..60}; do
+  if curl -s http://localhost:8111 > /dev/null; then
+    echo "TeamCity is ready!"
+    break
+  fi
+  echo "TeamCity not ready yet, waiting 5 seconds..."
+  sleep 5
+done
