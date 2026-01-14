@@ -1,7 +1,6 @@
 services:
   selenoid:
     image: aerokube/selenoid
-    network_mode: bridge	
     ports:
       - "4444:4444"
     environment:
@@ -21,7 +20,6 @@ services:
 
   selenoid-ui:
     image: aerokube/selenoid-ui
-    network_mode: bridge
     links:
       - selenoid
     ports:
@@ -30,7 +28,6 @@ services:
 
   teamcity-server:
     image: jetbrains/teamcity-server:latest
-    network_mode: bridge
     ports:
       - "8111:8111"
     volumes:
@@ -39,7 +36,6 @@ services:
 
   teamcity-agent:
     image: jetbrains/teamcity-agent:latest
-    network_mode: bridge
     links:
       - teamcity-server
     environment:
