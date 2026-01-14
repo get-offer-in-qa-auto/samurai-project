@@ -20,10 +20,11 @@ import org.junit.jupiter.api.TestInfo;
 
 import static common.states.BuildState.*;
 
-public class BuildTestPositive extends BaseTest {
+public class BuildPositiveTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Юзер создает билд")
     public void userCanCreateBuild() {
         CreateProjectResponse project =
                 UserSteps.createProjectManually(RequestSpecs.adminAuthSpec());
@@ -57,6 +58,7 @@ public class BuildTestPositive extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Юзер отменяет билд")
     public void userCanGetBuild() {
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
@@ -77,6 +79,7 @@ public class BuildTestPositive extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Юзер удаляет билд")
     public void userCanDeleteBuild() {
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
 
@@ -94,7 +97,7 @@ public class BuildTestPositive extends BaseTest {
     }
 
     @Test
-    @DisplayName("Cancel build from queue via API")
+    @DisplayName("Юзер отменяет билд из очереди")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     public void userCanCancelBuild(TestInfo testInfo) {
         CreateProjectResponse createdProject = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
@@ -125,10 +128,8 @@ public class BuildTestPositive extends BaseTest {
         softly.assertThat(canceledBuild.getCanceledInfo().getText()).isEqualTo(comment);
 
         //убедиться, что билд действительно отменен и его нет в очереди (статус finished)
-        GetBuildResponse getBuildResponse = new ValidatedCrudRequester<GetBuildResponse>(
-                RequestSpecs.userAuthSpecWithToken(),
-                Endpoint.GET_BUILD,
-                ResponseSpecs.requestReturnsOK()).get(createdBuild.getId());
-        softly.assertThat(getBuildResponse.getState()).isEqualTo(FINISHED.getMessage());
+
+        BuildSteps.checkIfBuildIsAlreadyCanceled(createdBuild);
+
     }
 }

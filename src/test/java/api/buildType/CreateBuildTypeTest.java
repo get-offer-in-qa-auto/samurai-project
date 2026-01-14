@@ -30,7 +30,7 @@ public class CreateBuildTypeTest extends BaseTest {
     public static Stream<Arguments> validBuildConfigurationName() {
         return Stream.of(
                 //длинное name + англ. буквы
-                Arguments.of("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"),
+                Arguments.of("q".repeat(100)),
                 //короткое name + русские буквы
                 Arguments.of("Й"),
                 //спецсимволы

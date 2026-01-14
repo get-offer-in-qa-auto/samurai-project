@@ -1,4 +1,4 @@
-package ui.BuildTypeTest;
+package ui.buildType;
 
 import api.generators.RandomData;
 import api.models.project.CreateProjectResponse;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
 import ui.pages.buildType.CreateBuildTypePage;
 
-public class CreateBuildTypeManually extends BaseUiTest {
+public class CreateBuildTypeTest extends BaseUiTest {
 
     @Test
     @WithAdminSession

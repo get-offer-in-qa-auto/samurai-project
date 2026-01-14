@@ -3,6 +3,7 @@ package ui.pages.project;
 import api.configs.Config;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
+import common.helpers.StepLogger;
 import ui.pages.BasePage;
 
 import java.time.Duration;
@@ -31,42 +32,60 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
     }
 
     private void clickCreateProjectManually() {
-        click(createProjectManually);
+        StepLogger.log("Выбор создания проекта вручную", () ->
+                click(createProjectManually)
+        );
     }
 
     private void clickCreateProjectFromRepository() {
-        click(createProjectFromARepositoryUrl);
+        StepLogger.log("Выбор создания проекта из репозитория", () ->
+                click(createProjectFromARepositoryUrl)
+        );
     }
 
     private void setProjectName(String name) {
-        setValue(projectNameInput, name);
+        StepLogger.log("Ввод имени проекта: " + name, () ->
+                setValue(projectNameInput, name)
+        );
     }
 
     private void setProjectId(String id) {
-        setValue(idInput, id);
+        StepLogger.log("Ввод id проекта: " + id, () ->
+                setValue(idInput, id)
+        );
     }
 
     private void setRepositoryUrl(String url) {
-        setValue(repositoryUrlInput, url);
+        StepLogger.log("Ввод URL репозитория: " + url, () ->
+                setValue(repositoryUrlInput, url)
+        );
     }
 
     private void setFromRepositoryProjectName(String name) {
-        setValue(fromRepositoryProjectNameInput, name);
+        StepLogger.log("Ввод имени проекта из репозитория: " + name, () ->
+                setValue(fromRepositoryProjectNameInput, name)
+        );
     }
 
     private void clickCreateButton() {
-        click(createButton);
+        StepLogger.log("Нажатие на кнопку создания проекта", () ->
+                click(createButton)
+        );
     }
 
     private void clickProceedButton() {
-        click(proceedButton);
+        StepLogger.log("Подтверждение продолжения создания проекта", () ->
+                click(proceedButton)
+        );
     }
 
     private void waitForLoaderIfExists() {
-        if (loader.exists()) {
-            loader.should(appear, Duration.ofSeconds(5));
-            loader.should(disappear, Duration.ofSeconds(15));
-        }
+        StepLogger.log("Ожидание загрузки страницы", () -> {
+            if (loader.exists()) {
+                loader.should(appear, Duration.ofSeconds(5));
+                loader.should(disappear, Duration.ofSeconds(15));
+            }
+        });
     }
 
     private void registerProject(String name) {
@@ -102,6 +121,7 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
     }
 
     public String getUnsuccessIdMessageForManually() {
-        return idValidationErrorText.getText();
+        return StepLogger.log("Получение сообщения об ошибке некорректного ID проекта", idValidationErrorText::getText
+        );
     }
 }

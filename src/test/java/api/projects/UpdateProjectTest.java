@@ -9,6 +9,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static api.generators.RandomData.getProjectName;
@@ -17,6 +18,7 @@ public class UpdateProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Редактировнаие проекта")
     public void userCanUpdateProjectDescription() {
         CreateProjectResponse project = UserSteps.createProjectManually(RequestSpecs.userAuthSpecWithToken());
         String projectBefore = UserSteps.getProjectById(project.getId(), RequestSpecs.userAuthSpecWithToken())

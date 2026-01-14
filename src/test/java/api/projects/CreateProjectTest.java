@@ -16,6 +16,7 @@ import api.specs.RequestSpecs;
 import api.specs.ResponseSpecs;
 import common.annotations.WithAuthUser;
 import common.messages.ProjectErrorMessage;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,6 +55,7 @@ public class CreateProjectTest extends BaseTest {
     @ParameterizedTest
     @MethodSource("validProjectIds")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Успешное создание проекта мануально")
     public void userCanCreateProjectManually(String id) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -76,6 +78,7 @@ public class CreateProjectTest extends BaseTest {
     @ParameterizedTest
     @MethodSource("validProjectIds")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Успешное создание проекта из репозитория")
     public void userCanCreateProjectFromRepository(String id) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -98,6 +101,7 @@ public class CreateProjectTest extends BaseTest {
     @ParameterizedTest
     @MethodSource("invalidProjectIds")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта мануально с невалидным id")
     public void userCannotCreateProjectManuallyWithInvalidData(String id, ProjectErrorMessage expectedError) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -120,6 +124,7 @@ public class CreateProjectTest extends BaseTest {
     @ParameterizedTest
     @MethodSource("invalidProjectIds")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта из репозитория с невалидным id")
     public void userCannotCreateProjectFromRepositoryWithInvalidData(String id, ProjectErrorMessage expectedError) {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -140,6 +145,7 @@ public class CreateProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта мануально с невалидным названием")
     public void userCannotCreateProjectManuallyWithEmptyName() {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -160,6 +166,7 @@ public class CreateProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта из репозитория с невалидным названием")
     public void userCannotCreateProjectFromRepositoryWithEmptyName() {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -180,6 +187,7 @@ public class CreateProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта мануально с существующим id")
     public void userCannotCreateProjectManuallyWithExistingId() {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -208,6 +216,7 @@ public class CreateProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта из репозитория с существующим id")
     public void userCannotCreateProjectFromRepositoryWithExistingId() {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -236,6 +245,7 @@ public class CreateProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта мануально с существующим именем")
     public void userCannotCreateProjectManuallyWithExistingName() {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
@@ -264,6 +274,7 @@ public class CreateProjectTest extends BaseTest {
 
     @Test
     @WithAuthUser(role = Roles.AGENT_MANAGER)
+    @DisplayName("Неспешное создание проекта из репозитория с существующим именем")
     public void userCannotCreateProjectFromRepositoryWithExistingName() {
         int initialCount = UserSteps.getProjectsCount(RequestSpecs.userAuthSpecWithToken());
 
