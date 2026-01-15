@@ -24,15 +24,6 @@ jobs:
         run: ./mvnw clean compile -DskipTests -Pcompile-lombok
         continue-on-error: true
 
-      - name: Cache Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
