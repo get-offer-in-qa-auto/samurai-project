@@ -114,7 +114,7 @@ jobs:
 
       - name: Run superuser tests on runner
         env:
-          SERVER: http://teamcity-server:8111
+          SERVERUI: http://teamcity-server:8111
           UIREMOTE: http://localhost:4444/wd/hub
         run: |
           echo "=== CHECK SERVICES BEFORE TESTS ==="
