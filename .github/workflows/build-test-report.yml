@@ -100,15 +100,21 @@ jobs:
           
 
       # ===================== Запуск тестов =====================
-      - name: Run superuser tests
-        run: ./mvnw test -P run-superuser-test -q
-        env:
-          SERVER: http://localhost:8111
-          UIREMOTE: http://localhost:4444/wd/hub
+#      - name: Run superuser tests
+#        run: ./mvnw test -P run-superuser-test -q
+#        env:
+#          SERVER: http://localhost:8111
+#          UIREMOTE: http://localhost:4444/wd/hub
 #
 #          SERVER: http://teamcity-server:8111
 #          UIREMOTE: http://selenoid:4444/wd/hub
-
+      - name: Run superuser tests
+        run: |
+          ./mvnw test \
+            -P run-superuser-test \
+            -q \
+            -DSERVER=http://teamcity-server:8111 \
+            -DUIREMOTE=http://selenoid:4444/wd/hub
 
       - name: Run API tests
         run: ./mvnw test -P api
