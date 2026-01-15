@@ -70,16 +70,37 @@ jobs:
             fi
             sleep 5
           done
-          
-          
-    
-    
 
-      - name: Run superuser tests
-        run: ./mvnw test -P run-superuser-test
+      - name: Run superuser tests on runner
         env:
           SERVER: http://teamcity-server:8111
           UIREMOTE: http://localhost:4444/wd/hub
+        run: |
+          echo "=== CHECK SERVICES BEFORE TESTS ==="
+          echo "TeamCity:"
+          if ! curl -s -f http://localhost:8111/mnt > /dev/null 2>&1; then
+            echo "❌ TeamCity not reachable!"
+            exit 1
+          else
+            echo "✅ TeamCity is reachable"
+          fi
+
+          echo "Selenoid:"
+          if ! curl -s -f http://localhost:4444/wd/hub/status > /dev/null 2>&1; then
+            echo "❌ Selenoid not reachable!"
+            exit 1
+          else
+            echo "✅ Selenoid is reachable"
+          fi
+
+          echo
+          echo "=== TEST CONFIG ==="
+          echo "SERVER = $SERVER"
+          echo "UIREMOTE = $UIREMOTE"
+          echo
+
+          echo "=== RUNNING TESTS ==="
+          ./mvnw test -P run-superuser-test -q 
 
       - name: Run API tests
         run: ./mvnw test -P api
