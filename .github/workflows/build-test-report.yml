@@ -115,18 +115,46 @@ jobs:
 #            -q \
 #            -DSERVER=http://teamcity-server:8111 \
 #            -DUIREMOTE=http://selenoid:4444/wd/hub
+#
+#      - name: Run superuser tests on runner
+#        run: |
+#          echo "=== TEST CONFIG ==="
+#          echo "SERVER = $(./mvnw help:evaluate -q -Dexpression=server -DforceStdout)"
+#         echo "UIREMOTE = $(./mvnw help:evaluate -q -Dexpression=uiRemote -DforceStdout)"
+#
+#      ./mvnw test -P run-superuser-test -q
 
-      - name: Run superuser tests in Docker
+
+      - name: Run superuser tests on runner
+        env:
+          SERVER: http://localhost:8111             # TeamCity доступен через проброшенный порт
+          UIREMOTE: http://localhost:4444/wd/hub    # Selenoid доступен через проброшенный порт
         run: |
-              docker run --rm \
-              --network test-network \
-              -v ${{ github.workspace }}:/app \
-              -w /app \
-              maven:3.9.3-openjdk-21 \
-              bash -c "chmod +x ./mvnw && \
-              ./mvnw test -P run-superuser-test -q \
-                -DSERVER=http://teamcity-server:8111 \
-                -DUIREMOTE=http://selenoid:4444/wd/hub"
+          echo "=== CHECK SERVICES BEFORE TESTS ==="
+          echo "TeamCity:"
+          if ! curl -s -f http://localhost:8111/mnt > /dev/null 2>&1; then
+            echo "❌ TeamCity not reachable!"
+            exit 1
+          else
+            echo "✅ TeamCity is reachable"
+          fi
+
+          echo "Selenoid:"
+          if ! curl -s -f http://localhost:4444/wd/hub/status > /dev/null 2>&1; then
+            echo "❌ Selenoid not reachable!"
+            exit 1
+          else
+            echo "✅ Selenoid is reachable"
+          fi
+
+          echo
+          echo "=== TEST CONFIG ==="
+          echo "SERVER = $SERVER"
+          echo "UIREMOTE = $UIREMOTE"
+          echo
+
+          echo "=== RUNNING TESTS ==="
+          ./mvnw test -P run-superuser-test -q 
 
       - name: Run API tests
         run: ./mvnw test -P api
