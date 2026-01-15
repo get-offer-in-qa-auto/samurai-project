@@ -1,6 +1,6 @@
 name: Build, UI & API Tests, Report
 
-on: [ push, workflow_dispatch ]
+on: [push, workflow_dispatch]
 
 jobs:
   run-tests:
@@ -32,7 +32,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
@@ -57,8 +56,7 @@ jobs:
             sleep 10
           done
 
-
-      - name: Wait for TeamCity to be ready
+      - name: Wait for TeamCity /mnt endpoint to be ready
         run: |
           echo "Waiting for TeamCity to be ready..."
           for i in {1..60}; do
@@ -70,7 +68,7 @@ jobs:
             echo "Attempt $i/60 - TeamCity not ready yet..."
             sleep 10
           done
-
+          
           # Финальная проверка
           echo "Final check:"
           curl -v http://localhost:8111/mnt || echo "WARNING: /mnt still not accessible"
@@ -79,19 +77,19 @@ jobs:
       - name: Debug - Check TeamCity status
         if: always()  # Выполнять даже если предыдущие шаги упали
         run: |
-        echo "=== Debug: TeamCity Status ==="
-         echo "1. Docker containers:"
-         docker-compose ps
-      
-         echo -e "\n2. TeamCity logs (last 30 lines):"
-         docker-compose logs teamcity-server --tail=30
-      
-         echo -e "\n3. Network check:"
-        curl -s -o /dev/null -w "Main page (%{url_effective}): %{http_code}\n" http://localhost:8111
-        curl -s -o /dev/null -w "/mnt (%{url_effective}): %{http_code}\n" http://localhost:8111/mnt
-      
-         echo -e "\n4. Selenoid status:"
-         curl -s http://localhost:4444/status | jq . 2>/dev/null || curl -s http://localhost:4444/status
+          echo "=== Debug: TeamCity Status ==="
+          echo "1. Docker containers:"
+          docker-compose ps
+          
+          echo -e "\n2. TeamCity logs (last 30 lines):"
+          docker-compose logs teamcity-server --tail=30
+          
+          echo -e "\n3. Network check:"
+          curl -s -o /dev/null -w "Main page (%{url_effective}): %{http_code}\n" http://localhost:8111
+          curl -s -o /dev/null -w "/mnt (%{url_effective}): %{http_code}\n" http://localhost:8111/mnt
+          
+          echo -e "\n4. Selenoid status:"
+          curl -s http://localhost:4444/status | jq . 2>/dev/null || curl -s http://localhost:4444/status
 
       - name: Wait for Selenoid to be ready
         run: |
