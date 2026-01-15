@@ -33,8 +33,8 @@ services:
     environment:
       - DOCKER_API_VERSION=1.44
     volumes:
-      - //var/run/docker.sock:/var/run/docker.sock
-      - ./config/:/etc/selenoid/:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../config/browsers.json:/etc/selenoid/browsers.json:ro
       - ./selenoid/video:/opt/selenoid/video
       - ./selenoid/logs:/opt/selenoid/logs
     command:

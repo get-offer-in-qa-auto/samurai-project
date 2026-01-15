@@ -95,8 +95,6 @@ jobs:
           echo "TeamCity responded, waiting 60 seconds to stabilize..."
           sleep 60
           echo "Now TeamCity should be stable"     
-    
-    
 
       - name: Run superuser tests
         run: ./mvnw test -P run-superuser-test -q
