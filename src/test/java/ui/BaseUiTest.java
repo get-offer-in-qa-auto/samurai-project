@@ -23,7 +23,7 @@ public class BaseUiTest extends BaseTest {
     public static void setupSelenoid() {
 
         Configuration.remote = Config.getProperty("uiRemote");
-        Configuration.baseUrl = Config.getProperty("server");
+        Configuration.baseUrl = Config.getProperty("serverui");
         Configuration.browser = Config.getProperty("browser");
         Configuration.browserSize = Config.getProperty("browserSize");
         Configuration.headless = false;
