@@ -150,21 +150,4 @@ jobs:
 
       - name: Run UI tests
         run: ./mvnw test -P ui
-        env:
-          SERVER: http://teamcity-server:8111
-          UIREMOTE: http://localhost:4444/wd/hub
         continue-on-error: true
-#
-#
-#      - name: Generate Allure Report
-#        if: always()
-#        run: ./mvnw allure:report || true
-#
-#
-#      - name: Upload Allure Report
-#        if: always()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: allure-report
-#          path: target/site
-#
