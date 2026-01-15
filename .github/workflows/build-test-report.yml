@@ -99,8 +99,11 @@ jobs:
       - name: Run superuser tests
         run: ./mvnw test -P run-superuser-test -q
         env:
-          SERVER: http://teamcity-server:8111
-          UIREMOTE: http://selenoid:4444/wd/hub
+          SERVER: http://localhost:8111
+          UIREMOTE: http://localhost:4444/wd/hub
+#
+#          SERVER: http://teamcity-server:8111
+#          UIREMOTE: http://selenoid:4444/wd/hub
 
 
       - name: Run API tests
