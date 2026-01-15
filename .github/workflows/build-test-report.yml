@@ -98,7 +98,18 @@ jobs:
           echo "Selenoid /wd/hub/status check:"
           curl -v http://localhost:4444/wd/hub/status || echo "Selenoid not reachable"     
           
-
+      - name: Debug permissions
+        run: |
+          echo "=== DEBUG ==="
+          echo "Runner info:"
+          id
+          whoami
+          echo "Docker info:"
+          docker info
+          echo "Files in logs dir:"
+          find infra/docker_compose/teamcity_server/logs -type f 2>/dev/null | xargs ls -la 2>/dev/null || echo "No files"
+          echo "Docker container files:"
+          docker exec teamcity-server find /opt/teamcity/logs -type f 2>/dev/null | xargs -I {} docker exec teamcity-server ls -la {} 2>/dev/null || echo "Cannot check container"
       # ===================== Запуск тестов =====================
 #      - name: Run superuser tests
 #        run: ./mvnw test -P run-superuser-test -q
@@ -128,7 +139,6 @@ jobs:
       - name: Run superuser tests on runner
         env:
           SERVER: http://teamcity-server:8111       # SERVER должно быть доступно из контейнера Selenoid
-#          SERVER: http://localhost:8111             # TeamCity доступен через проброшенный порт
           UIREMOTE: http://localhost:4444/wd/hub    # Selenoid доступен через проброшенный порт
         run: |
           echo "=== CHECK SERVICES BEFORE TESTS ==="
