@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # ===================== Поднимаем сервисы =====================
+
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
@@ -41,7 +41,6 @@ jobs:
           curl -v http://localhost:4444/status || echo "Selenoid not reachable"
           curl -v http://localhost:8111 || echo "TeamCity not reachable"
 
-      # ===================== Ждем TeamCity =====================
       - name: Wait for TeamCity /mnt/get/stateRevision to be ready
         run: |
           echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
@@ -110,12 +109,13 @@ jobs:
           find infra/docker_compose/teamcity_server/logs -type f 2>/dev/null | xargs ls -la 2>/dev/null || echo "No files"
           echo "Docker container files:"
           docker exec teamcity-server find /opt/teamcity/logs -type f 2>/dev/null | xargs -I {} docker exec teamcity-server ls -la {} 2>/dev/null || echo "Cannot check container"
-      
+     
+
 
       - name: Run superuser tests on runner
         env:
-          SERVER: http://teamcity-server:8111       # SERVER должно быть доступно из контейнера Selenoid
-          UIREMOTE: http://localhost:4444/wd/hub    # Selenoid доступен через проброшенный порт
+          SERVER: http://teamcity-server:8111
+          UIREMOTE: http://localhost:4444/wd/hub
         run: |
           echo "=== CHECK SERVICES BEFORE TESTS ==="
           echo "TeamCity:"
@@ -151,3 +151,17 @@ jobs:
       - name: Run UI tests
         run: ./mvnw test -P ui
         continue-on-error: true
+#
+#
+#      - name: Generate Allure Report
+#        if: always()
+#        run: ./mvnw allure:report || true
+#
+#
+#      - name: Upload Allure Report
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: allure-report
+#          path: target/site
+#

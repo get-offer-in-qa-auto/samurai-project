@@ -2,9 +2,9 @@ services:
   teamcity-server:
     image: jetbrains/teamcity-server:latest
     container_name: teamcity-server
-    user: "1001:1001"
+    user: "0"
     networks:
-      - test-network
+      - test-network  # ← ВМЕСТО network_mode: bridge
     ports:
       - "8111:8111"
     volumes:
@@ -14,11 +14,11 @@ services:
   teamcity-agent:
     image: jetbrains/teamcity-agent:latest
     container_name: teamcity-agent
-    user: "1001:1001"
+    user: "0"
     networks:
-      - test-network
+      - test-network  # ← ВМЕСТО network_mode: bridge
     depends_on:
-      - teamcity-server
+      - teamcity-server  # ← ВМЕСТО links
     environment:
       - SERVER_URL=http://teamcity-server:8111
     volumes:
@@ -59,7 +59,7 @@ services:
     depends_on:
       - selenoid
     networks:
-      - test-network
+      - test-network  # ← ВМЕСТО network_mode: bridge
 
 
 networks:
