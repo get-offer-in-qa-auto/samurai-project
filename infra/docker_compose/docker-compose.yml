@@ -1,7 +1,11 @@
+version: '3.8'
+
 services:
   selenoid:
     image: aerokube/selenoid
-    network_mode: bridge	
+    container_name: selenoid
+    networks:
+      - test-network  # ← ВМЕСТО network_mode: bridge
     ports:
       - "4444:4444"
     environment:
@@ -21,17 +25,21 @@ services:
 
   selenoid-ui:
     image: aerokube/selenoid-ui
-    network_mode: bridge
-    links:
-      - selenoid
+    container_name: selenoid-ui
+    networks:
+      - test-network  # ← ВМЕСТО network_mode: bridge
+    depends_on:
+      - selenoid  # ← ВМЕСТО links
     ports:
       - "8080:8080"
     command: ["--selenoid-uri", "http://selenoid:4444"]
 
   teamcity-server:
     image: jetbrains/teamcity-server:latest
+    container_name: teamcity-server
     user: "0"
-    network_mode: bridge
+    networks:
+      - test-network  # ← ВМЕСТО network_mode: bridge
     ports:
       - "8111:8111"
     volumes:
@@ -40,12 +48,19 @@ services:
 
   teamcity-agent:
     image: jetbrains/teamcity-agent:latest
+    container_name: teamcity-agent
     user: "0"
-    network_mode: bridge
-    links:
-      - teamcity-server
+    networks:
+      - test-network  # ← ВМЕСТО network_mode: bridge
+    depends_on:
+      - teamcity-server  # ← ВМЕСТО links
     environment:
       - SERVER_URL=http://teamcity-server:8111
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./teamcity_agent/conf:/data/teamcity_agent/conf
+
+# ОБЯЗАТЕЛЬНО добавить эту секцию!
+networks:
+  test-network:
+    name: samurai-test-network
