@@ -127,7 +127,8 @@ jobs:
 
       - name: Run superuser tests on runner
         env:
-          SERVER: http://localhost:8111             # TeamCity доступен через проброшенный порт
+          SERVER: http://teamcity-server:8111       # SERVER должно быть доступно из контейнера Selenoid
+#          SERVER: http://localhost:8111             # TeamCity доступен через проброшенный порт
           UIREMOTE: http://localhost:4444/wd/hub    # Selenoid доступен через проброшенный порт
         run: |
           echo "=== CHECK SERVICES BEFORE TESTS ==="
