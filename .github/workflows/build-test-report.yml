@@ -88,7 +88,13 @@ jobs:
             sleep 5
           done
           
-          
+      - name: Wait for TeamCity and stabilize
+        run: |
+          echo "Waiting for TeamCity..."
+          curl -s -f "http://localhost:8111/mnt" > /dev/null
+          echo "TeamCity responded, waiting 60 seconds to stabilize..."
+          sleep 60
+          echo "Now TeamCity should be stable"     
     
     
 
