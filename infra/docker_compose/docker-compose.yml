@@ -1,36 +1,10 @@
 services:
-  selenoid:
-    image: aerokube/selenoid
-    network_mode: bridge
-    ports:
-      - "4444:4444"
-    environment:
-      - DOCKER_API_VERSION=1.44
-    volumes:
-      - ../config:/etc/selenoid
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./selenoid/video:/opt/selenoid/video
-      - ./selenoid/logs:/opt/selenoid/logs
-    command:
-      [
-        "-conf", "/etc/selenoid/browsers.json",
-        "-video-output-dir", "/opt/selenoid/video",
-        "-log-output-dir", "/opt/selenoid/logs",
-        "-timeout", "60s"
-      ]
-
-  selenoid-ui:
-    image: aerokube/selenoid-ui
-    network_mode: bridge
-    links:
-      - selenoid
-    ports:
-      - "8080:8080"
-    command: ["--selenoid-uri", "http://selenoid:4444"]
-
   teamcity-server:
     image: jetbrains/teamcity-server:latest
-    network_mode: bridge
+    container_name: teamcity-server
+    user: "0"
+    networks:
+      - test-network
     ports:
       - "8111:8111"
     volumes:
@@ -39,11 +13,55 @@ services:
 
   teamcity-agent:
     image: jetbrains/teamcity-agent:latest
-    network_mode: bridge
-    links:
+    container_name: teamcity-agent
+    user: "0"
+    networks:
+      - test-network
+    depends_on:
       - teamcity-server
     environment:
       - SERVER_URL=http://teamcity-server:8111
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./teamcity_agent/conf:/data/teamcity_agent/conf
+
+  selenoid:
+    image: aerokube/selenoid
+    container_name: selenoid
+    ports:
+      - "4444:4444"
+    environment:
+      - DOCKER_API_VERSION=1.44
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../config/browsers.json:/etc/selenoid/browsers.json:ro
+      - ./selenoid/video:/opt/selenoid/video
+      - ./selenoid/logs:/opt/selenoid/logs
+    command:
+      [
+        "-container-network", "test-network",
+        "-conf", "/etc/selenoid/browsers.json",
+        "-video-output-dir", "/opt/selenoid/video",
+        "-log-output-dir", "/opt/selenoid/logs",
+        "-timeout", "60s"
+      ]
+    depends_on:
+      - teamcity-server
+    networks:
+      - test-network
+
+  selenoid-ui:
+    image: aerokube/selenoid-ui
+    container_name: selenoid-ui
+    ports:
+      - "8080:8080"
+    command: ["--selenoid-uri", "http://selenoid:4444"]
+    depends_on:
+      - selenoid
+    networks:
+      - test-network
+
+
+networks:
+  test-network:
+    name: test-network
