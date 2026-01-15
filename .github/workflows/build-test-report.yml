@@ -150,6 +150,9 @@ jobs:
 
       - name: Run UI tests
         run: ./mvnw test -P ui
+        env:
+          SERVER: http://teamcity-server:8111
+          UIREMOTE: http://localhost:4444/wd/hub
         continue-on-error: true
 #
 #
