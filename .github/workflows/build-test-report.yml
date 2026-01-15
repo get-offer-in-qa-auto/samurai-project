@@ -108,13 +108,25 @@ jobs:
 #
 #          SERVER: http://teamcity-server:8111
 #          UIREMOTE: http://selenoid:4444/wd/hub
-      - name: Run superuser tests
+#      - name: Run superuser tests
+#        run: |
+#          ./mvnw test \
+#            -P run-superuser-test \
+#            -q \
+#            -DSERVER=http://teamcity-server:8111 \
+#            -DUIREMOTE=http://selenoid:4444/wd/hub
+
+      - name: Run superuser tests in Docker
         run: |
-          ./mvnw test \
-            -P run-superuser-test \
-            -q \
-            -DSERVER=http://teamcity-server:8111 \
-            -DUIREMOTE=http://selenoid:4444/wd/hub
+              docker run --rm \
+              --network test-network \
+              -v ${{ github.workspace }}:/app \
+              -w /app \
+              maven:3.9.3-openjdk-21 \
+              bash -c "chmod +x ./mvnw && \
+              ./mvnw test -P run-superuser-test -q \
+                -DSERVER=http://teamcity-server:8111 \
+                -DUIREMOTE=http://selenoid:4444/wd/hub"
 
       - name: Run API tests
         run: ./mvnw test -P api
