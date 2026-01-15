@@ -32,6 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      # ===================== Поднимаем сервисы =====================
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
@@ -40,6 +41,7 @@ jobs:
           curl -v http://localhost:4444/status || echo "Selenoid not reachable"
           curl -v http://localhost:8111 || echo "TeamCity not reachable"
 
+      # ===================== Ждем TeamCity =====================
       - name: Wait for TeamCity /mnt/get/stateRevision to be ready
         run: |
           echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
@@ -73,12 +75,12 @@ jobs:
           echo "Final check:"
           curl -v http://localhost:8111/mnt || echo "WARNING: /mnt still not accessible"
 
-
+      # ===================== Ждем Selenoid =====================
       - name: Wait for Selenoid to be ready
         run: |
           echo "Waiting for Selenoid to be ready..."
           for i in {1..30}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:4444/status)
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:4444/wd/hub/status)
             if [[ "$status" == "200" ]]; then
               echo "Selenoid is ready"
               break
@@ -87,15 +89,17 @@ jobs:
             fi
             sleep 5
           done
-          
-      - name: Wait for TeamCity and stabilize
-        run: |
-          echo "Waiting for TeamCity..."
-          curl -s -f "http://localhost:8111/mnt" > /dev/null
-          echo "TeamCity responded, waiting 60 seconds to stabilize..."
-          sleep 60
-          echo "Now TeamCity should be stable"     
 
+      # ===================== Проверка сервисов =====================
+      - name: Check services
+        run: |
+          echo "TeamCity /mnt check:"
+          curl -v http://localhost:8111/mnt || echo "TeamCity /mnt not reachable"
+          echo "Selenoid /wd/hub/status check:"
+          curl -v http://localhost:4444/wd/hub/status || echo "Selenoid not reachable"     
+          
+
+      # ===================== Запуск тестов =====================
       - name: Run superuser tests
         run: ./mvnw test -P run-superuser-test -q
         env:
