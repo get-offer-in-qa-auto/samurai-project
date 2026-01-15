@@ -16,9 +16,8 @@ public class AuthorizationSuperUserTest extends BaseUiTest {
         System.out.println("SERVER = " + Config.getProperty("server"));
         System.out.println("UIREMOTE = " + Config.getProperty("uiRemote"));
 
-//        Configuration.baseUrl = Config.getProperty("server");
-//        Configuration.remote = Config.getProperty("uiRemote");
     }
+
     @Test
     public void setUpTeamCity() {
         SetUpAdminPage adminPage = new FirstStartPage()
