@@ -83,38 +83,39 @@ jobs:
           else
             echo "✅ TeamCity is reachable"
           fi
-
+      
           echo "Selenoid:"
           if ! curl -s -f http://localhost:4444/wd/hub/status > /dev/null 2>&1; then
             echo "❌ Selenoid not reachable!"
             exit 1
           else
             echo "✅ Selenoid is reachable"
-            run: |
-         echo "=== ACTUAL PERMISSIONS ==="
+          fi
+      
+          echo "=== ACTUAL PERMISSIONS ==="
           LOG_FILE="infra/docker_compose/teamcity_server/logs/teamcity-server.log"
-    
+      
           if [ -f "$LOG_FILE" ]; then
-          echo "File exists"
-          stat "$LOG_FILE"
-          echo "Owner numeric: $(stat -c '%u:%g' "$LOG_FILE")"
-          echo "Can runner read? $(test -r "$LOG_FILE" && echo "YES" || echo "NO")"
-          
-          # Попробовать прочитать
-          echo "Trying to read first line:"
-          head -1 "$LOG_FILE" 2>&1
+            echo "File exists"
+            stat "$LOG_FILE"
+            echo "Owner numeric: $(stat -c '%u:%g' "$LOG_FILE")"
+            echo "Can runner read? $(test -r "$LOG_FILE" && echo "YES" || echo "NO")"
+      
+            # Попробовать прочитать
+            echo "Trying to read first line:"
+            head -1 "$LOG_FILE" 2>&1
           else
-          echo "File doesn't exist at test time!"
-                fi
-
+            echo "File doesn't exist at test time!"
+          fi
+      
           echo
           echo "=== TEST CONFIG ==="
           echo "SERVER = $SERVER"
           echo "UIREMOTE = $UIREMOTE"
           echo
-
           echo "=== RUNNING TESTS ==="
-          ./mvnw test -P run-superuser-test -q 
+          ./mvnw test -P run-superuser-test -q
+
 
       - name: Run API tests
         run: ./mvnw test -P api
