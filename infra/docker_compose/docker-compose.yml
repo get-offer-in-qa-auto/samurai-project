@@ -2,7 +2,7 @@ services:
   teamcity-server:
     image: jetbrains/teamcity-server:latest
     container_name: teamcity-server
-    user: "0"
+    user: "1001:1001"
     networks:
       - test-network
     ports:
@@ -14,7 +14,7 @@ services:
   teamcity-agent:
     image: jetbrains/teamcity-agent:latest
     container_name: teamcity-agent
-    user: "0"
+    user: "1001:1001"
     networks:
       - test-network
     depends_on:
