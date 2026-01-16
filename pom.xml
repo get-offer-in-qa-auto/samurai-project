@@ -82,6 +82,11 @@
             <artifactId>allure-assertj</artifactId>
             <version>2.29.1</version>
         </dependency>
+        <dependency>  <!-- Swagger Coverage -->
+            <groupId>com.github.viclovsky</groupId>
+            <artifactId>swagger-coverage-rest-assured</artifactId>
+            <version>1.5.0</version>
+        </dependency>
     </dependencies>
 
     <profiles> <!-- Для запуска тестов по профилю -->

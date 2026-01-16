@@ -3,7 +3,6 @@ name: Build, UI & API Tests, Report
 on: [push, workflow_dispatch]
 
 jobs:
-
   linter:
     name: Linter (Checkstyle)
     runs-on: ubuntu-latest
@@ -25,6 +24,7 @@ jobs:
     name: Build and run tests
     runs-on: ubuntu-latest
     needs: linter
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,23 +46,7 @@ jobs:
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
-
-      - name: Wait for TeamCity /mnt/get/stateRevision to be ready
-        run: |
-          echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
-          for i in {1..60}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111/mnt/get/stateRevision)
-            if [[ "$status" == "200" ]]; then
-              echo "TeamCity /mnt/get/stateRevision is ready"
-              break
-            elif [[ "$status" == "503" ]]; then
-              echo "TeamCity still starting..."
-            else
-              echo "Unexpected response: $status"
-            fi
-            sleep 10
-          done
-
+      # ==================== Ожидание поднятия TeamCity и Selenoid =====================
       - name: Wait for TeamCity /mnt endpoint to be ready
         run: |
           echo "Waiting for TeamCity to be ready..."
@@ -80,7 +64,6 @@ jobs:
           echo "Final check:"
           curl -v http://localhost:8111/mnt || echo "WARNING: /mnt still not accessible"
 
-      # ===================== Ждем Selenoid =====================
       - name: Wait for Selenoid to be ready
         run: |
           echo "Waiting for Selenoid to be ready..."
@@ -95,29 +78,7 @@ jobs:
             sleep 5
           done
 
-      # ===================== Проверка сервисов =====================
-      - name: Check services
-        run: |
-          echo "TeamCity /mnt check:"
-          curl -v http://localhost:8111/mnt || echo "TeamCity /mnt not reachable"
-          echo "Selenoid /wd/hub/status check:"
-          curl -v http://localhost:4444/wd/hub/status || echo "Selenoid not reachable"     
-
-      - name: Debug permissions
-        run: |
-          echo "=== DEBUG ==="
-          echo "Runner info:"
-          id
-          whoami
-          echo "Docker info:"
-          docker info
-          echo "Files in logs dir:"
-          find infra/docker_compose/teamcity_server/logs -type f 2>/dev/null | xargs ls -la 2>/dev/null || echo "No files"
-          echo "Docker container files:"
-          docker exec teamcity-server find /opt/teamcity/logs -type f 2>/dev/null | xargs -I {} docker exec teamcity-server ls -la {} 2>/dev/null || echo "Cannot check container"
-     
-
-
+      # ===================== Запуск тестов  =======================
       - name: Run superuser tests on runner
         env:
           SERVERUI: http://teamcity-server:8111
@@ -147,12 +108,11 @@ jobs:
           echo
 
           echo "=== RUNNING TESTS ==="
-          ./mvnw test -P run-superuser-test -q 
+          ./mvnw test -P run-superuser-test -q
 
       - name: Run API tests
         run: ./mvnw test -P api
         continue-on-error: true
-
 
       - name: Run UI tests
         env:
@@ -185,3 +145,120 @@ jobs:
           echo "=== RUNNING TESTS ==="
           ./mvnw test -P ui -q
         continue-on-error: true
+
+      # =============== Отчеты: Allure report, Swagger coverage  ===============
+      - name: Run Swagger coverage
+        if: always()
+        run: |
+          curl -s http://localhost:8111/app/rest/swagger.json -o teamcity-swagger.json
+          chmod +x .swagger-coverage-commandline/bin/swagger-coverage-commandline
+          
+          .swagger-coverage-commandline/bin/swagger-coverage-commandline \
+            -s teamcity-swagger.json \
+            -i target/swagger-coverage-output
+
+      - name: Load test report history           # Загружаем историю отчётов Allure
+        uses: actions/checkout@v2
+        if: always()
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build test report                  # Генерируем Allure-отчёт, складываем историю и новые результаты
+        uses: simple-elf/allure-report-action@v1.13
+        if: always()
+        with:
+          gh_pages: gh-pages
+          allure_results: target/allure-results
+          allure_history: allure-history
+
+      - name: Build swagger coverage report      # Копируем html-отчёт по Swagger coverage в каталог allure-history
+        if: always()
+        run: sudo cp swagger-coverage-report.html allure-history/${{ github.run_number }}
+
+
+      - name: Publish test report                # Публикуем директорию allure-history в ветку gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      # =============== Артефакты: логи и отчёты  ===============
+      - name: Upload test logs (Surefire / Failsafe)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: |
+            target/surefire-reports
+            target/failsafe-reports
+          retention-days: 7
+
+      - name: Generate and upload Allure HTML report
+        if: always()
+        run: |
+          mkdir -p target/allure-report
+          curl -sL https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.tgz -o allure.tgz
+          tar -xzf allure.tgz
+          ./allure-2.25.0/bin/allure generate target/allure-results --clean -o target/allure-report
+        continue-on-error: true
+
+      - name: Collect Docker container logs
+        if: always()
+        run: |
+          mkdir -p docker-logs
+          echo "=== Available containers ==="
+          docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+          echo
+          # Логи TeamCity
+          docker logs --timestamps teamcity-server > docker-logs/teamcity.log 2>&1 || echo "teamcity-server not found" > docker-logs/teamcity.log
+          # Логи Selenoid 
+          docker logs --timestamps selenoid > docker-logs/selenoid.log 2>&1 || echo "selenoid not found" > docker-logs/selenoid.log
+
+      - name: Upload Docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs
+          path: docker-logs
+          retention-days: 7
+
+      # ===============  Уведомление в Telegram ===============
+      - name: Notify Telegram
+        if: always()
+        run: |
+          echo "Waiting 60 seconds before sending notification..."
+          sleep 60
+          
+          # Статус тестов
+          STATUS="❌ FAILED"
+          EMOJI="❌"
+          if [[ "${{ job.status }}" == "success" ]]; then
+            STATUS="✅ PASSED"
+            EMOJI="✅"
+          fi
+          
+          # Формируем ссылки на отчеты
+          REPORT_BASE="https://get-offer-in-qa-auto.github.io/samurai-project/${{ github.run_number }}"
+          ALLURE_REPORT="${REPORT_BASE}/index.html"
+          SWAGGER_REPORT="${REPORT_BASE}/swagger-coverage-report.html"
+          
+          # Формируем сообщение
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="HTML" \
+            -d text="$EMOJI Tests $STATUS #${{ github.run_number }}
+
+          📦 Repo <a href='${{ github.server_url }}/${{ github.repository }}'>TeamCityProject</a>
+          🌿 Branch <a href='${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}'>${{ github.ref_name }}</a>
+          👤 Actor ${{ github.actor }}
+          
+          🔗 Action run <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Run</a>
+          📊 Allure <a href='${ALLURE_REPORT}'>Report</a>"
+#          📈 <a href='${SWAGGER_REPORT}'>API Coverage</a>"
+
+      - name: Clean up services
+        if: always()
+        run: cd infra/docker_compose && docker compose down
