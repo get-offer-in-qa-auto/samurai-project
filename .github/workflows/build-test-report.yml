@@ -47,22 +47,6 @@ jobs:
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
       # ==================== Ожидание поднятия TeamCity и Selenoid =====================
-#      - name: Wait for TeamCity /mnt/get/stateRevision to be ready
-#        run: |
-#          echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
-#          for i in {1..60}; do
-#            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111/mnt/get/stateRevision)
-#            if [[ "$status" == "200" ]]; then
-#              echo "TeamCity /mnt/get/stateRevision is ready"
-#              break
-#            elif [[ "$status" == "503" ]]; then
-#              echo "TeamCity still starting..."
-#            else
-#              echo "Unexpected response: $status"
-#            fi
-#            sleep 10
-#          done
-
       - name: Wait for TeamCity /mnt endpoint to be ready
         run: |
           echo "Waiting for TeamCity to be ready..."
@@ -94,6 +78,7 @@ jobs:
             sleep 5
           done
 
+      # ===================== Запуск тестов  =======================
       - name: Run superuser tests on runner
         env:
           SERVERUI: http://teamcity-server:8111
@@ -172,8 +157,7 @@ jobs:
             -s teamcity-swagger.json \
             -i target/swagger-coverage-output
 
-
-      - name: Load test report history          # Загружаем историю отчётов Allure
+      - name: Load test report history           # Загружаем историю отчётов Allure
         uses: actions/checkout@v2
         if: always()
         with:
