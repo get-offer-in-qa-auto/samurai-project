@@ -46,21 +46,22 @@ jobs:
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
-      - name: Wait for TeamCity /mnt/get/stateRevision to be ready
-        run: |
-          echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
-          for i in {1..60}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111/mnt/get/stateRevision)
-            if [[ "$status" == "200" ]]; then
-              echo "TeamCity /mnt/get/stateRevision is ready"
-              break
-            elif [[ "$status" == "503" ]]; then
-              echo "TeamCity still starting..."
-            else
-              echo "Unexpected response: $status"
-            fi
-            sleep 10
-          done
+      # ==================== Ожидание поднятия TeamCity и Selenoid =====================
+#      - name: Wait for TeamCity /mnt/get/stateRevision to be ready
+#        run: |
+#          echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
+#          for i in {1..60}; do
+#            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111/mnt/get/stateRevision)
+#            if [[ "$status" == "200" ]]; then
+#              echo "TeamCity /mnt/get/stateRevision is ready"
+#              break
+#            elif [[ "$status" == "503" ]]; then
+#              echo "TeamCity still starting..."
+#            else
+#              echo "Unexpected response: $status"
+#            fi
+#            sleep 10
+#          done
 
       - name: Wait for TeamCity /mnt endpoint to be ready
         run: |
@@ -79,7 +80,6 @@ jobs:
           echo "Final check:"
           curl -v http://localhost:8111/mnt || echo "WARNING: /mnt still not accessible"
 
-      # ===================== Ждем Selenoid =====================
       - name: Wait for Selenoid to be ready
         run: |
           echo "Waiting for Selenoid to be ready..."
@@ -161,7 +161,8 @@ jobs:
           ./mvnw test -P ui -q
         continue-on-error: true
 
-      - name: Run Swagger coverage               # Собираем Swagger coverage в любом случае
+      # =============== Отчеты: Allure report, Swagger coverage  ===============
+      - name: Run Swagger coverage
         if: always()
         run: |
           curl -s http://localhost:8111/app/rest/swagger.json -o teamcity-swagger.json
@@ -172,7 +173,7 @@ jobs:
             -i target/swagger-coverage-output
 
 
-      - name: Load test report history          # Загружаем историю отчётов Allure из ветки gh-pages для трендов
+      - name: Load test report history          # Загружаем историю отчётов Allure
         uses: actions/checkout@v2
         if: always()
         with:
@@ -220,14 +221,6 @@ jobs:
           ./allure-2.25.0/bin/allure generate target/allure-results --clean -o target/allure-report
         continue-on-error: true
 
-      - name: Upload Swagger coverage output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: swagger-coverage-output
-          path: target/swagger-coverage-output/
-          retention-days: 7
-
       - name: Collect Docker container logs
         if: always()
         run: |
@@ -246,14 +239,6 @@ jobs:
         with:
           name: docker-logs
           path: docker-logs
-          retention-days: 7
-
-      - name: Upload Selenide test-screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-screenshots
-          path: build/reports/tests/
           retention-days: 7
 
       # ===============  Уведомление в Telegram ===============
@@ -286,8 +271,8 @@ jobs:
           🌿 Branch <a href='${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}'>${{ github.ref_name }}</a>
           👤 Actor ${{ github.actor }}
           
-          🔗 Action <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Run</a>
-          📊 Allure report <a href='${ALLURE_REPORT}'>Allure Report</a>"
+          🔗 Action run <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Run</a>
+          📊 Allure <a href='${ALLURE_REPORT}'>Report</a>"
 #          📈 <a href='${SWAGGER_REPORT}'>API Coverage</a>"
 
       - name: Clean up services
