@@ -1,0 +1,34 @@
+<div>POST to http://localhost:8111/app/rest/projects</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;parentProject&quot;: {
+        &quot;locator&quot;: &quot;_Root&quot;
+    },
+    &quot;name&quot;: &quot;Ui}R:.g7*+VOpE!KwR9I6.Qxa[= {4zo4zN/;5(a%]Hw8LUHV&quot;,
+    &quot;id&quot;: &quot;B&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.MXRNMTNmYTQyYjh5ZDlxM2R1MEo2OG9INkNX.ZmY5ZTdkOWMtMzNjYy00OGY2LWI0ZDAtOGRkYjgzZDIxZDNi</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8111/app/rest/projects&#39; -H &#39;Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.MXRNMTNmYTQyYjh5ZDlxM2R1MEo2OG9INkNX.ZmY5ZTdkOWMtMzNjYy00OGY2LWI0ZDAtOGRkYjgzZDIxZDNi&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;parentProject&quot;: {
+        &quot;locator&quot;: &quot;_Root&quot;
+    },
+    &quot;name&quot;: &quot;Ui}R:.g7*+VOpE!KwR9I6.Qxa[= {4zo4zN/;5(a%]Hw8LUHV&quot;,
+    &quot;id&quot;: &quot;B&quot;
+}&#39;
+    </div>
+
