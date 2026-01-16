@@ -1,0 +1,36 @@
+<div>PUT to http://localhost:8111/app/rest/agents/id:810/authorizedInfo</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;status&quot;: true,
+    &quot;comment&quot;: {
+        &quot;timestamp&quot;: null,
+        &quot;text&quot;: &quot;Авторизация агента с id: 810&quot;,
+        &quot;user&quot;: null
+    }
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.bndkTGxXYWlRVkFEQ0RDdnFseFNVN3VBOWZj.YmEzMWFjZDEtNGYwMi00OTQ1LWFjYTAtMzFjZTczMTFjNTJm</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X PUT &#39;http://localhost:8111/app/rest/agents/id:810/authorizedInfo&#39; -H &#39;Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.bndkTGxXYWlRVkFEQ0RDdnFseFNVN3VBOWZj.YmEzMWFjZDEtNGYwMi00OTQ1LWFjYTAtMzFjZTczMTFjNTJm&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;status&quot;: true,
+    &quot;comment&quot;: {
+        &quot;timestamp&quot;: null,
+        &quot;text&quot;: &quot;Авторизация агента с id: 810&quot;,
+        &quot;user&quot;: null
+    }
+}&#39;
+    </div>
+
