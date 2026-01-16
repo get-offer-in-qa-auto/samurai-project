@@ -3,22 +3,22 @@ name: Build, UI & API Tests, Report
 on: [push, workflow_dispatch]
 
 jobs:
-  linter:
-    name: Linter (Checkstyle)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Run Checkstyle
-        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true
+#  linter:
+#    name: Linter (Checkstyle)
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          java-version: '21'
+#
+#      - name: Run Checkstyle
+#        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true
 
   run-tests:
     name: Build and run tests
@@ -36,6 +36,9 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Run Checkstyle
+        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true
+
       - name: Make Maven Wrapper executable
         run: chmod +x ./mvnw
 
@@ -46,21 +49,21 @@ jobs:
       - name: Set up services
         run: cd infra/docker_compose && bash restart_docker.sh && cd ../..
 
-      - name: Wait for TeamCity /mnt/get/stateRevision to be ready
-        run: |
-          echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
-          for i in {1..60}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111/mnt/get/stateRevision)
-            if [[ "$status" == "200" ]]; then
-              echo "TeamCity /mnt/get/stateRevision is ready"
-              break
-            elif [[ "$status" == "503" ]]; then
-              echo "TeamCity still starting..."
-            else
-              echo "Unexpected response: $status"
-            fi
-            sleep 10
-          done
+#      - name: Wait for TeamCity /mnt/get/stateRevision to be ready
+#        run: |
+#          echo "Waiting for TeamCity /mnt/get/stateRevision to be ready..."
+#          for i in {1..60}; do
+#            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8111/mnt/get/stateRevision)
+#            if [[ "$status" == "200" ]]; then
+#              echo "TeamCity /mnt/get/stateRevision is ready"
+#              break
+#            elif [[ "$status" == "503" ]]; then
+#              echo "TeamCity still starting..."
+#            else
+#              echo "Unexpected response: $status"
+#            fi
+#            sleep 10
+#          done
 
       - name: Wait for TeamCity /mnt endpoint to be ready
         run: |
@@ -95,25 +98,12 @@ jobs:
           done
 
       # ===================== Проверка сервисов =====================
-      - name: Check services
-        run: |
-          echo "TeamCity /mnt check:"
-          curl -v http://localhost:8111/mnt || echo "TeamCity /mnt not reachable"
-          echo "Selenoid /wd/hub/status check:"
-          curl -v http://localhost:4444/wd/hub/status || echo "Selenoid not reachable"
-
-      - name: Debug permissions
-        run: |
-          echo "=== DEBUG ==="
-          echo "Runner info:"
-          id
-          whoami
-          echo "Docker info:"
-          docker info
-          echo "Files in logs dir:"
-          find infra/docker_compose/teamcity_server/logs -type f 2>/dev/null | xargs ls -la 2>/dev/null || echo "No files"
-          echo "Docker container files:"
-          docker exec teamcity-server find /opt/teamcity/logs -type f 2>/dev/null | xargs -I {} docker exec teamcity-server ls -la {} 2>/dev/null || echo "Cannot check container"
+#      - name: Check services
+#        run: |
+#          echo "TeamCity /mnt check:"
+#          curl -v http://localhost:8111/mnt || echo "TeamCity /mnt not reachable"
+#          echo "Selenoid /wd/hub/status check:"
+#          curl -v http://localhost:4444/wd/hub/status || echo "Selenoid not reachable"
 
       - name: Run superuser tests on runner
         env:
@@ -234,8 +224,12 @@ jobs:
       - name: Publish test report                # Публикуем директорию allure-history в ветку gh-pages
         uses: peaceiris/actions-gh-pages@v3
         if: always()
-        continue-on-error: true                  # не падать если деплой медленный
+#        continue-on-error: true                  # не падать если деплой медленный
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+
+      - name: Clean up services
+        if: always()
+        run: cd infra/docker_compose && docker compose down
