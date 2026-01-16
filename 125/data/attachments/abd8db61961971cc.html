@@ -1,0 +1,27 @@
+<div>POST to http://localhost:8111/app/rest/builds/-2147483648</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;comment&quot;: &quot;Canceled by API test [[2] invalidId=-2147483648] at 2026-01-16T16:50:57.962591349&quot;,
+    &quot;readdIntoQueue&quot;: false
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8111/app/rest/builds/-2147483648&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;comment&quot;: &quot;Canceled by API test [[2] invalidId=-2147483648] at 2026-01-16T16:50:57.962591349&quot;,
+    &quot;readdIntoQueue&quot;: false
+}&#39;
+    </div>
+
