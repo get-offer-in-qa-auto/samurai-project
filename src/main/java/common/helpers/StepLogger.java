@@ -22,7 +22,7 @@ public class StepLogger {
     public static <T> T log(String title, ThrowableRunnable<T> runnable) {
         return Allure.step(title, () -> {
             T result = runnable.run();
-            attachScreenshot();
+            attachScreenshot(title);
             return result;
         });
     }
@@ -30,20 +30,23 @@ public class StepLogger {
     public static void log(String title, ThrowableVoidRunnable runnable) {
         Allure.step(title, () -> {
             runnable.run();
-            attachScreenshot();
+            attachScreenshot(title);
             return null;
         });
     }
 
-    private static void attachScreenshot() {
+    private static void attachScreenshot(String stepName) {
         // если вебдрайвер не запущен (API- шаг) — просто выходим
         try {
             var driver = WebDriverRunner.getWebDriver();
             byte[] bytes = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            Allure.addAttachment("Screenshot", "image/png",
+
+            String attachmentName = String.format("Screenshot: %s", stepName);
+            Allure.addAttachment(attachmentName, "image/png",
                     new ByteArrayInputStream(bytes), ".png");
-        } catch (IllegalStateException e) {
-            System.err.println("[StepLogger] Не удалось сделать скриншот: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.printf("[StepLogger] Не удалось сделать скриншот для шага '%s': %s%n",
+                    stepName, e.getMessage());
         }
     }
 }
