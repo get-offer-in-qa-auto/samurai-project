@@ -229,6 +229,37 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
 
+      # ===============  Уведомление в Telegram ===============
+      - name: Notify Telegram
+        if: always()
+        run: |
+          # Статус тестов
+          STATUS="❌ FAILED"
+          EMOJI="❌"
+          if [[ "${{ job.status }}" == "success" ]]; then
+            STATUS="✅ PASSED"
+            EMOJI="✅"
+          fi
+          
+          # Формируем ссылки на отчеты
+          REPORT_BASE="https://story81.github.io/NBankProject/${{ github.run_number }}"
+          ALLURE_REPORT="${REPORT_BASE}/index.html"
+          SWAGGER_REPORT="${REPORT_BASE}/swagger-coverage-report.html"
+          
+          # Формируем сообщение
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="HTML" \
+            -d text="$EMOJI Tests $STATUS #${{ github.run_number }}
+
+          📦 Репозиторий <a href='${{ github.server_url }}/${{ github.repository }}'>NBankProject</a>
+          🌿 Ветка <a href='${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}'>${{ github.ref_name }}</a>
+          👤 Автор ${{ github.actor }}
+          
+          🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Run</a>
+          📊 Allure отчет <a href='${ALLURE_REPORT}'>Allure Report</a>"
+#          📈 <a href='${SWAGGER_REPORT}'>API Coverage</a>"
+
       - name: Clean up services
         if: always()
         run: cd infra/docker_compose && docker compose down
