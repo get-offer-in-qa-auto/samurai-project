@@ -4,6 +4,7 @@ import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import common.helpers.StepLogger;
 import ui.pages.BasePage;
+import ui.pages.project.CreateProjectPage;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
