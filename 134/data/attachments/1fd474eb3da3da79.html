@@ -1,0 +1,78 @@
+<div>POST to http://localhost:8111/app/rest/projects</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;parentProject&quot;: {
+        &quot;locator&quot;: &quot;_Root&quot;
+    },
+    &quot;name&quot;: &quot;i ]]]]]]]]]]]]&quot;,
+    &quot;id&quot;: &quot;pPqbUGQ45U2mzv0PFlCe0qaY4Ec_SvLwC1_9tCO48ATqY9aximRyjEC59Gmn51rDe73pf88aeGr0IBLrmhQd7U1vcDZkLvunk4D6dbUnc6BciqIabQGFMUHmVxlDccMn3R3WQ1AJQFdRzQsS9dT756dv5pzDDb3FYMHrOXf6aVIvwki7&quot;,
+    &quot;vcsRootEntries&quot;: [
+        {
+            &quot;vcsRoot&quot;: {
+                &quot;name&quot;: &quot;ProjectKT2rMthp&quot;,
+                &quot;vcsName&quot;: &quot;jetbrains.git&quot;,
+                &quot;properties&quot;: [
+                    {
+                        &quot;name&quot;: &quot;url&quot;,
+                        &quot;value&quot;: &quot;https://github.com/filangelin/repository-for-teamcity&quot;
+                    },
+                    {
+                        &quot;name&quot;: &quot;branch&quot;,
+                        &quot;value&quot;: &quot;refs/heads/main&quot;
+                    },
+                    {
+                        &quot;name&quot;: &quot;authMethod&quot;,
+                        &quot;value&quot;: &quot;ANONYMOUS&quot;
+                    }
+                ]
+            }
+        }
+    ]
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.cGoyRHZXLXJWRzB4bUc3X3dVZzhBX0hTSXNm.Y2VhMDRlNjktYWY1My00ZjA4LWJjYzItOTBhZTBiOWQwZTUx</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8111/app/rest/projects&#39; -H &#39;Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.cGoyRHZXLXJWRzB4bUc3X3dVZzhBX0hTSXNm.Y2VhMDRlNjktYWY1My00ZjA4LWJjYzItOTBhZTBiOWQwZTUx&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;parentProject&quot;: {
+        &quot;locator&quot;: &quot;_Root&quot;
+    },
+    &quot;name&quot;: &quot;i ]]]]]]]]]]]]&quot;,
+    &quot;id&quot;: &quot;pPqbUGQ45U2mzv0PFlCe0qaY4Ec_SvLwC1_9tCO48ATqY9aximRyjEC59Gmn51rDe73pf88aeGr0IBLrmhQd7U1vcDZkLvunk4D6dbUnc6BciqIabQGFMUHmVxlDccMn3R3WQ1AJQFdRzQsS9dT756dv5pzDDb3FYMHrOXf6aVIvwki7&quot;,
+    &quot;vcsRootEntries&quot;: [
+        {
+            &quot;vcsRoot&quot;: {
+                &quot;name&quot;: &quot;ProjectKT2rMthp&quot;,
+                &quot;vcsName&quot;: &quot;jetbrains.git&quot;,
+                &quot;properties&quot;: [
+                    {
+                        &quot;name&quot;: &quot;url&quot;,
+                        &quot;value&quot;: &quot;https://github.com/filangelin/repository-for-teamcity&quot;
+                    },
+                    {
+                        &quot;name&quot;: &quot;branch&quot;,
+                        &quot;value&quot;: &quot;refs/heads/main&quot;
+                    },
+                    {
+                        &quot;name&quot;: &quot;authMethod&quot;,
+                        &quot;value&quot;: &quot;ANONYMOUS&quot;
+                    }
+                ]
+            }
+        }
+    ]
+}&#39;
+    </div>
+
