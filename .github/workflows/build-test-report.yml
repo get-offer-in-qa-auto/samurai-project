@@ -185,3 +185,33 @@ jobs:
           echo "=== RUNNING TESTS ==="
           ./mvnw test -P ui -q
         continue-on-error: true
+
+      # =============== Собираем Swagger coverage в любом случае ==================
+      - name: Debug swagger-coverage-output contents
+        if: always()
+        run: |
+          echo "=== Contents of target/swagger-coverage-output ==="
+          ls -la target/swagger-coverage-output/
+          echo "=== File details ==="
+          find target/swagger-coverage-output -name "*.json" -exec ls -l {} \;
+          echo "=== Sample file content (if any) ==="
+          find target/swagger-coverage-output -name "*.json" -print -exec head -n 5 {} \;
+
+      - name: Run Swagger coverage
+        if: always()
+        run: |
+           curl -s http://localhost:8111/app/rest/swagger.json -o teamcity-swagger.json
+           chmod +x .swagger-coverage-commandline/bin/swagger-coverage-commandline
+          
+           .swagger-coverage-commandline/bin/swagger-coverage-commandline \
+#               -s teamcity-swagger.json \
+               -s http://localhost:8111/app/rest \
+               -i target/swagger-coverage-output
+
+      - name: Upload swagger-coverage-output as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+           name: swagger-coverage-output
+           path: target/swagger-coverage-output/
+           retention-days: 7
