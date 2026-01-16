@@ -1,0 +1,34 @@
+<div>POST to http://localhost:8111/app/rest/projects</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;parentProject&quot;: {
+        &quot;locator&quot;: &quot;_Root&quot;
+    },
+    &quot;name&quot;: &quot;y~.]V&gt;2?M3_M&amp;qVf*~)eL\&quot;OJc.._o{BclzAVJF&lt;1-|)*,A{naP]\&quot;Te]4 1Y}&#39;UPme&gt;j&quot;,
+    &quot;id&quot;: &quot;NDDd9hk6aAl4KUdZraWyaf51Xgsi0yyRdOcxWoTIsNLHcQ6ZM1XgV2SKpcqABYZNblxa2bYs0YobRbMCSJ6ZDrNrHPH_abaqqbYUXjHFe3FrrLbouVYArPkZxMePkIZ6MN9u2L&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.aGJBYzZEQVNnS2xxQkU5Ym9Ganl3Y091UHU0.OWZiODIxMGUtZjRlZi00NjViLTg0ZGItMThkYmE4Nzg4YjI2</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8111/app/rest/projects&#39; -H &#39;Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.aGJBYzZEQVNnS2xxQkU5Ym9Ganl3Y091UHU0.OWZiODIxMGUtZjRlZi00NjViLTg0ZGItMThkYmE4Nzg4YjI2&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;parentProject&quot;: {
+        &quot;locator&quot;: &quot;_Root&quot;
+    },
+    &quot;name&quot;: &quot;y~.]V&gt;2?M3_M&amp;qVf*~)eL\&quot;OJc.._o{BclzAVJF&lt;1-|)*,A{naP]\&quot;Te]4 1Y}&#39;UPme&gt;j&quot;,
+    &quot;id&quot;: &quot;NDDd9hk6aAl4KUdZraWyaf51Xgsi0yyRdOcxWoTIsNLHcQ6ZM1XgV2SKpcqABYZNblxa2bYs0YobRbMCSJ6ZDrNrHPH_abaqqbYUXjHFe3FrrLbouVYArPkZxMePkIZ6MN9u2L&quot;
+}&#39;
+    </div>
+
