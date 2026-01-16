@@ -3,26 +3,27 @@ name: Build, UI & API Tests, Report
 on: [push, workflow_dispatch]
 
 jobs:
-#  linter:
-#    name: Linter (Checkstyle)
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#
-#      - name: Set up JDK
-#        uses: actions/setup-java@v4
-#        with:
-#          distribution: temurin
-#          java-version: '21'
-#
-#      - name: Run Checkstyle
-#        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true
+  linter:
+    name: Linter (Checkstyle)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Run Checkstyle
+        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true
 
   run-tests:
     name: Build and run tests
     runs-on: ubuntu-latest
+    needs: linter
 
     steps:
       - name: Checkout repository
@@ -34,9 +35,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: maven
-
-      - name: Run Checkstyle
-        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true
 
       - name: Make Maven Wrapper executable
         run: chmod +x ./mvnw
@@ -95,14 +93,6 @@ jobs:
             fi
             sleep 5
           done
-
-      # ===================== Проверка сервисов =====================
-#      - name: Check services
-#        run: |
-#          echo "TeamCity /mnt check:"
-#          curl -v http://localhost:8111/mnt || echo "TeamCity /mnt not reachable"
-#          echo "Selenoid /wd/hub/status check:"
-#          curl -v http://localhost:4444/wd/hub/status || echo "Selenoid not reachable"
 
       - name: Run superuser tests on runner
         env:
@@ -171,18 +161,7 @@ jobs:
           ./mvnw test -P ui -q
         continue-on-error: true
 
-      # =============== Собираем Swagger coverage в любом случае ==================
-      - name: Debug swagger-coverage-output contents
-        if: always()
-        run: |
-          echo "=== Contents of target/swagger-coverage-output ==="
-          ls -la target/swagger-coverage-output/
-          echo "=== File details ==="
-          find target/swagger-coverage-output -name "*.json" -exec ls -l {} \;
-          echo "=== Sample file content (if any) ==="
-          find target/swagger-coverage-output -name "*.json" -print -exec head -n 5 {} \;
-
-      - name: Run Swagger coverage
+      - name: Run Swagger coverage               # Собираем Swagger coverage в любом случае
         if: always()
         run: |
           curl -s http://localhost:8111/app/rest/swagger.json -o teamcity-swagger.json
@@ -192,13 +171,6 @@ jobs:
             -s teamcity-swagger.json \
             -i target/swagger-coverage-output
 
-      - name: Upload swagger-coverage-output as artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: swagger-coverage-output
-          path: target/swagger-coverage-output/
-          retention-days: 7
 
       - name: Load test report history          # Загружаем историю отчётов Allure из ветки gh-pages для трендов
         uses: actions/checkout@v2
@@ -223,16 +195,74 @@ jobs:
       - name: Publish test report                # Публикуем директорию allure-history в ветку gh-pages
         uses: peaceiris/actions-gh-pages@v3
         if: always()
-#        continue-on-error: true                  # не падать если деплой медленный
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
 
+      # =============== Артефакты: логи и отчёты  ===============
+      - name: Upload test logs (Surefire / Failsafe)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: |
+            target/surefire-reports
+            target/failsafe-reports
+          retention-days: 7
+
+      - name: Generate and upload Allure HTML report
+        if: always()
+        run: |
+          mkdir -p target/allure-report
+          curl -sL https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.tgz -o allure.tgz
+          tar -xzf allure.tgz
+          ./allure-2.25.0/bin/allure generate target/allure-results --clean -o target/allure-report
+        continue-on-error: true
+
+      - name: Upload Swagger coverage output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: swagger-coverage-output
+          path: target/swagger-coverage-output/
+          retention-days: 7
+
+      - name: Collect Docker container logs
+        if: always()
+        run: |
+          mkdir -p docker-logs
+          echo "=== Available containers ==="
+          docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+          echo
+          # Логи TeamCity
+          docker logs --timestamps teamcity-server > docker-logs/teamcity.log 2>&1 || echo "teamcity-server not found" > docker-logs/teamcity.log
+          # Логи Selenoid 
+          docker logs --timestamps selenoid > docker-logs/selenoid.log 2>&1 || echo "selenoid not found" > docker-logs/selenoid.log
+
+      - name: Upload Docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs
+          path: docker-logs
+          retention-days: 7
+
+      - name: Upload Selenide test-screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: build/reports/tests/
+          retention-days: 7
+
       # ===============  Уведомление в Telegram ===============
       - name: Notify Telegram
         if: always()
         run: |
+          echo "Waiting 60 seconds before sending notification..."
+          sleep 60
+          
           # Статус тестов
           STATUS="❌ FAILED"
           EMOJI="❌"
@@ -242,7 +272,7 @@ jobs:
           fi
           
           # Формируем ссылки на отчеты
-          REPORT_BASE="https://story81.github.io/NBankProject/${{ github.run_number }}"
+          REPORT_BASE="https://get-offer-in-qa-auto.github.io/samurai-project/${{ github.run_number }}"
           ALLURE_REPORT="${REPORT_BASE}/index.html"
           SWAGGER_REPORT="${REPORT_BASE}/swagger-coverage-report.html"
           
@@ -252,12 +282,12 @@ jobs:
             -d parse_mode="HTML" \
             -d text="$EMOJI Tests $STATUS #${{ github.run_number }}
 
-          📦 Репозиторий <a href='${{ github.server_url }}/${{ github.repository }}'>NBankProject</a>
-          🌿 Ветка <a href='${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}'>${{ github.ref_name }}</a>
-          👤 Автор ${{ github.actor }}
+          📦 Repo <a href='${{ github.server_url }}/${{ github.repository }}'>TeamCityProject</a>
+          🌿 Branch <a href='${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}'>${{ github.ref_name }}</a>
+          👤 Actor ${{ github.actor }}
           
-          🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Run</a>
-          📊 Allure отчет <a href='${ALLURE_REPORT}'>Allure Report</a>"
+          🔗 Action <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Run</a>
+          📊 Allure report <a href='${ALLURE_REPORT}'>Allure Report</a>"
 #          📈 <a href='${SWAGGER_REPORT}'>API Coverage</a>"
 
       - name: Clean up services
