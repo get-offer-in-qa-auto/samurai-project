@@ -10,12 +10,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+
+      - name: Spotless apply
+        run: mvn spotless:apply
+
+      - name: Commit auto-format changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: autoformat by Spotless"
+          commit_user_name: github-actions
+          commit_user_email: github-actions@github.com
+
+      - name: Spotless check
+        run: mvn spotless:check
 
       - name: Run Checkstyle
         run: mvn checkstyle:check -Dcheckstyle.failOnViolation=true

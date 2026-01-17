@@ -14,4 +14,3 @@ public enum BuildTypeErrorMessage implements HasMessage {
     private final String message;
 
 }
-
