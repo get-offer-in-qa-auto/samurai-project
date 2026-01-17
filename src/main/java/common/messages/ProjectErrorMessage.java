@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ProjectErrorMessage implements HasMessage {
     PROJECT_NAME_EMPTY("Project name cannot be empty"),
-    PROJECT_NAME_EXISTS("Project with this name already exists"),
+    PROJECT_NAME_EXISTS("with this name already exists"),
     PROJECT_ID_EMPTY("Project ID must not be empty"),
     PROJECT_NOT_FOUND("No project found by name"),
     PROJECT_ID_TOO_LONG("it is 226 characters long while the maximum length is 225"),

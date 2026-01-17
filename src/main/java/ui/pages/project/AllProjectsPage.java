@@ -10,7 +10,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 
 public class AllProjectsPage extends BasePage<AllProjectsPage> {
-    private final SelenideElement createProjectButton = $(Selectors.byTitle("Create new project"));
+    private final SelenideElement createProjectButton = $(Selectors.byAttribute("data-test", "create-project"));
 
 
     public String url() {
