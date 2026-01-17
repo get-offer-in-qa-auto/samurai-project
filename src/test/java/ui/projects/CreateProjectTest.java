@@ -40,7 +40,6 @@ public class CreateProjectTest extends BaseUiTest {
     }
 
     @Test
-    @Disabled("Нa сi ui нет данного выбора")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @DisplayName("Успешное создание проекта из репозитория")
     public void userCanCreateProjectFromRepository() {
@@ -64,6 +63,7 @@ public class CreateProjectTest extends BaseUiTest {
     public void userCanNotCreateProjectManuallyWithEmptyId() {
         var projectName = RandomData.getProjectName();
         var resultMsg = new AllProjectsPage().open().openCreationProjectPage()
+                .changeIiToClassic()
                 .inputData(projectName, "")
                 .getUnsuccessIdMessageForManually();
         softly.assertThat(resultMsg).as("Проверка сообщения об ошибке")
