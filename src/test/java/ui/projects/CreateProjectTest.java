@@ -9,6 +9,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import common.annotations.WithAuthUser;
 import common.messages.ProjectUiMessage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
@@ -39,6 +40,7 @@ public class CreateProjectTest extends BaseUiTest {
     }
 
     @Test
+    @Disabled("Нa сi ui нет данного выбора")
     @WithAuthUser(role = Roles.AGENT_MANAGER)
     @DisplayName("Успешное создание проекта из репозитория")
     public void userCanCreateProjectFromRepository() {

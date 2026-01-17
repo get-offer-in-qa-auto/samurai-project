@@ -93,7 +93,6 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
     }
 
     public EditProjectPage createProjectManually(String name, String id) {
-        clickCreateProjectManually();
         setProjectName(name);
         setProjectId(id);
         clickCreateButton();
