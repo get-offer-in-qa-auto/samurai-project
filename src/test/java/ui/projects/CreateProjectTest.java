@@ -9,7 +9,6 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import common.annotations.WithAuthUser;
 import common.messages.ProjectUiMessage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
