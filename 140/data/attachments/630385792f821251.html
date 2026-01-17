@@ -1,0 +1,28 @@
+<div>POST to http://localhost:8111/app/rest/builds/4</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;comment&quot;: &quot;Canceled by API test [Юзер отменяет билд из очереди] at 2026-01-17T10:39:36.592631545&quot;,
+    &quot;readdIntoQueue&quot;: false
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.VnpEX3FVZGM4SGRwU2Fhc1REY09ON3kyYk04.YzEwOTUzY2EtNGQzMi00NzcwLWJjODAtMTc5OTA0YjE4ZDdk</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8111/app/rest/builds/4&#39; -H &#39;Authorization: Bearer eyJ0eXAiOiAiVENWMiJ9.VnpEX3FVZGM4SGRwU2Fhc1REY09ON3kyYk04.YzEwOTUzY2EtNGQzMi00NzcwLWJjODAtMTc5OTA0YjE4ZDdk&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;comment&quot;: &quot;Canceled by API test [Юзер отменяет билд из очереди] at 2026-01-17T10:39:36.592631545&quot;,
+    &quot;readdIntoQueue&quot;: false
+}&#39;
+    </div>
+
