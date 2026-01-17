@@ -9,6 +9,7 @@ import api.requests.steps.UserSteps;
 import api.specs.RequestSpecs;
 import common.annotations.WithAuthUser;
 import common.messages.ProjectUiMessage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ui.BaseUiTest;
@@ -62,6 +63,7 @@ public class CreateProjectTest extends BaseUiTest {
     public void userCanNotCreateProjectManuallyWithEmptyId() {
         var projectName = RandomData.getProjectName();
         var resultMsg = new AllProjectsPage().open().openCreationProjectPage()
+                .changeIiToClassic()
                 .inputData(projectName, "")
                 .getUnsuccessIdMessageForManually();
         softly.assertThat(resultMsg).as("Проверка сообщения об ошибке")

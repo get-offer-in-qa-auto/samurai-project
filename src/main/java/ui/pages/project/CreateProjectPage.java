@@ -24,6 +24,7 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
     private final SelenideElement createButton = $(Selectors.byId("createProject"));
     private final SelenideElement loader = $("#saving");
     private final SelenideElement idValidationErrorText = $(Selectors.byId("errorExternalId"));
+    private final SelenideElement classicUi = $(Selectors.byText("Import project DSL (classic UI)"));
 
 
     @Override
@@ -79,6 +80,13 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
         );
     }
 
+    public CreateProjectPage changeIiToClassic() {
+        StepLogger.log("Переход на классический UI", () ->
+                click(classicUi)
+        );
+        return this;
+    }
+
     private void waitForLoaderIfExists() {
         StepLogger.log("Ожидание загрузки страницы", () -> {
             if (loader.exists()) {
@@ -93,6 +101,7 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
     }
 
     public EditProjectPage createProjectManually(String name, String id) {
+        changeIiToClassic();
         clickCreateProjectManually();
         setProjectName(name);
         setProjectId(id);
@@ -102,6 +111,7 @@ public class CreateProjectPage extends BasePage<CreateProjectPage> {
     }
 
     public EditProjectPage createProjectFromRepository(String name) {
+        changeIiToClassic();
         clickCreateProjectFromRepository();
         setRepositoryUrl(Config.getProperty("repositoryForProject"));
         clickProceedButton();
